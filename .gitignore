@@ -12,3 +12,12 @@ web-build/
 
 # macOS
 .DS_Store
+.env
+
+
+# Platform
+android
+ios
+
+# Supabase
+supabase
