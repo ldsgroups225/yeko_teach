@@ -11,6 +11,7 @@ export enum Routes {
   School = "School",
   SchoolDetails = "SchoolDetails",
   SchoolClassDetails = "SchoolClassDetails",
+  Chat = "Chat",
 }
 
 /**
@@ -32,6 +33,13 @@ export type SchoolStackParams = {
     school: ISchoolDTO;
     classItem: IClassDTO;
   };
+};
+
+/**
+ * Represents the parameter types for the chat stack routes.
+ */
+export type ChatStackParams = {
+  [Routes.Chat]: undefined;
 };
 
 /**

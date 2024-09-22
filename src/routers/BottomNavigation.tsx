@@ -9,6 +9,7 @@ import { useTheme } from "@src/hooks";
 import ProfileStack from "./ProfileStack";
 import { StatusBar } from "react-native";
 import SchoolStack from "@routers/SchoolStack";
+import ChatStack from "@routers/ChatStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -46,7 +47,7 @@ export default function TabNavigator() {
 
         <Tab.Screen
           name="Chats"
-          component={Home}
+          component={ChatStack}
           options={{
             tabBarIcon: ({ color }) => (
               <Ionicons name="chatbubbles-outline" size={24} color={color} />
