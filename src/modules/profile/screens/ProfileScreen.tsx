@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useState } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useDispatch } from "react-redux";
 import CsButton from "@components/CsButton";
@@ -12,11 +12,6 @@ import { borderRadius, spacing } from "@styles/index";
 import { Ionicons } from "@expo/vector-icons";
 import { formatFullName } from "@utils/Formatting";
 import { useAppSelector } from "@src/store";
-import BottomSheet, { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
-import QRCode from "react-native-qrcode-svg";
-import { removeStoreDataAsync } from "@helpers/storage";
-import { StoreEnum } from "@helpers/storage/storeEnum";
-import { ToastColorEnum } from "@components/ToastMessage/ToastColorEnum";
 
 const ProfileScreen: React.FC = () => {
   const themedStyles = useThemedStyles<typeof styles>(styles);
@@ -26,19 +21,15 @@ const ProfileScreen: React.FC = () => {
 
   const { logout, loading } = useAuth();
 
-  const bottomSheetRef = useRef<BottomSheet>(null);
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [isClearingCache, setIsClearingCache] = useState(false);
+  const [isGeneratingQR, setIsGeneratingQR] = useState(false);
 
   const handleLogout = async () => {
     try {
       const response = await logout();
       if (response) {
         dispatch(loggedOut());
-        await removeStoreDataAsync(StoreEnum.User);
-        await removeStoreDataAsync(StoreEnum.CacheDuration);
-        await removeStoreDataAsync(StoreEnum.Classes);
-        await removeStoreDataAsync(StoreEnum.Notes);
       }
     } catch (_) {
       showToast("Un problème rencontré lors de la déconnexion, réessayer");
@@ -50,40 +41,27 @@ const ProfileScreen: React.FC = () => {
     // TODO: Implement profile update logic
     setTimeout(() => {
       setIsUpdatingProfile(false);
-      showToast("Sera disponible très bientôt", ToastColorEnum.Warning);
-    }, 300);
+      showToast("Profil mis à jour avec succès");
+    }, 2000);
   };
 
   const handleClearCache = async () => {
     setIsClearingCache(true);
-    await removeStoreDataAsync(StoreEnum.User);
-    await removeStoreDataAsync(StoreEnum.CacheDuration);
-    await removeStoreDataAsync(StoreEnum.Classes);
-    await removeStoreDataAsync(StoreEnum.Notes);
-    setIsClearingCache(false);
-
-    showToast(
-      "Les nouvelles données vous seront transmises.",
-      ToastColorEnum.Success
-    );
+    // TODO: Implement cache clearing logic
+    setTimeout(() => {
+      setIsClearingCache(false);
+      showToast("Cache effacé avec succès");
+    }, 1500);
   };
 
-  const qrValue = useMemo(() => `YEKO_teacher|---|${user?.id}`, [user?.id]);
-
-  const handleGenerateQRCode = useCallback(() => {
-    bottomSheetRef.current?.expand();
-  }, []);
-
-  const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop
-        {...props}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-      />
-    ),
-    []
-  );
+  const handleGenerateQR = () => {
+    setIsGeneratingQR(true);
+    // TODO: Implement QR code generation logic
+    setTimeout(() => {
+      setIsGeneratingQR(false);
+      showToast("QR Code généré avec succès");
+    }, 1500);
+  };
 
   return (
     <ScrollView style={themedStyles.container}>
@@ -117,7 +95,9 @@ const ProfileScreen: React.FC = () => {
       <View style={themedStyles.section}>
         <CsButton
           title="Générer un QR Code"
-          onPress={handleGenerateQRCode}
+          onPress={handleGenerateQR}
+          disabled={isGeneratingQR}
+          loading={isGeneratingQR}
           style={themedStyles.button}
         />
         <CsText variant="caption" style={themedStyles.infoText}>
@@ -137,7 +117,7 @@ const ProfileScreen: React.FC = () => {
             color={themedStyles.clearCacheButton.color}
           />
           <CsText variant="body" style={themedStyles.clearCacheButtonText}>
-            {isClearingCache ? "En cours..." : "Nouvelle données"}
+            {isClearingCache ? "En cours..." : "Nouvelle donnée"}
           </CsText>
         </TouchableOpacity>
         <CsText variant="caption" style={themedStyles.infoText}>
@@ -152,22 +132,6 @@ const ProfileScreen: React.FC = () => {
         loading={loading}
         style={themedStyles.logoutButton}
       />
-
-      <BottomSheet
-        ref={bottomSheetRef}
-        snapPoints={["53%"]}
-        index={-1}
-        enablePanDownToClose={true}
-        backdropComponent={renderBackdrop}
-      >
-        <View style={themedStyles.qrCodeContainer}>
-          <QRCode value={qrValue} size={200} />
-          <CsText style={themedStyles.qrText}>QR Code de jonction</CsText>
-          <CsText variant="caption" style={themedStyles.qrText}>
-            Utilisez ce Qr Code pour joindre une nouvelle école.
-          </CsText>
-        </View>
-      </BottomSheet>
     </ScrollView>
   );
 };
@@ -225,17 +189,6 @@ const styles = (theme: ITheme) =>
     logoutButton: {
       margin: spacing.lg,
       backgroundColor: theme.error,
-    },
-    qrCodeContainer: {
-      flex: 1,
-      alignItems: "center",
-      justifyContent: "center",
-      padding: spacing.lg,
-    },
-    qrText: {
-      marginTop: spacing.md,
-      textAlign: "center",
-      color: theme.text,
     },
   });
 

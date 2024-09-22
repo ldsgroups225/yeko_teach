@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { IClassDTO } from "@modules/app/types/ILoginDTO";
 import { classes } from "@modules/school/services/classService";
-import { addStoreDataAsync, getStoreDataAsync } from "@helpers/storage";
-import { StoreEnum } from "@helpers/storage/storeEnum";
 
 interface UseClassReturn {
   getClasses: (
@@ -22,15 +20,7 @@ const getClasses = async (
   setLoading(true);
   setError(null);
   try {
-    const cachedClassesData = await getStoreDataAsync<IClassDTO[]>(
-      StoreEnum.Classes
-    );
-    if (cachedClassesData) return cachedClassesData;
-
-    const classesData = await classes.getClasses(teacherId, schoolId);
-    await addStoreDataAsync(StoreEnum.Classes, classesData);
-
-    return classesData;
+    return await classes.getClasses(teacherId, schoolId);
   } catch (err) {
     setError("Failed to get classes records.");
     console.error("[E_GET_CLASSES]:", err);
