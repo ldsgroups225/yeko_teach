@@ -7,5 +7,9 @@
 export enum StoreEnum {
   Token,
   User,
-  ColorMode
+  ColorMode,
+  Classes,
+  Notes,
+  CacheDuration,
+  Schedules,
 }

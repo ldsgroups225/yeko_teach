@@ -3,13 +3,13 @@
  */
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Home from "@modules/app/screens/Home";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@src/hooks";
 import ProfileStack from "./ProfileStack";
 import { StatusBar } from "react-native";
 import SchoolStack from "@routers/SchoolStack";
 import ChatStack from "@routers/ChatStack";
+import ScheduleStack from "@routers/ScheduleStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -27,7 +27,7 @@ export default function TabNavigator() {
       >
         <Tab.Screen
           name="Programmes"
-          component={Home}
+          component={ScheduleStack}
           options={{
             tabBarIcon: ({ color }) => (
               <AntDesign name="calendar" size={24} color={color} />

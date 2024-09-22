@@ -12,6 +12,7 @@ export enum Routes {
   SchoolDetails = "SchoolDetails",
   SchoolClassDetails = "SchoolClassDetails",
   Chat = "Chat",
+  Schedule = "Schedule",
 }
 
 /**
@@ -21,6 +22,13 @@ export type RootStackParams = {
   [Routes.Core]: undefined;
   [Routes.Login]: undefined;
   [Routes.Register]: undefined;
+};
+
+/**
+ * Represents the parameter types for the schedule stack routes.
+ */
+export type ScheduleStackParams = {
+  [Routes.Schedule]: undefined;
 };
 
 /**
