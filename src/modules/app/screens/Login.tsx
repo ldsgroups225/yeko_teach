@@ -62,10 +62,6 @@ export default function Login() {
     [login]
   );
 
-  const handleRegister = useCallback(() => {
-    navigationRef.navigate(Routes.Register);
-  }, [navigationRef]);
-
   // Auth Callbacks
   const handleLogin = async () => {
     try {
@@ -193,19 +189,6 @@ export default function Login() {
             style={themedStyles.button}
           />
         </Animated.View>
-
-        <Animated.View
-          entering={FadeInUp.delay(600).duration(1000).springify()}
-          style={themedStyles.registerContainer}
-        >
-          <CsText variant="body">{translate("dontHaveAccount")}</CsText>
-          <TouchableOpacity onPress={handleRegister}>
-            <CsText variant="body" style={themedStyles.registerText}>
-              {" "}
-              {translate("register")}
-            </CsText>
-          </TouchableOpacity>
-        </Animated.View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -257,14 +240,5 @@ const styles = (theme: ITheme) =>
     dividerText: {
       marginHorizontal: spacing.md,
       color: theme.textLight,
-    },
-    registerContainer: {
-      flexDirection: "row",
-      justifyContent: "center",
-      marginTop: spacing.xl,
-    },
-    registerText: {
-      color: theme.primary,
-      fontWeight: "bold",
     },
   });

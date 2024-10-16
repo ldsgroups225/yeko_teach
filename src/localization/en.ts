@@ -39,7 +39,6 @@ const resource: ILocalization = {
   or: "or",
   loginWithGoogle: "Login with Google",
   dontHaveAccount: "Don't have an account?",
-  register: "Register",
   googleLoginNotImplemented: "Google login is not yet implemented.",
   forgotPasswordNotImplemented:
     "Forgot password functionality is not yet implemented.",

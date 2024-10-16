@@ -6,7 +6,6 @@ import { IClassDTO, ISchoolDTO } from "@modules/app/types/ILoginDTO";
 export enum Routes {
   Core = "Core",
   Login = "Login",
-  Register = "Register",
   User = "User",
   School = "School",
   SchoolDetails = "SchoolDetails",
@@ -21,7 +20,6 @@ export enum Routes {
 export type RootStackParams = {
   [Routes.Core]: undefined;
   [Routes.Login]: undefined;
-  [Routes.Register]: undefined;
 };
 
 /**

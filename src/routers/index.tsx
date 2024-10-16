@@ -12,7 +12,6 @@ import Login from "@modules/app/screens/Login";
 import BottomNavigation from "./BottomNavigation";
 import { ScreenOptions } from "@utils/ScreenOptions";
 import Routes, { RootStackParams } from "@utils/Routes";
-import Registration from "@modules/app/screens/Register";
 import { useAuth } from "@hooks/useAuth";
 import LoadingSpinner from "@components/LoadingSpinner";
 import { useDispatch } from "react-redux";
@@ -88,11 +87,6 @@ function RootNavigation() {
               <Stack.Screen
                 name={Routes.Login}
                 component={Login}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name={Routes.Register}
-                component={Registration}
                 options={{ headerShown: false }}
               />
             </>

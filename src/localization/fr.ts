@@ -37,7 +37,6 @@ const resource = {
   or: "ou",
   loginWithGoogle: "Continuer avec Google",
   dontHaveAccount: "Vous n'avez pas de compte ?",
-  register: "S'inscrire",
   googleLoginNotImplemented:
     "La connexion avec Google n'est pas encore implémentée.",
   forgotPasswordNotImplemented:

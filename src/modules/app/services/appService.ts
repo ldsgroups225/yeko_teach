@@ -1,11 +1,9 @@
 import { supabase } from "@src/lib/supabase";
 import {
   AuthError,
-  AuthResponse,
   AuthTokenResponsePassword,
   Session,
 } from "@supabase/auth-js";
-import { ERole } from "@modules/app/types/ILoginDTO";
 
 interface IGetSession {
   data: {
@@ -18,52 +16,6 @@ interface IGetSession {
  * Authentication service for handling user accounts and sessions using Supabase.
  */
 export const auth = {
-  /**
-   * Creates a new user account and assigns a role.
-   *
-   * @param {string} email - The email address of the user.
-   * @param {string} password - The password for the new account.
-   * @param {string} [firstName] - The user's first name (optional).
-   * @param {string} [lastName] - The user's last name (optional).
-   * @param {string} [phone] - The user's phone number (optional).
-   * @returns {Promise<AuthResponse>} - The response from the Supabase sign-up request.
-   */
-  async createAccount(
-    email: string,
-    password: string,
-    firstName?: string,
-    lastName?: string,
-    phone?: string
-  ): Promise<AuthResponse> {
-    const newAccountResponse = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-          phone: phone,
-        },
-      },
-    });
-
-    if (newAccountResponse.error) {
-      console.error("Error creating account:", newAccountResponse.error);
-      return newAccountResponse;
-    }
-
-    const newRoleResponse = await supabase.from("user_roles").insert({
-      user_id: newAccountResponse.data.user!.id,
-      role_id: ERole.TEACHER,
-    });
-
-    if (newRoleResponse.error) {
-      console.error("Error assigning role:", newRoleResponse.error);
-    }
-
-    return newAccountResponse;
-  },
-
   /**
    * Logs in a user using email and password.
    *

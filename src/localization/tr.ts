@@ -37,7 +37,6 @@ const resource = {
   or: "veya",
   loginWithGoogle: "Google ile Giriş Yap",
   dontHaveAccount: "Hesabınız yok mu?",
-  register: "Kayıt Ol",
   googleLoginNotImplemented: "Google girişi henüz uygulanmadı.",
   forgotPasswordNotImplemented: "Şifremi unuttum işlevi henüz uygulanmadı.",
   invalidCredentials: "Geçersiz e-posta veya şifre",
