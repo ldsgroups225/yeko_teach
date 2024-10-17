@@ -39,11 +39,13 @@ import Routes from "@utils/Routes";
 import { spacing } from "@styles/spacing";
 import { ITheme } from "@styles/theme";
 import { IUserDTO } from "../types/ILoginDTO";
+import { useClearCache } from "@hooks/useClearCache";
 
 export default function Login() {
   // Hooks
   const dispatch = useDispatch();
   const { login, loading } = useAuth();
+  const { clearCache } = useClearCache({showSuccesToast: false});
   const theme = useTheme();
   const themedStyles = useThemedStyles<typeof styles>(styles);
 
@@ -70,6 +72,7 @@ export default function Login() {
       const user = await login(email, password);
       if (!user) return showToast(translate("invalidCredentials"));
 
+      await clearCache();
       goHomePage(user);
     } catch (error) {
       if (error.toString() === "Error: Invalid login credentials")

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import { BackHandler, FlatList, Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useTheme } from "@src/hooks";
 import CsText from "@components/CsText";
 import { spacing } from "@styles/spacing";
@@ -9,6 +9,12 @@ import { useSchedule } from "@modules/schedule/hooks/useSchedule";
 import { LoadingScreen } from "@modules/app/components";
 import { IScheduleDTO } from "@modules/app/types/IScheduleDTO";
 import { Ionicons } from "@expo/vector-icons";
+import { OtpForm } from "@components/OtpForm";
+import { useSchoolJoin } from "@hooks/useSchoolJoin";
+import { useClearCache } from "@hooks/useClearCache";
+import { showToast } from "@helpers/toast/showToast";
+import { ToastColorEnum } from "@components/ToastMessage/ToastColorEnum";
+import { useAuthCheck } from "@hooks/useAuthCheck";
 
 const daysOfWeek = ["LUN", "MAR", "MER", "JEU", "VEN"];
 const fullDaysOfWeek = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
@@ -18,15 +24,18 @@ const ITEM_HEIGHT = 100;
 const ScheduleScreen: React.FC = () => {
   const theme = useTheme();
   const styles = useStyles(theme);
+  const checkAuth = useAuthCheck()
+  const { clearCache } = useClearCache();
   const user = useAppSelector((s) => s?.AppReducer?.user);
   const { getSchedules, loading, error: scheduleError } = useSchedule();
+  const { joinSchool, loading: isJoiningSchool, error: joinSchoolError } = useSchoolJoin(user?.id || '');
 
   const [schedules, setSchedules] = useState<IScheduleDTO[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [selectedDay, setSelectedDay] = useState(new Date().getDay() || 1);
 
   const fetchSchedules = useCallback(async () => {
-    if (!user) return;
+    if (!user || !user.schools.length) return;
     const fetchedSchedules = await getSchedules(user.id);
     if (fetchedSchedules) {
       setSchedules(fetchedSchedules);
@@ -39,6 +48,12 @@ const ScheduleScreen: React.FC = () => {
   useEffect(() => {
     fetchSchedules();
   }, [fetchSchedules]);
+
+  useEffect(() => {
+    if (joinSchoolError) {
+      showToast(joinSchoolError, ToastColorEnum.Error);
+    }
+  }, [joinSchoolError]);
 
   const memoizedSchedules = useMemo(() => {
     const schedulesMap = new Map();
@@ -55,6 +70,15 @@ const ScheduleScreen: React.FC = () => {
     () => memoizedSchedules.get(selectedDay) || [],
     [memoizedSchedules, selectedDay]
   );
+
+  const handleOtpComplete = useCallback(async (code: string) => {
+    const joined = await joinSchool(code);
+    if (joined) {
+      await clearCache();
+      await checkAuth();
+      BackHandler.exitApp();
+    }
+  }, [joinSchool, clearCache]);
 
   const renderDaySelector = useCallback(
     () => (
@@ -87,8 +111,12 @@ const ScheduleScreen: React.FC = () => {
     ({ item }: { item: IScheduleDTO }) => (
       <View style={styles.scheduleItem}>
         <View style={styles.timeContainer}>
-          <CsText style={styles.timeText}>{item.startTime}</CsText>
-          <CsText style={styles.timeText}>{item.endTime}</CsText>
+          <CsText style={styles.timeText}>
+            {item.startTime.substring(0, 5)}
+          </CsText>
+          <CsText style={styles.timeText}>
+            {item.endTime.substring(0, 5)}
+          </CsText>
         </View>
         <View style={styles.scheduleDetails}>
           <CsText style={styles.className}>{item.className}</CsText>
@@ -132,6 +160,30 @@ const ScheduleScreen: React.FC = () => {
     );
   }
 
+  if (!user?.schools.length) {
+    return (
+      <View style={styles.centeredView}>
+        <Image
+          source={require("@assets/images/icon.png")}
+          style={styles.logo}
+        />
+
+        <CsText style={styles.title}>
+          Vous êtes encore sans établissement scolaire !
+        </CsText>
+        <CsText style={styles.subtitle}>
+          Pour commencer, veuillez rejoindre au moins un établissement scolaire.
+        </CsText>
+        <View style={styles.otpWrapper}>
+          <OtpForm
+            onComplete={handleOtpComplete}
+            loading={isJoiningSchool}
+          />
+        </View>
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -168,6 +220,33 @@ const useStyles = (theme: ITheme) =>
       flex: 1,
       backgroundColor: theme.background,
     },
+    centeredView: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    logo: {
+      width: 150,
+      height: 200,
+      alignSelf: "center",
+      objectFit: "contain",
+    },
+    otpWrapper: {
+      margin: 20,
+      backgroundColor: theme.background,
+      borderRadius: 20,
+      padding: 35,
+      alignItems: "center",
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+      width: '90%',
+    },
     header: {
       flexDirection: "row",
       justifyContent: "space-between",
@@ -180,6 +259,13 @@ const useStyles = (theme: ITheme) =>
       fontSize: 24,
       fontWeight: "bold",
       color: theme.text,
+    },
+    subtitle: {
+      fontSize: 16,
+       fontWeight: "bold",
+       color: theme.text,
+       textAlign: "center",
+       margin: 20,
     },
     refreshButton: {
       padding: spacing.sm,

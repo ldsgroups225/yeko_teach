@@ -20,7 +20,14 @@ export const useTeacherData = () => {
       }
 
       console.error("[E_FETCH_TEACHER_DATA]: Invalid data structure");
-      return null;
+      return {
+        id: userId,
+        email: '',
+        firstName: '',
+        lastName: '',
+        phone: '',
+        schools: [],
+      };
     },
     []
   );
