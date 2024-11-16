@@ -36,6 +36,19 @@
   "interline-translate.knownPopularWordCount": 6000,
   "iconify.annotations": true,
   "iconify.inplace": true,
+  "cSpell.ignorePaths": [
+    "package.json",
+    "package-lock.json",
+    "node_modules",
+    "vscode-extension",
+    ".git/objects",
+    ".vscode",
+    ".vscode-insiders",
+    ".expo",
+    "android",
+    "ios",
+    "supabase"
+  ],
   "cSpell.language": "en, fr",
   "cSpell.words": [
     "springify"
