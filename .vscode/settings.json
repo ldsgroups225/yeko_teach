@@ -46,8 +46,7 @@
     ".vscode-insiders",
     ".expo",
     "android",
-    "ios",
-    "supabase"
+    "ios"
   ],
   "cSpell.language": "en, fr",
   "cSpell.words": [
