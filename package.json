@@ -47,7 +47,8 @@
     "react-native-svg": "15.8.0",
     "react-native-web": "~0.19.6",
     "react-redux": "^9.1.0",
-    "redux": "^5.0.1"
+    "redux": "^5.0.1",
+    "supabase": "^2.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
