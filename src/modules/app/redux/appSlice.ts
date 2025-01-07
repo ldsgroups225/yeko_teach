@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ColorSchemeName } from "react-native";
-import { IAppState, ProfileCompletion } from "./IAppState";
+import { IAppState, ISemester, ProfileCompletion } from "./IAppState";
 
 /**
  * Initial state for the app slice.
@@ -10,6 +10,8 @@ const initialState: IAppState = {
   userColorScheme: "light",
   isLoading: false,
   user: undefined,
+  schoolYear: undefined,
+  semesters: undefined,
   selectedStudent: undefined,
   authToken: undefined,
   expoToken: undefined,
@@ -92,6 +94,8 @@ const appSlice = createSlice({
       state.expoToken = undefined;
       state.selectedStudent = undefined;
       // state.user = undefined;
+      state.schoolYear = undefined;
+      state.semesters = undefined;
     },
 
     /**
@@ -126,6 +130,24 @@ const appSlice = createSlice({
         ...action.payload,
       };
     },
+
+    /**
+     * Set the current school year.
+     * @param state - The current state.
+     * @param action - Action containing the school year.
+     */
+    setSchoolYear(state: IAppState, action: PayloadAction<{id: number, name: string}>) {
+      state.schoolYear = action.payload;
+    },
+
+    /**
+     * Set the semesters.
+     * @param state - The current state.
+     * @param action - Action containing the semesters.
+     */
+    setSemesters(state: IAppState, action: PayloadAction<ISemester[]>) {
+      state.semesters = action.payload;
+    },
   },
 });
 
@@ -139,6 +161,8 @@ export const {
   setAuthToken,
   setExpoToken,
   setProfileCompletion,
+  setSchoolYear,
+  setSemesters,
 } = appSlice.actions;
 
 export default appSlice.reducer;

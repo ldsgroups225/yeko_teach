@@ -11,15 +11,36 @@ export interface IStudentDTO {
   note?: number;
 }
 
-export interface INoteDTO {
+export interface INoteDetailDTO {
   id?: string;
-  classId: string;
+  noteId: string;
   subjectId: string;
   studentId: string;
-  note: number;
-  date: Date;
-  isPublished?: boolean;
-  publishDate?: Date | null;
+  note?: number;
+  gradedAt?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface INoteDTO {
+  id?: string;
+  schoolId: string;
+  schoolYearId: number;
+  semesterId: number;
+  noteType: string;
+  title?: string;
+  description?: string;
+  totalPoints: number;
+  weight?: number;
+  isGraded: boolean;
+  createdAt: Date;
+  publishedAt?: Date;
+  dueDate?: Date;
+  teacherId: string;
+  isPublished: boolean;
+  isActive: boolean;
+  classId: string;
+  noteDetails?: INoteDetailDTO[];
 }
 
 export interface ISchoolDTO {
@@ -77,4 +98,11 @@ export interface ITeacherDataRawDTO {
       name: string;
     }[];
   }[];
+}
+
+export interface INoteDetailRawToSaveDTO {
+  noteId: string;
+  studentId: string;
+  note: number;
+  subjectId: string;
 }

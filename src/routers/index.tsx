@@ -15,37 +15,69 @@ import Routes, { RootStackParams } from "@utils/Routes";
 import { useAuth } from "@hooks/useAuth";
 import LoadingSpinner from "@components/LoadingSpinner";
 import { useDispatch } from "react-redux";
-import { setUser } from "@modules/app/redux/appSlice";
+import { setUser, setSchoolYear, setSemesters } from "@modules/app/redux/appSlice";
+import { schoolYear } from "@modules/app/services/appService";
 
 enableScreens();
-
 const Stack = createStackNavigator<RootStackParams>();
 
 function RootNavigation() {
   const theme = useTheme();
   const dispatch = useDispatch();
   const { checkAuth, loading } = useAuth();
+  
   const isSignedIn = useAppSelector((s) => s.AppReducer?.isSignedIn);
-  const user = useAppSelector((s) => s.AppReducer?.user);
   const userColorScheme = useAppSelector((s) => s?.AppReducer?.userColorScheme);
-
   const isDarkTheme = userColorScheme === "dark";
-  const recheckAuthTriggered = useRef(false);
+  
+  const authCheckRef = useRef(false);
+  const dataFetchRef = useRef(false);
 
-  const recheckAuth = useCallback(async () => {
-    const r = await checkAuth();
-    if (r) {
-      dispatch(setUser(r));
+  const handleAuthentication = useCallback(async () => {
+    try {
+      const userData = await checkAuth();
+      if (userData) {
+        dispatch(setUser(userData));
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Authentication check failed:", error);
+      return false;
     }
-  }, [checkAuth, dispatch, user]);
+  }, [checkAuth, dispatch]);
+
+  const fetchAndStoreSchoolData = useCallback(async () => {
+    try {
+      const { data, error } = await schoolYear.getCurrentSchoolYearWithSemesters();
+      if (error) throw error;
+      if (data && data.schoolYear && data.semesters) {
+        dispatch(setSchoolYear({
+          id: data.schoolYear.id,
+          name: data.schoolYear.name!,
+        }));
+        dispatch(setSemesters(data.semesters));
+      }
+    } catch (error) {
+      console.error("Failed to fetch school data:", error);
+    }
+  }, [dispatch]);
 
   useEffect(() => {
-    // Trigger recheckAuth only once when not signed in
-    if (!isSignedIn && !recheckAuthTriggered.current) {
-      recheckAuth().then((r) => r);
-      recheckAuthTriggered.current = true;
-    }
-  }, [isSignedIn]);
+    const initializeApp = async () => {
+      if (!isSignedIn && !authCheckRef.current) {
+        authCheckRef.current = true;
+        const isAuthenticated = await handleAuthentication();
+        
+        if (isAuthenticated && !dataFetchRef.current) {
+          dataFetchRef.current = true;
+          await fetchAndStoreSchoolData();
+        }
+      }
+    };
+
+    initializeApp();
+  }, [isSignedIn, handleAuthentication, fetchAndStoreSchoolData]);
 
   const navigationTheme = {
     dark: isDarkTheme,

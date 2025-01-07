@@ -11,12 +11,16 @@ interface StudentListItemProps {
   student: IStudentDTO;
   isAssigningGrade: boolean;
   onNoteChange: (id: string, note: number | null) => void;
+  isReadOnly: boolean;
+  maxPoints: number;
 }
 
 const StudentListItem: React.FC<StudentListItemProps> = ({
   student,
   isAssigningGrade,
   onNoteChange,
+  isReadOnly,
+  maxPoints,
 }) => {
   const theme = useTheme();
   const styles = useStyles(theme);
@@ -32,7 +36,7 @@ const StudentListItem: React.FC<StudentListItemProps> = ({
 
   const handleNoteChange = (text: string) => {
     const note =
-      text === "" ? null : Math.min(Math.max(parseInt(text) || 0, 0), 40);
+      text === "" ? null : Math.min(Math.max(parseInt(text) || 0, 0), maxPoints);
     onNoteChange(student.id, note);
   };
 
@@ -61,27 +65,33 @@ const StudentListItem: React.FC<StudentListItemProps> = ({
         </View>
       </View>
       <View style={styles.noteContainer}>
-        {isAssigningGrade ? (
-          <TextInput
-            style={styles.noteInput}
-            keyboardType="numeric"
-            value={student.note?.toString() || ""}
-            onChangeText={handleNoteChange}
-            maxLength={2}
-            placeholder="0-40"
-            placeholderTextColor={theme.textLight}
-          />
-        ) : (
-          <View
-            style={[
-              styles.noteDisplay,
-              student.note !== undefined && styles.noteDisplayFilled,
-            ]}
-          >
-            <CsText variant="body" style={styles.noteText}>
-              {student.note !== undefined ? student.note : "-"}
-            </CsText>
-          </View>
+      {isAssigningGrade
+        ? (
+            <TextInput
+              style={[
+                styles.noteInput,
+                isReadOnly && styles.readOnlyInput
+              ]}
+              keyboardType="numeric"
+              value={student.note?.toString() || ""}
+              onChangeText={handleNoteChange}
+              maxLength={2}
+              placeholder={`/${maxPoints}`}
+              placeholderTextColor={theme.textLight}
+              editable={!isReadOnly}
+            />
+          )
+        : (
+            <View
+              style={[
+                styles.noteDisplay,
+                student.note !== undefined && styles.noteDisplayFilled,
+              ]}
+            >
+              <CsText variant="body" style={styles.noteText}>
+                {student.note !== undefined ? student.note : "-"}
+              </CsText>
+            </View>
         )}
       </View>
     </Animated.View>
@@ -162,6 +172,10 @@ const useStyles = (theme: ITheme) =>
       color: theme.text,
       fontWeight: "bold",
       fontSize: 16,
+    },
+    readOnlyInput: {
+      backgroundColor: theme.background + '40',
+      borderColor: theme.border,
     },
   });
 

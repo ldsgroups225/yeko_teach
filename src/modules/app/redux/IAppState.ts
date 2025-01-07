@@ -13,13 +13,24 @@ export interface ProfileCompletion {
   referral: string;
 }
 
+export interface ISemester {
+  id: number;
+  name: string;
+  isCurrent: boolean;
+}
+
 export interface IAppState {
   isSignedIn: boolean;
   userColorScheme: ColorSchemeName;
   isLoading: boolean;
-  user: IUserDTO | undefined;
-  selectedStudent: IStudentDTO | undefined;
-  authToken: string | undefined;
-  expoToken: string | undefined;
+  user?: IUserDTO;
+  selectedStudent?: IStudentDTO;
+  authToken?: string;
+  expoToken?: string;
   profileCompletion: ProfileCompletion;
+  schoolYear?: {
+    id: number;
+    name: string;
+  };
+  semesters?: ISemester[];
 }

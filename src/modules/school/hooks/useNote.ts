@@ -1,79 +1,56 @@
 import { useCallback, useState } from "react";
-import { INoteDTO } from "@modules/app/types/ILoginDTO";
+import { INoteDTO, INoteDetailDTO, INoteDetailRawToSaveDTO } from "@modules/app/types/ILoginDTO";
 import { notes } from "@modules/school/services/noteService";
 
 interface UseNoteReturn {
-  getNotes: (subjectId: string, classId: string) => Promise<INoteDTO[] | null>;
-  saveNotes: (noteData: INoteDTO[]) => Promise<boolean>;
-  publishNotes: (date: Date) => Promise<boolean>;
+  getNotes: (classId: string, teacherId: string, schoolYearId: number) => Promise<INoteDTO[] | null>;
+  saveNotes: (noteData: INoteDTO) => Promise<boolean>;
+  publishNotes: (noteId: string) => Promise<boolean>;
+  activateNotes: (noteId: string) => Promise<boolean>;
+  saveNoteDetails: (noteDetail: INoteDetailRawToSaveDTO) => Promise<boolean>;
   loading: boolean;
   error: string | null;
 }
 
-/**
- * Custom hook to manage note operations (fetching, saving, and publishing).
- * @returns {UseNoteReturn} An object containing note-related functions and states.
- */
 export const useNote = (): UseNoteReturn => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  /**
-   * Fetches notes for a given subject and class.
-   * @param {string} subjectId - The ID of the subject.
-   * @param {string} classId - The ID of the class.
-   * @returns {Promise<INoteDTO[] | null>} A promise that resolves to an array of note objects or null on error.
-   */
-  const getNotes = useCallback(
-    async (subjectId: string, classId: string): Promise<INoteDTO[] | null> => {
-      setLoading(true);
-      setError(null);
-      try {
-        return await notes.getNotes(subjectId, classId);
-      } catch (err) {
-        setError("Failed to get notes records.");
-        console.error("[E_GET_NOTES]:", err);
-        return null;
-      } finally {
-        setLoading(false);
-      }
-    },
-    []
-  );
 
-  /**
-   * Saves new notes to the database.
-   * @param {INoteDTO[]} noteData - An array of note objects to be saved.
-   * @returns {Promise<boolean>} A promise that resolves to true if the notes were saved successfully, false otherwise.
-   */
-  const saveNotes = useCallback(
-    async (noteData: INoteDTO[]): Promise<boolean> => {
-      setLoading(true);
-      setError(null);
-      try {
-        await notes.saveNotes(noteData);
-        return true;
-      } catch (err) {
-        setError("Failed to save note.");
-        console.error("[E_SAVE_NOTES]:", err);
-        return false;
-      } finally {
-        setLoading(false);
-      }
-    },
-    []
-  );
-
-  /**
-   * Publishes notes for a specific date.
-   * @param {Date} date - The date for which to publish notes.
-   * @returns {Promise<boolean>} A promise that resolves to true if the notes were published successfully, false otherwise.
-   */
-  const publishNotes = useCallback(async (date: Date): Promise<boolean> => {
+  const getNotes = useCallback(async (classId: string, teacherId: string, schoolYearId: number): Promise<INoteDTO[] | null> => {
     setLoading(true);
     setError(null);
     try {
-      await notes.publishNotes(date);
+      return await notes.getNotes(classId, teacherId, schoolYearId);
+    } catch (err) {
+      setError("Failed to get notes records.");
+      console.error("[E_GET_NOTES]:", err);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const saveNotes = useCallback(async (noteData: INoteDTO): Promise<boolean> => {
+    setLoading(true);
+    setError(null);
+    try {
+      await notes.saveNotes(noteData);
+      return true;
+    } catch (err) {
+      setError("Failed to save note.");
+      console.error("[E_SAVE_NOTES]:", err);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const publishNotes = useCallback(async (noteId: string): Promise<boolean> => {
+    setLoading(true);
+    setError(null);
+    try {
+      await notes.publishNotes(noteId);
       return true;
     } catch (err) {
       setError("Failed to publish notes.");
@@ -84,11 +61,43 @@ export const useNote = (): UseNoteReturn => {
     }
   }, []);
 
+  const activateNotes = useCallback(async (noteId: string): Promise<boolean> => {
+    setLoading(true);
+    setError(null);
+    try {
+      await notes.activateNotes(noteId);
+      return true;
+    } catch (err) {
+      setError("Failed to activate notes.");
+      console.error("[E_ACTIVATE_NOTES]:", err);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const saveNoteDetails = useCallback(async (noteDetail: INoteDetailRawToSaveDTO): Promise<boolean> => {
+    setLoading(true);
+    setError(null);
+    try {
+      await notes.saveNoteDetail(noteDetail);
+      return true;
+    } catch (err) {
+      setError("Failed to save note details.");
+      console.error("[E_SAVE_NOTE_DETAILS]:", err);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
+    error,
+    loading,
     getNotes,
     saveNotes,
     publishNotes,
-    loading,
-    error,
+    activateNotes,
+    saveNoteDetails,
   };
 };

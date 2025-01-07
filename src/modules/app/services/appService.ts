@@ -4,12 +4,29 @@ import {
   AuthTokenResponsePassword,
   Session,
 } from "@supabase/auth-js";
+import { PostgrestError } from "@supabase/supabase-js";
 
 interface IGetSession {
   data: {
     session: Session | null;
   };
   error: AuthError | null;
+}
+
+interface SchoolYear {
+  id: number;
+  name: string | null;
+}
+
+interface Semester {
+  id: number;
+  name: string;
+  isCurrent: boolean;
+}
+
+interface SchoolYearWithSemesters {
+  schoolYear: SchoolYear | null;
+  semesters: Semester[];
 }
 
 /**
@@ -69,3 +86,108 @@ export const auth = {
     return response;
   },
 };
+
+export const schoolYear = {
+  /**
+   * Fetches the current school year based on the current date and its related semesters.
+   * A school year is considered current if the current date falls between its start_date and end_date.
+   * 
+   * @returns {Promise<SchoolYearWithSemesters>} The current school year and its semesters
+   */
+  async getCurrentSchoolYearWithSemesters(): Promise<{
+    data: SchoolYearWithSemesters | null;
+    error: PostgrestError | null;
+  }> {
+    try {
+      // First, fetch the current school year
+      const { data: schoolYearData, error: schoolYearError } = await supabase
+        .from('school_years')
+        .select('*')
+        .lte('start_date', new Date().toISOString())
+        .gte('end_date', new Date().toISOString())
+        .single();
+
+      if (schoolYearError) {
+        throw schoolYearError;
+      }
+
+      if (!schoolYearData) {
+        return {
+          data: null,
+          error: null
+        };
+      }
+
+      // Then fetch related semesters
+      const { data: semestersData, error: semestersError } = await supabase
+        .from('semesters')
+        .select('*')
+        .eq('school_year_id', schoolYearData.id)
+        .order('start_date', { ascending: true });
+
+      if (semestersError) {
+        throw semestersError;
+      }
+
+      return {
+        data: {
+          schoolYear: {
+            id: schoolYearData.id,
+            name: schoolYearData.academic_year_name,
+          },
+          semesters: semestersData.map((semester) => ({
+            id: semester.id,
+            name: semester.semester_name,
+            isCurrent: semester.is_current
+          }))
+        },
+        error: null
+      };
+    } catch (error) {
+      console.error('Error fetching current school year:', error);
+      return {
+        data: null,
+        error: error as PostgrestError
+      };
+    }
+  },
+
+
+  /**
+   * Gets the current semester based on the current date.
+   * 
+   * @returns {Promise<Semester | null>} The current semester or null if not found
+   */
+  async getCurrentSemester(): Promise<{
+    data: Semester | null;
+    error: PostgrestError | null;
+  }> {
+    try {
+      const { data: semesterData, error: semesterError } = await supabase
+        .from('semesters')
+        .select('*')
+        .lte('start_date', new Date().toISOString())
+        .gte('end_date', new Date().toISOString())
+        .single();
+
+      if (semesterError) {
+        throw semesterError;
+      }
+
+      return {
+        data: {
+          id: semesterData.id,
+          name: semesterData.semester_name,
+          isCurrent: semesterData.is_current
+        },
+        error: null
+      };
+    } catch (error) {
+      console.error('Error fetching current semester:', error);
+      return {
+        data: null,
+        error: error as PostgrestError
+      };
+    }
+  },
+}

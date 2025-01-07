@@ -1,3 +1,5 @@
+// cSpell:disable
+
 /**
  * The endpoint URL for the Supabase server.
  * This is the base URL used for all Supabase API requests.
@@ -34,6 +36,11 @@ export const SCHOOL_TABLE_ID = "schools";
  * The ID of the collection storing Notes documents in the Supabase database.
  */
 export const NOTE_TABLE_ID = "notes";
+
+/**
+ * The ID of the collection storing NoteDetails documents in the Supabase database.
+ */
+export const NOTE_DETAILS_TABLE_ID = "note_details";
 
 /**
  * The ID of the collection storing Class documents in the Supabase database.
