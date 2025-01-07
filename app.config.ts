@@ -7,7 +7,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   slug: "yeko-teach",
   scheme: "io.ldsgroups.yeko_teach",
   version: "1.0.0",
-  sdkVersion: "51.0.0",
+  sdkVersion: "52.0.0",
   orientation: "portrait",
   icon: "./src/assets/images/icon.png",
   userInterfaceStyle: "automatic",
@@ -52,4 +52,5 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
   },
   owner: "ldsgroups225",
+  plugins: ["expo-font", "expo-localization"],
 });
