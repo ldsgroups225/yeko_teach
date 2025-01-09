@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, Alert, FlatList, SectionList, StyleSheet, TouchableOpacity, View, Modal } from "react-native";
+import { ActivityIndicator, Alert, SectionList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/hooks";
 import CsText from "@components/CsText";
 import { spacing } from "@styles/spacing";
 import { ITheme } from "@styles/theme";
-import { INoteDetailRawToSaveDTO, INoteDTO, IStudentDTO } from "@modules/app/types/ILoginDTO";
+import { INoteDTO, IStudentDTO, ISubjectDTO } from "@modules/app/types/ILoginDTO";
 import Routes, { SchoolStackParams } from "@utils/Routes";
 import ClassHeader from "../components/ClassHeader";
 import StudentSearchSortFilter from "@modules/school/components/StudentSearchSortFilter";
@@ -19,8 +19,6 @@ import { showToast } from "@helpers/toast/showToast";
 import { ToastColorEnum } from "@components/ToastMessage/ToastColorEnum";
 import BottomSheet, { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { Ionicons } from "@expo/vector-icons";
-import { Picker } from "@react-native-picker/picker";
-import { format } from "date-fns";
 import { CreateNoteModal } from "../components/CreateNoteModal";
 import { NoteHistoryView } from "../components/NoteHistoryView";
 import { useAppSelector } from "@store/index";
@@ -42,16 +40,19 @@ const SchoolClassDetails: React.FC = () => {
   const [isAssigningGrade, setIsAssigningGrade] = useState(false);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [selectedNote, setSelectedNote] = useState<INoteDTO | null>(null);
+  const [subjectsTeached, setSubjectsTeached] = useState<ISubjectDTO[]>([])
   const [currentSubject, setCurrentSubject] = useState(classItem.subjects[0]);
   const [isCreateNoteModalVisible, setIsCreateNoteModalVisible] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const {
+error,
+    loading,
     getNotes,
-    saveNotes,
-    publishNotes,
-    activateNotes,
-    saveNoteDetails,
-    loading: isNoteSubmitting,
+    saveNote,
+    removeNote,
+    publishNote,
+    teachedSubjects,
   } = useNote();
 
   const { students, setStudents, saveStudents, isLoading } = useStudentData(
@@ -63,7 +64,7 @@ const SchoolClassDetails: React.FC = () => {
   const groupedStudents = useFilteredAndGroupedStudents(
     students,
     searchQuery,
-    sortOrder
+    sortOrder,
   );
 
   useEffect(() => {
@@ -79,9 +80,11 @@ const SchoolClassDetails: React.FC = () => {
 
   const handleCreateNote = async (noteData: Partial<INoteDTO>) => {
     try {
-      await saveNotes(noteData as INoteDTO);
+      await saveNote(noteData as INoteDTO);
       showToast("Évaluation créée avec succès", ToastColorEnum.Success);
       fetchSavedNotes();
+
+      setIsCreateNoteModalVisible(false);
     } catch (error) {
       console.error("Failed to create note:", error);
       showToast("Erreur lors de la création de l'évaluation", ToastColorEnum.Error);
@@ -92,6 +95,7 @@ const SchoolClassDetails: React.FC = () => {
     setSelectedNote(note);
     setIsViewingNote(true);
     setIsAssigningGrade(true);
+    setIsEditing(true);
     
     if (note.noteDetails && note.noteDetails.length > 0) {
       const updatedStudents = students.map(student => {
@@ -134,7 +138,14 @@ const SchoolClassDetails: React.FC = () => {
           subjectId: currentSubject.id,
         };
   
-        await saveNoteDetails(noteDetail);
+        //TODO: await saveNoteDetails(noteDetail);
+        // TODO: update selectedNote noteDetails
+        setSelectedNote({
+          ...selectedNote,
+          noteDetails: selectedNote.noteDetails?.map((detail) =>
+            detail.studentId === studentId ? { ...detail, note: note ?? 0 } : detail
+          ),
+        });
       } catch (error) {
         console.error("Failed to update note detail:", error);
         showToast("Erreur lors de la mise à jour de la note", ToastColorEnum.Error);
@@ -154,24 +165,29 @@ const SchoolClassDetails: React.FC = () => {
     return students.every((student) => student.note !== undefined);
   }, [students]);
 
-  const handlePublishNote = async (noteId: string) => {
-    try {
-      const isSuccess = await publishNotes(noteId);
-      if (isSuccess) {
-        showToast("Notes publiées avec succès", ToastColorEnum.Success);
-        fetchSavedNotes();
-      } else {
-        showToast("Erreur lors de la publication des notes", ToastColorEnum.Error);
-      }
-    } catch (error) {
-      console.error("Failed to publish notes:", error);
-      Alert.alert("Error", "Failed to publish notes. Please try again.");
+  const handleActivateNote = async (noteId: string, isActive: boolean) => {
+    if (isActive) {
+      return;
     }
-  };
 
-  const handleActivateNote = async (noteId: string) => {
+    if (!allNotesAssigned) {
+      showToast("Toutes les notes doivent être attribuées pour envoyer les notes à l'administration", ToastColorEnum.Error, 7000);
+      return;
+    }
+  
+    const noteToActivate = savedNotes.find((note) => note.id === noteId);
+    if (!noteToActivate) {
+      showToast("Note introuvable", ToastColorEnum.Error);
+      return;
+    }
+  
+    if (noteToActivate.isActive) {
+      showToast("La note est déjà publiée", ToastColorEnum.Error);
+      return;
+    }
+  
     try {
-      const isSuccess = await activateNotes(noteId);
+      const isSuccess = await publishNote(noteId);
       if (isSuccess) {
         showToast("Notes activées avec succès", ToastColorEnum.Success);
         fetchSavedNotes();
@@ -182,6 +198,32 @@ const SchoolClassDetails: React.FC = () => {
       console.error("Failed to activate notes:", error);
       Alert.alert("Error", "Failed to activate notes. Please try again.");
     }
+  };
+
+  const handleSaveLocalNote = async () => {
+    if (allNotesAssigned) {
+      try {
+        await saveNote(selectedNote!, selectedNote!.id);
+        showToast("Note sauvegardée avec succès", ToastColorEnum.Success);
+      } catch (error) {
+        console.error("Failed to save note:", error);
+        showToast("Erreur lors de la sauvegarde de la note", ToastColorEnum.Error);
+      }
+    } else {
+      try {
+        await saveNote(selectedNote!);
+        showToast("Note sauvegardée localement", ToastColorEnum.Success);
+      } catch (error) {
+        console.error("Failed to save note locally:", error);
+        showToast("Erreur lors de la sauvegarde locale de la note", ToastColorEnum.Error);
+      }
+    }
+    setIsEditing(false);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setSelectedNote(null);
   };
 
   const renderStudentItem = ({ item }: { item: IStudentDTO }) => (
@@ -209,11 +251,17 @@ const SchoolClassDetails: React.FC = () => {
     []
   );
 
+  async function makeNoteCreationModalVisible() {
+    const _subjects = await teachedSubjects(classItem.id, user!.id);
+    setSubjectsTeached(_subjects);
+    setIsCreateNoteModalVisible(true);
+  }
+
   const renderBottomSheetContent = () => (
     <View style={styles.bottomSheetContent}>
       <TouchableOpacity
         style={styles.bottomSheetButton}
-        onPress={() => setIsCreateNoteModalVisible(true)}
+        onPress={makeNoteCreationModalVisible}
       >
         <Ionicons name="add-outline" size={24} color={theme.background} />
         <CsText variant="body" style={styles.bottomSheetButtonText}>
@@ -224,6 +272,7 @@ const SchoolClassDetails: React.FC = () => {
       <NoteHistoryView
         notes={savedNotes}
         onPressNote={handleNotePress}
+        onPressActivate={handleActivateNote}
       />
     </View>
   );
@@ -243,6 +292,9 @@ const SchoolClassDetails: React.FC = () => {
         schoolName={school.name}
         onBackPress={navigationRef.goBack}
         onOpenBottomSheet={openBottomSheet}
+        isEditing={isEditing}
+        onSave={handleSaveLocalNote}
+        onCancel={handleCancelEdit}
       />
       <StudentSearchSortFilter
         searchQuery={searchQuery}
@@ -276,15 +328,18 @@ const SchoolClassDetails: React.FC = () => {
         {renderBottomSheetContent()}
       </BottomSheet>
 
-      <CreateNoteModal
-        isVisible={isCreateNoteModalVisible}
-        onClose={() => setIsCreateNoteModalVisible(false)}
-        onSubmit={handleCreateNote}
-        schoolId={school.id}
-        classId={classItem.id}
-        user={user}
-        schoolYear={schoolYear}
-      />
+      {isCreateNoteModalVisible && (
+        <CreateNoteModal
+          isVisible={isCreateNoteModalVisible}
+          onClose={() => setIsCreateNoteModalVisible(false)}
+          onSubmit={handleCreateNote}
+          schoolId={school.id}
+          classId={classItem.id}
+          user={user}
+          schoolYear={schoolYear}
+          subjects={subjectsTeached}
+        />
+      )}
     </View>
   );
 };

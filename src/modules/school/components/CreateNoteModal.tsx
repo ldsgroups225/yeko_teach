@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { format } from 'date-fns';
 import CsText from '@components/CsText';
 import { useTheme } from '@src/hooks';
 import { spacing } from '@styles/spacing';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { INoteDTO, IUserDTO } from '@modules/app/types/ILoginDTO';
+import { INoteDTO, ISubjectDTO, IUserDTO } from '@modules/app/types/ILoginDTO';
 import CsButton from '@components/CsButton';
 import { Picker } from '@react-native-picker/picker';
 import { ITheme } from '@styles/theme';
 import CsTextField from '@components/CsTextField';
 import { useAppSelector } from '@store/index';
+import { ToastColorEnum } from '@components/ToastMessage/ToastColorEnum';
+import { showToast } from '@helpers/toast/showToast';
 
 interface CreateNoteModalProps {
   isVisible: boolean;
@@ -19,6 +21,7 @@ interface CreateNoteModalProps {
   schoolId: string;
   classId: string;
   user?: IUserDTO;
+  subjects: ISubjectDTO[];
   schoolYear?: {
     id: number;
     name: string;
@@ -41,6 +44,7 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
   classId,
   user,
   schoolYear,
+  subjects,
 }) => {
   const theme = useTheme();
   const styles = useStyles(theme);
@@ -50,12 +54,23 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [totalPoints, setTotalPoints] = useState('20');
+  const [subject, setSubject] = useState('');
   const [weight, setWeight] = useState('1');
   const [noteType, setNoteType] = useState('EXAM');
   const [dueDate, setDueDate] = useState<Date>(new Date());
   const [isGraded, setIsGraded] = useState(true);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [semester, setSemester] = useState(semesters.find(s => s.isCurrent === true)?.id.toString() ?? '0');
+
+
+  useEffect(() => {
+    if (subjects.length === 0) {
+      showToast("Vous n’êtes pas enseignant de cette classe", ToastColorEnum.Warning);
+      return onClose();
+    }
+    
+    setSubject(subjects[0].id)
+  }, [])
 
   const handleSubmit = async () => {
     const noteData: Partial<INoteDTO> = {
@@ -64,6 +79,7 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
       schoolId,
       noteType,
       isGraded,
+      subjectId: subject,
       teacherId: user?.id,
       title: title.trim(),
       weight: parseFloat(weight),
@@ -74,8 +90,6 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
     };
 
     await onSubmit(noteData);
-    resetForm();
-    onClose();
   };
 
   const resetForm = () => {
@@ -117,6 +131,21 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
                 ))}
               </Picker>
             </View>
+
+            {subjects.length > 1 && (
+              <View style={styles.inputContainer}>
+                <CsText variant="body">Matière</CsText>
+                <Picker
+                  selectedValue={subject}
+                  onValueChange={setSubject}
+                  style={styles.picker}
+                >
+                  {subjects.map((sub) => (
+                    <Picker.Item key={sub.id} label={sub.name} value={sub.id} />
+                  ))}
+                </Picker>
+              </View>
+          )}
 
             <View style={styles.inputContainer}>
               <CsText variant="body">Type d'évaluation</CsText>

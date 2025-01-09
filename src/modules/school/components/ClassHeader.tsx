@@ -12,6 +12,9 @@ interface ClassHeaderProps {
   schoolName: string;
   onBackPress: () => void;
   onOpenBottomSheet: () => void;
+  isEditing: boolean;
+  onSave: () => void;
+  onCancel: () => void;
 }
 
 const ClassHeader: React.FC<ClassHeaderProps> = ({
@@ -19,6 +22,9 @@ const ClassHeader: React.FC<ClassHeaderProps> = ({
   schoolName,
   onBackPress,
   onOpenBottomSheet,
+  isEditing,
+  onSave,
+  onCancel,
 }) => {
   const theme = useTheme();
   const styles = useStyles(theme);
@@ -43,17 +49,38 @@ const ClassHeader: React.FC<ClassHeaderProps> = ({
           {classItem.name}
         </CsText>
 
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={onOpenBottomSheet}
-          activeOpacity={0.7}
-        >
-          <Ionicons
-            name="ellipsis-vertical"
-            size={24}
-            color={theme.background}
-          />
-        </TouchableOpacity>
+        {isEditing ? (
+          <View style={styles.editActions}>
+            <TouchableOpacity
+              onPress={onCancel}
+              style={styles.actionCancelButton}
+            >
+              <CsText variant="body" style={styles.actionCancelText}>
+                Annuler
+              </CsText>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={onSave}
+              style={styles.actionSaveButton}
+            >
+              <CsText variant="body" style={styles.actionSaveText}>
+                Enreg.
+              </CsText>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={onOpenBottomSheet}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name="ellipsis-vertical"
+              size={24}
+              color={theme.background}
+            />
+          </TouchableOpacity>
+        )}
       </View>
 
       <View style={styles.bottomRow}>
@@ -97,9 +124,37 @@ const useStyles = (theme: ITheme) =>
       color: theme.background + "80",
       fontFamily: "monospace",
     },
+    actionCancelButton: {
+      padding: spacing.xs,
+      marginLeft: spacing.sm,
+      paddingHorizontal: spacing.sm,
+      borderRadius: 8,
+      alignItems: "center",
+      borderColor: theme.background + "80",
+      borderWidth: 1,
+    },
     actionButton: {
       padding: spacing.xs,
       marginLeft: spacing.sm,
+    },
+    actionSaveButton: {
+      padding: spacing.xs,
+      marginLeft: spacing.sm,
+      paddingHorizontal: spacing.sm,
+      borderRadius: 8,
+      backgroundColor: theme.background,
+      alignItems: "center",
+    },
+    editActions: {
+      flexDirection: "row",
+    },
+    actionCancelText: {
+      color: theme.background,
+      marginHorizontal: spacing.sm,
+    },
+    actionSaveText: {
+      color: theme.primary,
+      marginHorizontal: spacing.sm,
     },
   });
 

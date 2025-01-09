@@ -14,7 +14,6 @@ export interface IStudentDTO {
 export interface INoteDetailDTO {
   id?: string;
   noteId: string;
-  subjectId: string;
   studentId: string;
   note?: number;
   gradedAt?: Date;
@@ -25,6 +24,7 @@ export interface INoteDetailDTO {
 export interface INoteDTO {
   id?: string;
   schoolId: string;
+  subjectId: string;
   schoolYearId: number;
   semesterId: number;
   noteType: string;
@@ -104,5 +104,4 @@ export interface INoteDetailRawToSaveDTO {
   noteId: string;
   studentId: string;
   note: number;
-  subjectId: string;
 }
