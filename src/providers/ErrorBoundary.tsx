@@ -28,7 +28,7 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps> {
      *  Bugsnag.notify(error)
      *  rollbar.error(error)
      */
-    console.log("error", error, errorInfo);
+    console.error("error", error, errorInfo);
   }
 
   render(): React.ReactElement {

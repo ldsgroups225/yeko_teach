@@ -23,23 +23,23 @@ export interface INoteDetailDTO {
 
 export interface INoteDTO {
   id?: string;
+  classId: string;
   schoolId: string;
   subjectId: string;
-  schoolYearId: number;
+  teacherId: string;
   semesterId: number;
+  schoolYearId: number;
   noteType: string;
   title?: string;
-  description?: string;
+  description?: string | null;
   totalPoints: number;
-  weight?: number;
+  weight: number;
   isGraded: boolean;
-  createdAt: Date;
+  createdAt?: Date;
   publishedAt?: Date;
   dueDate?: Date;
-  teacherId: string;
   isPublished: boolean;
-  isActive: boolean;
-  classId: string;
+  isActive?: boolean;
   noteDetails?: INoteDetailDTO[];
 }
 

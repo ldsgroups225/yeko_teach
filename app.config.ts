@@ -52,5 +52,24 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
   },
   owner: "ldsgroups225",
-  plugins: ["expo-font", "expo-localization"],
+  plugins: [
+    "expo-font",
+    "expo-localization",
+    [
+      "expo-sqlite",
+      {
+        "enableFTS": true,
+        "useSQLCipher": true,
+        "android": {
+          // Override the shared configuration for Android
+          "enableFTS": false,
+          "useSQLCipher": false
+        },
+        "ios": {
+          // You can also override the shared configurations for iOS
+          "customBuildFlags": ["-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1"]
+        }
+      }
+    ]
+  ],
 });

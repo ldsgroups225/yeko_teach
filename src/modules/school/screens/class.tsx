@@ -35,10 +35,12 @@ const SchoolClassDetails: React.FC = () => {
   const schoolYear = useAppSelector((s) => s.AppReducer?.schoolYear);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [isViewingNote, setIsViewingNote] = useState(false);
   const [savedNotes, setSavedNotes] = useState<INoteDTO[]>([]);
+  const [totalNotes, setTotalNotes] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [isAssigningGrade, setIsAssigningGrade] = useState(false);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [selectedNote, setSelectedNote] = useState<INoteDTO | null>(null);
   const [subjectsTeached, setSubjectsTeached] = useState<ISubjectDTO[]>([])
   const [currentSubject, setCurrentSubject] = useState(classItem.subjects[0]);
@@ -46,16 +48,15 @@ const SchoolClassDetails: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   const {
-error,
-    loading,
-    getNotes,
-    saveNote,
-    removeNote,
-    publishNote,
-    teachedSubjects,
+  getNotes,
+  saveNote,
+  removeNote,
+  publishNote,
+  teachedSubjects,
+  updateNoteDetails,
   } = useNote();
 
-  const { students, setStudents, saveStudents, isLoading } = useStudentData(
+  const { students, setStudents, isLoading } = useStudentData(
     classItem.id,
     currentSubject.id,
     classItem.students
@@ -68,22 +69,42 @@ error,
   );
 
   useEffect(() => {
-    fetchSavedNotes();
+    fetchSavedNotes().then(r => r);
   }, [currentSubject]);
 
-  const fetchSavedNotes = async () => {
-    const notes = await getNotes(classItem.id, user?.id ?? "", schoolYear?.id ?? 0);
-    if (notes) {
-      setSavedNotes(notes);
+  const fetchSavedNotes = async (page: number = 1) => {
+    const result = await getNotes(
+      classItem.id,
+      user?.id ?? "",
+      schoolYear?.id ?? 0,
+      page
+    );
+    
+    if (result) {
+      if (page === 1) {
+        setSavedNotes(result.notes);
+      } else {
+        setSavedNotes(prev => [...prev, ...result.notes]);
+      }
+      setTotalNotes(result.totalCount);
     }
+  };
+
+  const loadMoreNotes = async () => {
+    if (isLoadingMore || savedNotes.length >= totalNotes) return;
+    
+    setIsLoadingMore(true);
+    const nextPage = currentPage + 1;
+    await fetchSavedNotes(nextPage);
+    setCurrentPage(nextPage);
+    setIsLoadingMore(false);
   };
 
   const handleCreateNote = async (noteData: Partial<INoteDTO>) => {
     try {
       await saveNote(noteData as INoteDTO);
       showToast("Évaluation créée avec succès", ToastColorEnum.Success);
-      fetchSavedNotes();
-
+      await fetchSavedNotes();
       setIsCreateNoteModalVisible(false);
     } catch (error) {
       console.error("Failed to create note:", error);
@@ -92,29 +113,21 @@ error,
   };
 
   const handleNotePress = async (note: INoteDTO) => {
+    const updatedStudents = students.map(student => {
+      const existingStudent = students.find(s => s.id === student.id);
+      const noteDetail = note.noteDetails?.find(detail => detail.studentId === student.id);
+      
+      return {
+        ...student,
+        ...existingStudent,
+        note: noteDetail?.note ?? existingStudent?.note ?? undefined
+      };
+    });
+
     setSelectedNote(note);
-    setIsViewingNote(true);
+    setStudents(updatedStudents);
     setIsAssigningGrade(true);
     setIsEditing(true);
-    
-    if (note.noteDetails && note.noteDetails.length > 0) {
-      const updatedStudents = students.map(student => {
-        const noteDetail = note!.noteDetails!.find(
-          detail => detail.studentId === student.id
-        );
-        return {
-          ...student,
-          note: noteDetail?.note ?? undefined
-        };
-      });
-      setStudents(updatedStudents);
-    } else {
-      const clearedStudents = students.map(student => ({
-        ...student,
-        note: undefined
-      }));
-      setStudents(clearedStudents);
-    }
     
     bottomSheetRef.current?.close();
   };
@@ -131,15 +144,7 @@ error,
   
     if (selectedNote) {
       try {
-        const noteDetail = {
-          noteId: selectedNote.id!,
-          studentId,
-          note: note ?? 0,
-          subjectId: currentSubject.id,
-        };
-  
-        //TODO: await saveNoteDetails(noteDetail);
-        // TODO: update selectedNote noteDetails
+        
         setSelectedNote({
           ...selectedNote,
           noteDetails: selectedNote.noteDetails?.map((detail) =>
@@ -153,13 +158,7 @@ error,
     }
   };
 
-  const toggleGradeAssignment = () => {
-    setIsAssigningGrade(!isAssigningGrade);
-  };
 
-  const hasExistingNotes = useMemo(() => {
-    return students.some((student) => student.note !== undefined);
-  }, [students]);
 
   const allNotesAssigned = useMemo(() => {
     return students.every((student) => student.note !== undefined);
@@ -187,10 +186,10 @@ error,
     }
   
     try {
-      const isSuccess = await publishNote(noteId);
+      const isSuccess = await publishNote(user?.id ?? "", classItem.id, noteId);
       if (isSuccess) {
         showToast("Notes activées avec succès", ToastColorEnum.Success);
-        fetchSavedNotes();
+        await fetchSavedNotes();
       } else {
         showToast("Erreur lors de l'activation des notes", ToastColorEnum.Error);
       }
@@ -200,29 +199,42 @@ error,
     }
   };
 
-  const handleSaveLocalNote = async () => {
-    if (allNotesAssigned) {
-      try {
-        await saveNote(selectedNote!, selectedNote!.id);
-        showToast("Note sauvegardée avec succès", ToastColorEnum.Success);
-      } catch (error) {
-        console.error("Failed to save note:", error);
-        showToast("Erreur lors de la sauvegarde de la note", ToastColorEnum.Error);
-      }
-    } else {
-      try {
-        await saveNote(selectedNote!);
-        showToast("Note sauvegardée localement", ToastColorEnum.Success);
-      } catch (error) {
-        console.error("Failed to save note locally:", error);
-        showToast("Erreur lors de la sauvegarde locale de la note", ToastColorEnum.Error);
-      }
+  const handleUpdateLocalNoteDetails = async () => {
+    try {
+      const updatedNoteDetails = students.map((student) => ({
+        studentId: student.id,
+        note: student.note,
+        noteId: selectedNote?.id ?? "",
+      }))
+
+      await updateNoteDetails(selectedNote!.id!, updatedNoteDetails);
+
+      await fetchSavedNotes();
+      showToast("Note sauvegardée avec succès", ToastColorEnum.Success);
+    } catch (error) {
+      console.error("Failed to save note:", error);
+      showToast("Erreur lors de la sauvegarde de la note", ToastColorEnum.Error);
     }
+
     setIsEditing(false);
+    setIsAssigningGrade(false);
+    setSelectedNote(null);
   };
+
+  const handleDeleteNote = async (noteId: string) => {
+    try {
+      await removeNote(user?.id ?? "", classItem.id, noteId);
+      showToast("Note supprimée avec succès", ToastColorEnum.Success);
+      await fetchSavedNotes();
+    } catch (error) {
+      console.error("Failed to delete note:", error);
+      showToast("Erreur lors de la suppression de la note", ToastColorEnum.Error);
+    }
+  }
 
   const handleCancelEdit = () => {
     setIsEditing(false);
+    setIsAssigningGrade(false);
     setSelectedNote(null);
   };
 
@@ -272,7 +284,11 @@ error,
       <NoteHistoryView
         notes={savedNotes}
         onPressNote={handleNotePress}
+        onPressDelete={handleDeleteNote}
         onPressActivate={handleActivateNote}
+        onEndReached={loadMoreNotes}
+        isLoadingMore={isLoadingMore}
+        hasMore={savedNotes.length < totalNotes}
       />
     </View>
   );
@@ -293,7 +309,7 @@ error,
         onBackPress={navigationRef.goBack}
         onOpenBottomSheet={openBottomSheet}
         isEditing={isEditing}
-        onSave={handleSaveLocalNote}
+        onUpdate={handleUpdateLocalNoteDetails}
         onCancel={handleCancelEdit}
       />
       <StudentSearchSortFilter

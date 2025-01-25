@@ -13,6 +13,7 @@ import CsTextField from '@components/CsTextField';
 import { useAppSelector } from '@store/index';
 import { ToastColorEnum } from '@components/ToastMessage/ToastColorEnum';
 import { showToast } from '@helpers/toast/showToast';
+import { NOTE_TYPES } from '@modules/app/constants/noteTypes';
 
 interface CreateNoteModalProps {
   isVisible: boolean;
@@ -27,14 +28,6 @@ interface CreateNoteModalProps {
     name: string;
   };
 }
-
-const NOTE_TYPES = [
-  { label: 'Examen', value: 'EXAM' },
-  { label: 'Devoir', value: 'HOMEWORK' },
-  { label: 'Projet', value: 'PROJECT' },
-  { label: 'Quiz', value: 'QUIZ' },
-  { label: 'Participation', value: 'PARTICIPATION' },
-];
 
 export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
   isVisible,

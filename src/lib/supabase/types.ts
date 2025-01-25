@@ -318,6 +318,92 @@ export type Database = {
           },
         ]
       }
+      invite_to_school: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          expired_at: string
+          id: string
+          is_used: boolean
+          otp: string
+          school_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          expired_at?: string
+          id?: string
+          is_used?: boolean
+          otp: string
+          school_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          expired_at?: string
+          id?: string
+          is_used?: boolean
+          otp?: string
+          school_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "link_teacher_school_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "link_teacher_school_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      link_student_parent: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          expired_at: string
+          id: string
+          is_used: boolean
+          otp: string
+          parent_id: string
+          student_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          expired_at?: string
+          id?: string
+          is_used?: boolean
+          otp: string
+          parent_id: string
+          student_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          expired_at?: string
+          id?: string
+          is_used?: boolean
+          otp?: string
+          parent_id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "link_student_parent_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       note_details: {
         Row: {
           created_at: string | null
@@ -874,6 +960,7 @@ export type Database = {
           date_of_birth: string | null
           first_name: string
           gender: string | null
+          grade_id: number | null
           id: string
           id_number: string
           last_name: string
@@ -891,6 +978,7 @@ export type Database = {
           date_of_birth?: string | null
           first_name: string
           gender?: string | null
+          grade_id?: number | null
           id?: string
           id_number: string
           last_name: string
@@ -908,6 +996,7 @@ export type Database = {
           date_of_birth?: string | null
           first_name?: string
           gender?: string | null
+          grade_id?: number | null
           id?: string
           id_number?: string
           last_name?: string
@@ -922,6 +1011,13 @@ export type Database = {
             columns: ["class_id"]
             isOneToOne: false
             referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "students_grade_id_fkey"
+            columns: ["grade_id"]
+            isOneToOne: false
+            referencedRelation: "grades"
             referencedColumns: ["id"]
           },
           {

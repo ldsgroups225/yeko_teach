@@ -13,7 +13,7 @@ interface ClassHeaderProps {
   onBackPress: () => void;
   onOpenBottomSheet: () => void;
   isEditing: boolean;
-  onSave: () => void;
+  onUpdate: () => void;
   onCancel: () => void;
 }
 
@@ -23,7 +23,7 @@ const ClassHeader: React.FC<ClassHeaderProps> = ({
   onBackPress,
   onOpenBottomSheet,
   isEditing,
-  onSave,
+  onUpdate,
   onCancel,
 }) => {
   const theme = useTheme();
@@ -60,7 +60,7 @@ const ClassHeader: React.FC<ClassHeaderProps> = ({
               </CsText>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={onSave}
+              onPress={onUpdate}
               style={styles.actionSaveButton}
             >
               <CsText variant="body" style={styles.actionSaveText}>

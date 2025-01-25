@@ -3,6 +3,11 @@ import { View } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
 import MontserratFont from "@assets/font";
+import migrations from '@src/drizzle/migrations';
+import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
+import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
+import { drizzleDb } from "@src/db/config";
+
 
 SplashScreen.preventAutoHideAsync().then((r) => r);
 
@@ -20,6 +25,9 @@ type Props = {
  */
 function AppLoadingProvider({ children }: Props): ReactElement | null {
   const [fontsLoaded, fontError] = useFonts(MontserratFont);
+  const { success: dbMigrated, error: dbError } = useMigrations(drizzleDb, migrations);
+
+  useDrizzleStudio(drizzleDb);
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded || fontError) {
@@ -27,7 +35,7 @@ function AppLoadingProvider({ children }: Props): ReactElement | null {
     }
   }, [fontsLoaded, fontError]);
 
-  if (!fontsLoaded && !fontError) {
+  if ((!fontsLoaded && !fontError) || (!dbMigrated && !dbError)) {
     return null;
   }
 

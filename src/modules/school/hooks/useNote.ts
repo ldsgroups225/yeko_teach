@@ -1,27 +1,47 @@
 import { useCallback, useState } from "react";
 import { INoteDTO, ISubjectDTO } from "@modules/app/types/ILoginDTO";
 import { notes } from "@modules/school/services/noteService";
-import { LOCAL_NOTE_KEY } from "@modules/app/constants/keys";
 
 interface UseNoteReturn {
   loading: boolean;
   error: string | null;
-  publishNote: (noteId: string) => Promise<boolean>;
-  saveNote: (noteData: INoteDTO, noteId?: string) => Promise<boolean>;
-  removeNote: (noteId: string) => Promise<boolean>;
+  publishNote: (teacherId: string, classId: string, noteId: string) => Promise<boolean>;
+  saveNote: (noteData: INoteDTO) => Promise<boolean>;
+  removeNote: (teacherId: string, classId: string, noteId: string) => Promise<boolean>;
+  updateNote: (noteId: string, noteData: Partial<INoteDTO>) => Promise<boolean>;
+  updateNoteDetails: (noteId: string, details: INoteDTO['noteDetails']) => Promise<boolean>;
   teachedSubjects: (classId: string, teacherId: string) => Promise<ISubjectDTO[]>;
-  getNotes: (classId: string, teacherId: string, schoolYearId: number) => Promise<INoteDTO[] | null>;
+  getNotes: (
+    classId: string,
+    teacherId: string,
+    schoolYearId: number,
+    page?: number,
+    limit?: number
+  ) => Promise<{ notes: INoteDTO[]; totalCount: number } | null>;
 }
 
 export const useNote = (): UseNoteReturn => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const getNotes = useCallback(async (classId: string, teacherId: string, schoolYearId: number): Promise<INoteDTO[] | null> => {
+  const getNotes = useCallback(async (
+    classId: string,
+    teacherId: string,
+    schoolYearId: number,
+    page: number = 1,
+    limit: number = 10
+  ): Promise<{ notes: INoteDTO[]; totalCount: number } | null> => {
     setLoading(true);
     setError(null);
     try {
-      return await notes.getNotes(classId, teacherId, schoolYearId);
+      // Fixed: Add teacherId as first parameter
+      const localNotes = await notes.getAllSavedNotesLocally(teacherId, classId, page, limit);
+      const remoteNotes = await notes.getNotes(teacherId, classId, schoolYearId);
+
+      return {
+        notes: [...localNotes.notes, ...remoteNotes],
+        totalCount: localNotes.totalCount + remoteNotes.length
+      };
     } catch (err) {
       setError("Failed to get notes records.");
       console.error("[E_GET_NOTES]:", err);
@@ -31,12 +51,13 @@ export const useNote = (): UseNoteReturn => {
     }
   }, []);
 
-  const saveNote = useCallback(async (noteData: INoteDTO, noteId?: string): Promise<boolean> => {
+  const saveNote = useCallback(async (noteData: INoteDTO): Promise<boolean> => {
     setLoading(true);
     setError(null);
     try {
-      const _id = `${LOCAL_NOTE_KEY}${noteData.schoolId}_${noteData.classId}_${noteData.teacherId}_${Math.random().toString(36).substring(7)}`;
-      await notes.saveNoteLocally(noteData, noteId ?? _id);
+      // Fixed: Remove manual ID generation and parameters
+      await notes.saveNoteLocally(noteData);
+      // Fixed: Add schoolYearId to getNotes call
       await notes.getNotes(noteData.classId, noteData.teacherId, noteData.schoolYearId);
       return true;
     } catch (err) {
@@ -48,12 +69,67 @@ export const useNote = (): UseNoteReturn => {
     }
   }, []);
 
-  const removeNote = useCallback(async (noteId: string): Promise<boolean> => {
+  const updateNote = useCallback(async (noteId: string, noteData: Partial<INoteDTO>): Promise<boolean> => {
     setLoading(true);
     setError(null);
     try {
-      await notes.removeSavedNoteLocally(noteId);
-      return true
+      const id = parseInt(noteId);
+      if (isNaN(id)) {
+        throw new Error('Invalid Note ID');
+      }
+
+      await notes.updateNoteLocally(id, noteData);
+      
+      // Refresh notes list if needed
+      if (noteData.classId && noteData.teacherId && noteData.schoolYearId) {
+        await notes.getNotes(
+          noteData.classId,
+          noteData.teacherId,
+          noteData.schoolYearId
+        );
+      }
+      
+      return true;
+    } catch (err) {
+      setError("Failed to update note.");
+      console.error("[E_UPDATE_NOTE]:", err);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const updateNoteDetails = useCallback(async (noteId: string, details: INoteDTO['noteDetails']): Promise<boolean> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const id = parseInt(noteId);
+      if (isNaN(id)) {
+        throw new Error('Invalid Note ID');
+      }
+
+      if (!details || details.length === 0) {
+        throw new Error('No details provided for update');
+      }
+
+      await notes.updateNoteDetailsLocally(id, details);
+      return true;
+    } catch (err) {
+      setError("Failed to update note details");
+      console.error("[E_UPDATE_NOTE_DETAILS]:", err);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const removeNote = useCallback(async (teacherId: string, classId: string, noteId: string): Promise<boolean> => {
+    setLoading(true);
+    setError(null);
+    try {
+      // Fixed: Add teacherId parameter
+      await notes.removeSavedNoteLocally(teacherId, classId, noteId);
+      return true;
     } catch (err) {
       setError("Failed to remove saved notes locally.");
       console.error("[E_REMOVE_SAVED_NOTES_LOCALLY]:", err);
@@ -63,19 +139,20 @@ export const useNote = (): UseNoteReturn => {
     }
   }, []);
 
-  const publishNote = useCallback(async (noteId: string): Promise<boolean> => {
+  const publishNote = useCallback(async (teacherId: string, classId: string, noteId: string): Promise<boolean> => {
     setLoading(true);
     setError(null);
     try {
-      const note = await notes.getSavedNoteLocally(noteId);
+      // Fixed: Add teacherId parameter
+      const note = await notes.getSavedNoteLocally(teacherId, classId, Number(noteId));
       if (!note) {
         setError("Note not found.");
         return false;
       }
-      
+
       await Promise.all([
         notes.saveNoteRemotely(note),
-        notes.removeSavedNoteLocally(noteId),
+        notes.removeSavedNoteLocally(teacherId, classId, noteId),
       ]);
 
       return true;
@@ -107,8 +184,10 @@ export const useNote = (): UseNoteReturn => {
     loading,
     getNotes,
     saveNote,
+    updateNote,
     removeNote,
     publishNote,
     teachedSubjects,
+    updateNoteDetails,
   };
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity, View, Text, ActivityIndicator } from 'react-native';
 import { format } from 'date-fns';
 import CsText from '@components/CsText';
 import { useTheme } from '@src/hooks';
@@ -8,17 +8,26 @@ import { INoteDTO } from '@modules/app/types/ILoginDTO';
 import EmptyListComponent from '@components/EmptyListComponent';
 import { NOTE_TYPES } from '@modules/app/constants/noteTypes';
 import { ITheme } from '@styles/theme';
+import { Ionicons } from '@expo/vector-icons';
 
 interface NoteHistoryViewProps {
   notes: INoteDTO[];
   onPressNote: (note: INoteDTO) => void;
+  onPressDelete: (noteId: string) => void;
   onPressActivate: (noteId: string, isActive: boolean) => void;
+  onEndReached?: () => void;
+  isLoadingMore?: boolean;
+  hasMore?: boolean;
 }
 
 export const NoteHistoryView: React.FC<NoteHistoryViewProps> = ({
   notes,
   onPressNote,
+  onPressDelete,
   onPressActivate,
+  onEndReached,
+  isLoadingMore = false,
+  hasMore = false,
 }) => {
   const theme = useTheme();
   const styles = useStyles(theme);
@@ -74,15 +83,31 @@ export const NoteHistoryView: React.FC<NoteHistoryViewProps> = ({
 
 
         {!item.isActive && (
-            <TouchableOpacity style={styles.sendButton} onPress={() => onPressActivate(item.id!, item.isActive)}>
+            <View style={styles.buttonGroup}>
+              <TouchableOpacity style={styles.sendButton} onPress={() => onPressActivate(item.id!, item.isActive)}>
               <Text style={styles.sendButtonText}>Envoyer</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity style={styles.trashButton} onPress={() => onPressDelete(item.id!)}>
+              <Ionicons name="trash" size={24} color={theme.background} />
+            </TouchableOpacity>
+            </View>
           )}
       </View>
 
       
     </TouchableOpacity>
   );
+
+  const renderFooter = () => {
+    if (!isLoadingMore) return null;
+
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="small" color={theme.primary} />
+      </View>
+    );
+  };
 
   return (
     <FlatList
@@ -93,6 +118,9 @@ export const NoteHistoryView: React.FC<NoteHistoryViewProps> = ({
       ListEmptyComponent={
         <EmptyListComponent message="Aucune évaluation enregistrée" />
       }
+      onEndReached={hasMore ? onEndReached : undefined}
+      onEndReachedThreshold={0.5}
+      ListFooterComponent={renderFooter}
     />
   );
 };
@@ -158,16 +186,32 @@ const useStyles = (theme: ITheme) =>
     notesList: {
       flex: 1,
     },
+    buttonGroup: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: spacing.md,
+      columnGap: spacing.sm,
+    },
     sendButton: {
       backgroundColor: theme.primary,
       borderRadius: 4,
       paddingVertical: spacing.xs,
       paddingHorizontal: spacing.sm,
-      marginTop: spacing.lg,
       alignItems: 'center',
+      flex: 1,
+    },
+    trashButton: {
+      backgroundColor: theme.error,
+      borderRadius: 4,
+      paddingVertical: spacing.xs,
+      paddingHorizontal: spacing.sm,
     },
     sendButtonText: {
       color: theme.background,
+    },
+    loaderContainer: {
+      paddingVertical: spacing.md,
+      alignItems: 'center',
     },
   });
 
