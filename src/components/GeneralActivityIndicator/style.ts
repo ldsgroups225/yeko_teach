@@ -21,4 +21,11 @@ export const styles = (theme: ITheme) =>
       fontSize: 4,
       color: theme.primary,
     },
+
+    modalContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "rgba(0, 0, 0, 0.3)",
+    },
   });

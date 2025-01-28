@@ -17,7 +17,7 @@ enableScreens();
 function App() {
   useEffect(() => {
     if (Platform.OS !== "web") {
-      // TODO: Orientation Congihuration
+      // TODO: Orientation Configuration
       ScreenOrientation.lockAsync(
         ScreenOrientation.OrientationLock.PORTRAIT_UP
       );
