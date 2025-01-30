@@ -3,6 +3,7 @@ import { INoteDTO, ISubjectDTO } from "@modules/app/types/ILoginDTO";
 import { drizzleDb } from "@src/db/config";
 import { noteDetailTable, noteTable } from "@src/db/schema";
 import { and, count, desc, eq, lt } from "drizzle-orm";
+import { FROM_STRING_OPTIONS_MAP } from "@modules/app/constants/noteTypes";
 
 export const notes = {
   async getNotes(teacherId: string, classId: string, schoolYearId: number): Promise<INoteDTO[]> {
@@ -33,7 +34,7 @@ export const notes = {
       schoolYearId: note.school_year_id,
       semesterId: note.semester_id,
       subjectId: note.subject_id,
-      noteType: note.note_type,
+      noteType: FROM_STRING_OPTIONS_MAP[note.note_type],
       title: note.title ?? '',
       description: note.description ?? '',
       totalPoints: note.total_points,
@@ -327,10 +328,11 @@ export const notes = {
 
       return {
         ..._note,
-        isPublished: false,
         isActive: false,
+        isPublished: false,
         id: _note.id.toString(),
         isGraded: _note.isGraded === 1,
+        noteType: FROM_STRING_OPTIONS_MAP[_note.noteType],
         dueDate: _note.dueDate ? new Date(_note.dueDate) : undefined,
         createdAt: _note.createdAt ? new Date(_note.createdAt) : undefined,
 
@@ -401,6 +403,7 @@ export const notes = {
             isActive: false,
             id: note.id.toString(),
             isGraded: note.isGraded === 1,
+            noteType: FROM_STRING_OPTIONS_MAP[note.noteType],
             dueDate: note.dueDate ? new Date(note.dueDate) : undefined,
             createdAt: note.createdAt ? new Date(note.createdAt) : new Date(),
             noteDetails: noteDetails.map((detail) => ({

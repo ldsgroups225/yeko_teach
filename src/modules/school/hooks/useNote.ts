@@ -34,14 +34,11 @@ export const useNote = (): UseNoteReturn => {
     setLoading(true);
     setError(null);
     try {
-      const _fetchLocalNotes = notes.getAllSavedNotesLocally(teacherId, classId, page, limit);
-      const _fetchRemoteNotes = notes.getNotes(teacherId, classId, schoolYearId);
-
-      const [localNotes, remoteNotes] = await Promise.all([_fetchLocalNotes, _fetchRemoteNotes]);
+      const _notes = await notes.getNotes(teacherId, classId, schoolYearId);
 
       return {
-        notes: [...localNotes.notes, ...remoteNotes],
-        totalCount: localNotes.totalCount + remoteNotes.length
+        notes: _notes,
+        totalCount: _notes.length
       };
     } catch (err) {
       setError("Failed to get notes records.");
@@ -57,7 +54,7 @@ export const useNote = (): UseNoteReturn => {
     setError(null);
     try {
       await notes.saveNoteLocally(noteData);
-      await notes.getNotes(noteData.classId, noteData.teacherId, noteData.schoolYearId);
+      await getNotes(noteData.classId, noteData.teacherId, noteData.schoolYearId);
       return true;
     } catch (err) {
       setError("Failed to save note.");
