@@ -33,6 +33,7 @@ export const styles = (theme: ITheme) =>
       color: theme.secondary,
     },
     error: {
+      ...typography.body,
       color: theme.notification,
     },
     light: {

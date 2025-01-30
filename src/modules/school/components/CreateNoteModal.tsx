@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { format } from 'date-fns';
+import { z } from 'zod';
 import CsText from '@components/CsText';
 import { useTheme } from '@src/hooks';
 import { spacing } from '@styles/spacing';
@@ -13,7 +14,7 @@ import CsTextField from '@components/CsTextField';
 import { useAppSelector } from '@store/index';
 import { ToastColorEnum } from '@components/ToastMessage/ToastColorEnum';
 import { showToast } from '@helpers/toast/showToast';
-import { NOTE_OPTIONS } from '@modules/app/constants/noteTypes';
+import { NOTE_OPTIONS, NOTE_TYPE } from '@modules/app/constants/noteTypes';
 
 interface CreateNoteModalProps {
   isVisible: boolean;
@@ -54,7 +55,35 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
   const [isGraded, setIsGraded] = useState(true);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [semester, setSemester] = useState(semesters.find(s => s.isCurrent === true)?.id.toString() ?? '0');
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const NoteFormSchema = z.object({
+    title: z.string().min(1, "Le titre est requis"),
+    description: z.string().optional(),
+    totalPoints: z.preprocess(
+      (val) => parseFloat(String(val)),
+      z.number().positive({ message: "Les points totaux doivent être un nombre positif" })
+    ),
+    weight: z.preprocess(
+      (val) => parseFloat(String(val)),
+      z.number().positive({ message: "Le coefficient doit être un nombre positif" })
+    ),
+    subject: z.string()
+      .min(1, 'La matière est requise')
+      .refine((val) => subjects.some(sub => sub.id === val), {
+        message: "Matière invalide",
+      }),
+    noteType: z.nativeEnum(NOTE_TYPE),
+    semester: z.preprocess(
+      (val) => parseInt(String(val), 10),
+      z.number().refine((num) => semesters.some(sm => sm.id === num), {
+        message: "Semestre invalide",
+      })
+    ),
+    dueDate: z.date().refine((date) => date instanceof Date && !isNaN(date.getTime()), {
+      message: "Date invalide",
+    }),
+  });
 
   useEffect(() => {
     if (subjects.length === 0) {
@@ -66,20 +95,49 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
   }, [])
 
   const handleSubmit = async () => {
+    const formData = {
+      title: title.trim(),
+      description: description.trim(),
+      totalPoints,
+      weight,
+      subject,
+      noteType,
+      semester,
+      dueDate,
+    };
+
+    console.log(formData);
+
+    const validationResult = NoteFormSchema.safeParse(formData);
+
+    if (!validationResult.success) {
+      const newErrors: Record<string, string> = {};
+      validationResult.error.issues.forEach((issue) => {
+        const path = issue.path[0];
+        if (path) {
+          newErrors[path] = issue.message;
+        }
+      });
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
+
     const noteData: Partial<INoteDTO> = {
       classId,
-      dueDate,
+      dueDate: validationResult.data.dueDate,
       schoolId,
-      noteType,
+      noteType: validationResult.data.noteType,
       isGraded,
-      subjectId: subject,
+      subjectId: validationResult.data.subject,
       teacherId: user?.id,
-      title: title.trim(),
-      weight: parseFloat(weight),
+      title: validationResult.data.title,
+      weight: validationResult.data.weight,
       schoolYearId: schoolYear?.id,
-      semesterId: parseInt(semester),
-      description: description.trim(),
-      totalPoints: parseFloat(totalPoints),
+      semesterId: validationResult.data.semester,
+      description: validationResult.data.description,
+      totalPoints: validationResult.data.totalPoints,
     };
 
     await onSubmit(noteData);
@@ -93,6 +151,7 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
     setNoteType(NOTE_OPTIONS[0].value);
     setDueDate(new Date());
     setIsGraded(true);
+    setErrors({});
   };
 
   return (
@@ -106,23 +165,21 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
 
             <View style={styles.inputContainer}>
               <CsText variant="body">
-                {
-                  semesters?.length === 2
-                  ? 'Semestre'
-                  : semesters?.length === 3
-                    ? 'Trimestre'
-                    : ''
-                }
+                {semesters?.length === 2 ? 'Semestre' : semesters?.length === 3 ? 'Trimestre' : ''}
               </CsText>
               <Picker
                 selectedValue={semester}
-                onValueChange={setSemester}
+                onValueChange={(value) => {
+                  setSemester(value);
+                  if (errors.semester) setErrors(prev => ({ ...prev, semester: '' }));
+                }}
                 style={styles.picker}
               >
                 {semesters.map((sm) => (
                   <Picker.Item key={sm.id.toString()} label={sm.name} value={sm.id.toString()} />
                 ))}
               </Picker>
+              {errors.semester && <CsText variant="error" style={styles.errorText}>{errors.semester}</CsText>}
             </View>
 
             {subjects.length > 1 && (
@@ -130,36 +187,49 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
                 <CsText variant="body">Matière</CsText>
                 <Picker
                   selectedValue={subject}
-                  onValueChange={setSubject}
+                  onValueChange={(value) => {
+                    setSubject(value);
+                    if (errors.subject) setErrors(prev => ({ ...prev, subject: '' }));
+                  }}
                   style={styles.picker}
                 >
                   {subjects.map((sub) => (
                     <Picker.Item key={sub.id} label={sub.name} value={sub.id} />
                   ))}
                 </Picker>
+                {errors.subject && <CsText variant="error" style={styles.errorText}>{errors.subject}</CsText>}
               </View>
-          )}
+            )}
 
             <View style={styles.inputContainer}>
               <CsText variant="body">Type d'évaluation</CsText>
               <Picker
                 selectedValue={noteType}
-                onValueChange={setNoteType}
+                onValueChange={(value) => {
+                  setNoteType(value);
+                  if (errors.noteType) setErrors(prev => ({ ...prev, noteType: '' }));
+                }}
                 style={styles.picker}
               >
                 {NOTE_OPTIONS.map((type) => (
                   <Picker.Item key={type.value} label={type.label} value={type.value} />
                 ))}
               </Picker>
+              {errors.noteType && <CsText variant="error" style={styles.errorText}>{errors.noteType}</CsText>}
             </View>
 
             <View style={styles.inputContainer}>
               <CsText variant="body">Titre</CsText>
               <CsTextField
                 value={title}
-                onChangeText={setTitle}
+                onChangeText={(text) => {
+                  setTitle(text);
+                  if (errors.title) setErrors(prev => ({ ...prev, title: '' }));
+                }}
                 label='Titre'
                 placeholder="Titre de l'évaluation"
+                autoCapitalize="words"
+                error={errors.title}
               />
             </View>
 
@@ -167,11 +237,16 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
               <CsText variant="body">Description</CsText>
               <CsTextField
                 value={description}
-                onChangeText={setDescription}
+                onChangeText={(text) => {
+                  setDescription(text);
+                  if (errors.description) setErrors(prev => ({ ...prev, description: '' }));
+                }}
                 label='Description'
                 placeholder="Description de l'évaluation"
+                autoCapitalize="words"
                 multiline
                 numberOfLines={3}
+                error={errors.description}
               />
             </View>
 
@@ -180,20 +255,28 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
                 <CsText variant="body">Points totaux</CsText>
                 <CsTextField
                   value={totalPoints}
-                  onChangeText={setTotalPoints}
+                  onChangeText={(text) => {
+                    setTotalPoints(text);
+                    if (errors.totalPoints) setErrors(prev => ({ ...prev, totalPoints: '' }));
+                  }}
                   keyboardType="numeric"
                   label='Points totaux'
                   placeholder="20"
+                  error={errors.totalPoints}
                 />
               </View>
               <View style={styles.inputHalf}>
                 <CsText variant="body">Coefficient</CsText>
                 <CsTextField
                   value={weight}
-                  onChangeText={setWeight}
+                  onChangeText={(text) => {
+                    setWeight(text);
+                    if (errors.weight) setErrors(prev => ({ ...prev, weight: '' }));
+                  }}
                   keyboardType="numeric"
                   label='Coefficient'
                   placeholder="1"
+                  error={errors.weight}
                 />
               </View>
             </View>
@@ -204,6 +287,7 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
             >
               <CsText variant="body">Date limite: {format(dueDate, 'dd/MM/yyyy')}</CsText>
             </TouchableOpacity>
+            {errors.dueDate && <CsText variant="error" style={styles.errorText}>{errors.dueDate}</CsText>}
 
             {showDatePicker && (
               <DateTimePicker
@@ -211,7 +295,10 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
                 mode="date"
                 onChange={(event, selectedDate) => {
                   setShowDatePicker(false);
-                  if (selectedDate) setDueDate(selectedDate);
+                  if (selectedDate) {
+                    setDueDate(selectedDate);
+                    if (errors.dueDate) setErrors(prev => ({ ...prev, dueDate: '' }));
+                  }
                 }}
               />
             )}
@@ -236,7 +323,6 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
               <CsButton
                 title="Créer"
                 onPress={handleSubmit}
-                disabled={!title || !totalPoints || !weight}
               />
             </View>
           </ScrollView>
@@ -303,6 +389,11 @@ const useStyles = (theme: ITheme) =>
     buttonContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
+    },
+    errorText: {
+      color: theme.error,
+      fontSize: 12,
+      marginTop: spacing.xs,
     },
   });
 
