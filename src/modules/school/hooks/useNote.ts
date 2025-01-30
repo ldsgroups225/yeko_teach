@@ -34,9 +34,10 @@ export const useNote = (): UseNoteReturn => {
     setLoading(true);
     setError(null);
     try {
-      // Fixed: Add teacherId as first parameter
-      const localNotes = await notes.getAllSavedNotesLocally(teacherId, classId, page, limit);
-      const remoteNotes = await notes.getNotes(teacherId, classId, schoolYearId);
+      const _fetchLocalNotes = notes.getAllSavedNotesLocally(teacherId, classId, page, limit);
+      const _fetchRemoteNotes = notes.getNotes(teacherId, classId, schoolYearId);
+
+      const [localNotes, remoteNotes] = await Promise.all([_fetchLocalNotes, _fetchRemoteNotes]);
 
       return {
         notes: [...localNotes.notes, ...remoteNotes],
@@ -55,9 +56,7 @@ export const useNote = (): UseNoteReturn => {
     setLoading(true);
     setError(null);
     try {
-      // Fixed: Remove manual ID generation and parameters
       await notes.saveNoteLocally(noteData);
-      // Fixed: Add schoolYearId to getNotes call
       await notes.getNotes(noteData.classId, noteData.teacherId, noteData.schoolYearId);
       return true;
     } catch (err) {
@@ -80,7 +79,6 @@ export const useNote = (): UseNoteReturn => {
 
       await notes.updateNoteLocally(id, noteData);
       
-      // Refresh notes list if needed
       if (noteData.classId && noteData.teacherId && noteData.schoolYearId) {
         await notes.getNotes(
           noteData.classId,
@@ -127,7 +125,6 @@ export const useNote = (): UseNoteReturn => {
     setLoading(true);
     setError(null);
     try {
-      // Fixed: Add teacherId parameter
       await notes.removeSavedNoteLocally(teacherId, classId, noteId);
       return true;
     } catch (err) {
@@ -143,7 +140,6 @@ export const useNote = (): UseNoteReturn => {
     setLoading(true);
     setError(null);
     try {
-      // Fixed: Add teacherId parameter
       const note = await notes.getSavedNoteLocally(teacherId, classId, Number(noteId));
       if (!note) {
         setError("Note not found.");
