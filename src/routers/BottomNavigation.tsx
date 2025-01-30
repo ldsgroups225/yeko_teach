@@ -17,7 +17,7 @@ export default function TabNavigator() {
   const theme = useTheme();
   return (
     <>
-      <StatusBar translucent={false} />
+      <StatusBar backgroundColor={theme.primary} />
       <Tab.Navigator
         screenOptions={{
           tabBarActiveTintColor: theme.primary,
