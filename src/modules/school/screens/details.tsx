@@ -5,7 +5,13 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
+import { 
+  ActivityIndicator, 
+  Animated, 
+  FlatList, 
+  StyleSheet, 
+  View 
+} from "react-native";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/hooks";
 import CsText from "@components/CsText";
@@ -33,6 +39,37 @@ const SchoolDetailsScreen: React.FC = () => {
   const styles = useStyles(theme);
   const route = useRoute<RouteProp<SchoolStackParams, Routes.SchoolDetails>>();
   const school = route.params;
+
+  // Loading animations
+  const loadingDotsAnimation = useRef(new Animated.Value(0)).current;
+  const [currentDot, setCurrentDot] = useState(0);
+
+  useEffect(() => {
+    const animateDots = () => {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(loadingDotsAnimation, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+          Animated.timing(loadingDotsAnimation, {
+            toValue: 2,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+      
+      const interval = setInterval(() => {
+        setCurrentDot(prev => (prev + 1) % 3);
+      }, 600);
+
+      return () => clearInterval(interval);
+    };
+
+    animateDots();
+  }, []);
 
   const {
     getClasses,
@@ -109,8 +146,39 @@ const SchoolDetailsScreen: React.FC = () => {
   if (loading || classesLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={theme.primary} />
-        <CsText style={styles.loadingText}>Loading classes...</CsText>
+        <View style={styles.loadingContent}>
+          <ActivityIndicator 
+            size="large" 
+            color={theme.primary}
+            accessibilityLabel="Chargement des classes"
+          />
+          <View style={styles.dotsContainer}>
+            {[...Array(3)].map((_, index) => (
+              <Animated.View
+                key={index}
+                style={[
+                  styles.dot,
+                  {
+                    backgroundColor: theme.primary,
+                    transform: [{ 
+                      scale: loadingDotsAnimation.interpolate({
+                        inputRange: [0, 1, 2],
+                        outputRange: index === currentDot ? [1, 1.2, 1] : [1, 1, 1]
+                      })
+                    }]
+                  }
+                ]}
+              />
+            ))}
+          </View>
+          <CsText style={styles.loadingText}>Loading Classes</CsText>
+          <CsText 
+            variant="caption" 
+            style={styles.loadingSubtitle}
+          >
+            Collection des informations de {school.name}
+          </CsText>
+        </View>
       </View>
     );
   }
@@ -167,7 +235,7 @@ const SchoolDetailsScreen: React.FC = () => {
   );
 };
 
-const useStyles = (theme: ITheme) =>
+const useStyles = (theme: ITheme) => 
   StyleSheet.create({
     container: {
       flex: 1,
@@ -178,22 +246,47 @@ const useStyles = (theme: ITheme) =>
     },
     loadingContainer: {
       flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: theme.background,
+    },
+    loadingContent: {
+      alignItems: 'center',
+      padding: spacing.xl,
+      backgroundColor: theme.card,
+      borderRadius: 16,
+      margin: spacing.lg,
+      shadowColor: theme.text,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 6,
+      elevation: 3,
+    },
+    dotsContainer: {
+      flexDirection: 'row',
+      marginVertical: spacing.md,
+    },
+    dot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      marginHorizontal: 4,
     },
     loadingText: {
       marginTop: spacing.md,
+      fontSize: 18,
+      fontWeight: '600',
       color: theme.text,
+    },
+    loadingSubtitle: {
+      marginTop: spacing.xs,
+      color: theme.secondary,
+      textAlign: 'center',
     },
     errorContainer: {
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-    },
-    emptyText: {
-      textAlign: "center",
-      marginTop: spacing.xl,
-      color: theme.textLight,
     },
     errorText: {
       textAlign: "center",
