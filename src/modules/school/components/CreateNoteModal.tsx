@@ -13,7 +13,7 @@ import CsTextField from '@components/CsTextField';
 import { useAppSelector } from '@store/index';
 import { ToastColorEnum } from '@components/ToastMessage/ToastColorEnum';
 import { showToast } from '@helpers/toast/showToast';
-import { NOTE_TYPES } from '@modules/app/constants/noteTypes';
+import { NOTE_OPTIONS } from '@modules/app/constants/noteTypes';
 
 interface CreateNoteModalProps {
   isVisible: boolean;
@@ -49,7 +49,7 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
   const [totalPoints, setTotalPoints] = useState('20');
   const [subject, setSubject] = useState('');
   const [weight, setWeight] = useState('1');
-  const [noteType, setNoteType] = useState('EXAM');
+  const [noteType, setNoteType] = useState(NOTE_OPTIONS[0].value);
   const [dueDate, setDueDate] = useState<Date>(new Date());
   const [isGraded, setIsGraded] = useState(true);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -90,7 +90,7 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
     setDescription('');
     setTotalPoints('20');
     setWeight('1');
-    setNoteType('EXAM');
+    setNoteType(NOTE_OPTIONS[0].value);
     setDueDate(new Date());
     setIsGraded(true);
   };
@@ -147,7 +147,7 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
                 onValueChange={setNoteType}
                 style={styles.picker}
               >
-                {NOTE_TYPES.map((type) => (
+                {NOTE_OPTIONS.map((type) => (
                   <Picker.Item key={type.value} label={type.label} value={type.value} />
                 ))}
               </Picker>

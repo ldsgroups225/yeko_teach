@@ -6,7 +6,7 @@ import { useTheme } from '@src/hooks';
 import { spacing } from '@styles/spacing';
 import { INoteDTO } from '@modules/app/types/ILoginDTO';
 import EmptyListComponent from '@components/EmptyListComponent';
-import { NOTE_TYPES } from '@modules/app/constants/noteTypes';
+import { NOTE_OPTIONS } from '@modules/app/constants/noteTypes';
 import { ITheme } from '@styles/theme';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -41,7 +41,7 @@ export const NoteHistoryView: React.FC<NoteHistoryViewProps> = ({
       <View style={styles.noteHeader}>
         <CsText variant="h3">{item.title}</CsText>
         <CsText variant="caption" style={styles.noteType}>
-          {NOTE_TYPES.find((t) => t.value === item.noteType)?.label}
+          {NOTE_OPTIONS.find((t) => t.value === item.noteType)?.label}
         </CsText>
       </View>
 
@@ -84,7 +84,7 @@ export const NoteHistoryView: React.FC<NoteHistoryViewProps> = ({
 
         {!item.isActive && (
             <View style={styles.buttonGroup}>
-              <TouchableOpacity style={styles.sendButton} onPress={() => onPressActivate(item.id!, item.isActive)}>
+              <TouchableOpacity style={styles.sendButton} onPress={() => onPressActivate(item.id!, !!item.isActive)}>
               <Text style={styles.sendButtonText}>Envoyer</Text>
             </TouchableOpacity>
 

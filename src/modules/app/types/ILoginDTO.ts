@@ -1,3 +1,5 @@
+import { NOTE_TYPE } from "../constants/noteTypes";
+
 export interface ISubjectDTO {
   id: string;
   name: string;
@@ -29,7 +31,7 @@ export interface INoteDTO {
   teacherId: string;
   semesterId: number;
   schoolYearId: number;
-  noteType: string;
+  noteType: NOTE_TYPE;
   title?: string;
   description?: string | null;
   totalPoints: number;
