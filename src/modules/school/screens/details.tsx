@@ -1,17 +1,18 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { 
   ActivityIndicator, 
-  Animated, 
   FlatList, 
   StyleSheet, 
   View 
 } from "react-native";
+import Animated, {
+  useSharedValue,
+  withTiming,
+  withRepeat,
+  useAnimatedStyle,
+  interpolate,
+  SharedValue,
+} from "react-native-reanimated";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/hooks";
 import CsText from "@components/CsText";
@@ -32,6 +33,24 @@ import { useAppSelector } from "@src/store";
 import { useClass } from "@modules/school/hooks/useClass";
 import EmptyListComponent from "@components/EmptyListComponent";
 
+const AnimatedDot: React.FC<{
+  index: number;
+  progress: SharedValue<number>;
+  themePrimary: string;
+  dotStyle: any;
+}> = ({ index, progress, themePrimary, dotStyle }) => {
+  const animatedStyle = useAnimatedStyle(() => {
+    const effectiveProgress = (progress.value + index / 3) % 1;
+    const scale = interpolate(effectiveProgress, [0, 0.5, 1], [1, 1.2, 1]);
+    return { transform: [{ scale }] };
+  });
+  return (
+    <Animated.View
+      style={[dotStyle, { backgroundColor: themePrimary }, animatedStyle]}
+    />
+  );
+};
+
 const SchoolDetailsScreen: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<SchoolStackParams>>();
   const user = useAppSelector((s) => s?.AppReducer?.user);
@@ -40,42 +59,17 @@ const SchoolDetailsScreen: React.FC = () => {
   const route = useRoute<RouteProp<SchoolStackParams, Routes.SchoolDetails>>();
   const school = route.params;
 
-  // Loading animations
-  const loadingDotsAnimation = useRef(new Animated.Value(0)).current;
-  const [currentDot, setCurrentDot] = useState(0);
+  const progress = useSharedValue(0);
 
   useEffect(() => {
-    const animateDots = () => {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(loadingDotsAnimation, {
-            toValue: 1,
-            duration: 200,
-            useNativeDriver: true,
-          }),
-          Animated.timing(loadingDotsAnimation, {
-            toValue: 2,
-            duration: 200,
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
-      
-      const interval = setInterval(() => {
-        setCurrentDot(prev => (prev + 1) % 3);
-      }, 600);
+    progress.value = withRepeat(
+      withTiming(1, { duration: 600 }),
+      -1, // infinite repeats
+      false
+    );
+  }, [progress]);
 
-      return () => clearInterval(interval);
-    };
-
-    animateDots();
-  }, []);
-
-  const {
-    getClasses,
-    loading: classesLoading,
-    error: classesError,
-  } = useClass();
+  const { getClasses, loading: classesLoading, error: classesError } = useClass();
   const [classes, setClasses] = useState<IClassDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -83,14 +77,8 @@ const SchoolDetailsScreen: React.FC = () => {
   const [selectedGrade, setSelectedGrade] = useState<number | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
-  const filteredClasses = useFilteredClasses(
-    classes,
-    selectedGrade,
-    searchQuery,
-    sortOrder
-  );
+  const filteredClasses = useFilteredClasses(classes, selectedGrade, searchQuery, sortOrder);
   const grades = useGrades(classes);
-
   const bottomSheetRef = useRef<BottomSheet>(null);
 
   const fetchClasses = async () => {
@@ -106,7 +94,7 @@ const SchoolDetailsScreen: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchClasses().then((r) => r);
+    fetchClasses();
   }, [school.id, user!.id]);
 
   const handleGenerateQRCode = useCallback(() => {
@@ -129,19 +117,12 @@ const SchoolDetailsScreen: React.FC = () => {
 
   const renderBackdrop = useCallback(
     (props: any) => (
-      <BottomSheetBackdrop
-        {...props}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-      />
+      <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />
     ),
     []
   );
 
-  const qrValue = useMemo(
-    () => `YEKO_teacher|---|${school.id}|---|${user?.id}`,
-    [school.id, user?.id]
-  );
+  const qrValue = useMemo(() => `YEKO_teacher|---|${school.id}|---|${user?.id}`, [school.id, user?.id]);
 
   if (loading || classesLoading) {
     return (
@@ -153,29 +134,18 @@ const SchoolDetailsScreen: React.FC = () => {
             accessibilityLabel="Chargement des classes"
           />
           <View style={styles.dotsContainer}>
-            {[...Array(3)].map((_, index) => (
-              <Animated.View
+            {[0, 1, 2].map((index) => (
+              <AnimatedDot 
                 key={index}
-                style={[
-                  styles.dot,
-                  {
-                    backgroundColor: theme.primary,
-                    transform: [{ 
-                      scale: loadingDotsAnimation.interpolate({
-                        inputRange: [0, 1, 2],
-                        outputRange: index === currentDot ? [1, 1.2, 1] : [1, 1, 1]
-                      })
-                    }]
-                  }
-                ]}
+                index={index}
+                progress={progress}
+                themePrimary={theme.primary}
+                dotStyle={styles.dot}
               />
             ))}
           </View>
           <CsText style={styles.loadingText}>Loading Classes</CsText>
-          <CsText 
-            variant="caption" 
-            style={styles.loadingSubtitle}
-          >
+          <CsText variant="caption" style={styles.loadingSubtitle}>
             Collection des informations de {school.name}
           </CsText>
         </View>
@@ -212,9 +182,7 @@ const SchoolDetailsScreen: React.FC = () => {
         renderItem={renderClassItem}
         keyExtractor={(item: IClassDTO) => item.id}
         contentContainerStyle={styles.listContent}
-        ListEmptyComponent={
-          <EmptyListComponent message="Pas de classe dans cette école" />
-        }
+        ListEmptyComponent={<EmptyListComponent message="Pas de classe dans cette école" />}
       />
       <BottomSheet
         ref={bottomSheetRef}
@@ -235,7 +203,7 @@ const SchoolDetailsScreen: React.FC = () => {
   );
 };
 
-const useStyles = (theme: ITheme) => 
+const useStyles = (theme: ITheme) =>
   StyleSheet.create({
     container: {
       flex: 1,

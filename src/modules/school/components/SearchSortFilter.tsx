@@ -1,20 +1,20 @@
-import React from "react";
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import CsText from "@components/CsText";
-import { useTheme } from "@src/hooks";
-import { spacing } from "@styles/spacing";
-import { ITheme } from "@styles/theme";
-import { ISelectOptions } from "@modules/app/types/ISelectOptions";
+import type { ISelectOptions } from '@modules/app/types/ISelectOptions'
+import type { ITheme } from '@styles/theme'
+import CsText from '@components/CsText'
+import { Ionicons } from '@expo/vector-icons'
+import { useTheme } from '@src/hooks'
+import { spacing } from '@styles/spacing'
+import React from 'react'
+import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 
 interface SearchSortFilterProps {
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
-  selectedGrade: number | null;
-  setSelectedGrade: (grade: number | null) => void;
-  sortOrder: "asc" | "desc";
-  setSortOrder: (order: "asc" | "desc") => void;
-  grades: ISelectOptions[];
+  searchQuery: string
+  setSearchQuery: (query: string) => void
+  selectedGrade: number | null
+  setSelectedGrade: (grade: number | null) => void
+  sortOrder: 'asc' | 'desc'
+  setSortOrder: (order: 'asc' | 'desc') => void
+  grades: ISelectOptions[]
 }
 
 const SearchSortFilter: React.FC<SearchSortFilterProps> = ({
@@ -26,8 +26,8 @@ const SearchSortFilter: React.FC<SearchSortFilterProps> = ({
   setSortOrder,
   grades,
 }) => {
-  const theme = useTheme();
-  const styles = useStyles(theme);
+  const theme = useTheme()
+  const styles = useStyles(theme)
 
   return (
     <View style={styles.container}>
@@ -59,20 +59,20 @@ const SearchSortFilter: React.FC<SearchSortFilterProps> = ({
               variant="caption"
               style={
                 selectedGrade === null
-                  ? { color: "white" }
+                  ? { color: 'white' }
                   : styles.gradeButtonText
               }
             >
               Tout
             </CsText>
           </TouchableOpacity>
-          {grades.map((grade) => (
+          {grades.map(grade => (
             <TouchableOpacity
               key={grade.value}
               style={[
                 styles.gradeButton,
-                selectedGrade?.toString() === grade.value &&
-                  styles.selectedGrade,
+                selectedGrade?.toString() === grade.value
+                && styles.selectedGrade,
               ]}
               onPress={() => setSelectedGrade(Number(grade.value))}
             >
@@ -80,7 +80,7 @@ const SearchSortFilter: React.FC<SearchSortFilterProps> = ({
                 variant="caption"
                 style={
                   selectedGrade?.toString() === grade.value
-                    ? { color: "white" }
+                    ? { color: 'white' }
                     : styles.gradeButtonText
                 }
               >
@@ -92,30 +92,32 @@ const SearchSortFilter: React.FC<SearchSortFilterProps> = ({
       </View>
       <TouchableOpacity
         style={styles.sortButton}
-        onPress={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+        onPress={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
       >
         <Ionicons
-          name={sortOrder === "asc" ? "arrow-up" : "arrow-down"}
+          name={sortOrder === 'asc' ? 'arrow-up' : 'arrow-down'}
           size={20}
           color={theme.text}
         />
         <CsText variant="caption" style={styles.sortButtonText}>
-          Sort {sortOrder === "asc" ? "A-Z" : "Z-A"}
+          Sort
+          {' '}
+          {sortOrder === 'asc' ? 'A-Z' : 'Z-A'}
         </CsText>
       </TouchableOpacity>
     </View>
-  );
-};
+  )
+}
 
-const useStyles = (theme: ITheme) =>
-  StyleSheet.create({
+function useStyles(theme: ITheme) {
+  return StyleSheet.create({
     container: {
       padding: spacing.md,
       backgroundColor: theme.card,
     },
     searchContainer: {
-      flexDirection: "row",
-      alignItems: "center",
+      flexDirection: 'row',
+      alignItems: 'center',
       backgroundColor: theme.background,
       borderRadius: 8,
       padding: spacing.sm,
@@ -137,8 +139,8 @@ const useStyles = (theme: ITheme) =>
       marginBottom: spacing.xs,
     },
     gradeButtons: {
-      flexDirection: "row",
-      flexWrap: "wrap",
+      flexDirection: 'row',
+      flexWrap: 'wrap',
     },
     gradeButton: {
       backgroundColor: theme.background,
@@ -155,14 +157,15 @@ const useStyles = (theme: ITheme) =>
       color: theme.text,
     },
     sortButton: {
-      flexDirection: "row",
-      alignItems: "center",
-      alignSelf: "flex-end",
+      flexDirection: 'row',
+      alignItems: 'center',
+      alignSelf: 'flex-end',
     },
     sortButtonText: {
       color: theme.text,
       marginLeft: spacing.xs,
     },
-  });
+  })
+}
 
-export default SearchSortFilter;
+export default SearchSortFilter
