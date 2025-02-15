@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, Alert, SectionList, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, FlatList, Pressable, SectionList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/hooks";
 import CsText from "@components/CsText";
@@ -22,6 +22,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { CreateNoteModal } from "../components/CreateNoteModal";
 import { NoteHistoryView } from "../components/NoteHistoryView";
 import { useAppSelector } from "@store/index";
+import { ISemester } from "@modules/app/redux/IAppState";
 
 const SchoolClassDetails: React.FC = () => {
   const theme = useTheme();
@@ -32,20 +33,22 @@ const SchoolClassDetails: React.FC = () => {
   const { classItem, school } = route.params;
 
   const user = useAppSelector((s) => s.AppReducer?.user);
+  const semesters = useAppSelector((s) => s.AppReducer?.semesters);
   const schoolYear = useAppSelector((s) => s.AppReducer?.schoolYear);
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [savedNotes, setSavedNotes] = useState<INoteDTO[]>([]);
   const [totalNotes, setTotalNotes] = useState(0);
+  const [isEditing, setIsEditing] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [savedNotes, setSavedNotes] = useState<INoteDTO[]>([]);
   const [isAssigningGrade, setIsAssigningGrade] = useState(false);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [selectedSemester, setSelectedSemester] = useState<ISemester>();
   const [selectedNote, setSelectedNote] = useState<INoteDTO | null>(null);
   const [subjectsTeached, setSubjectsTeached] = useState<ISubjectDTO[]>([])
   const [currentSubject, setCurrentSubject] = useState(classItem.subjects[0]);
   const [isCreateNoteModalVisible, setIsCreateNoteModalVisible] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
 
   const {
   getNotes,
@@ -72,11 +75,12 @@ const SchoolClassDetails: React.FC = () => {
     fetchSavedNotes().then(r => r);
   }, [currentSubject]);
 
-  const fetchSavedNotes = async (page: number = 1) => {
+  const fetchSavedNotes = useCallback(async (page: number = 1) => {
     const result = await getNotes(
       classItem.id,
       user?.id ?? "",
       schoolYear?.id ?? 0,
+      selectedSemester?.id,
       page
     );
     
@@ -88,7 +92,7 @@ const SchoolClassDetails: React.FC = () => {
       }
       setTotalNotes(result.totalCount);
     }
-  };
+  }, [classItem.id, selectedSemester]);
 
   const loadMoreNotes = async () => {
     if (isLoadingMore || savedNotes.length >= totalNotes) return;
@@ -281,6 +285,39 @@ const SchoolClassDetails: React.FC = () => {
         </CsText>
       </TouchableOpacity>
 
+      <View>
+        <CsText variant="caption" style={{ fontSize: 14, paddingHorizontal: 20 }}>Filter par trimestre</CsText>
+        <FlatList
+          data={semesters}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={{ columnGap: 10, paddingVertical: 4, paddingHorizontal: 20 }}
+          renderItem={({ item }) => (
+            <Pressable
+              style={[
+                styles.semesterButton,
+                selectedSemester?.id === item.id && styles.selectedSemesterButton,
+              ]}
+              onPress={() => {
+                if (selectedSemester?.id === item.id) setSelectedSemester(undefined);
+                else setSelectedSemester(item);
+              }}
+            >
+              <CsText
+                style={StyleSheet.flatten([
+                  styles.semesterButtonText,
+                  selectedSemester?.id === item.id &&
+                    styles.selectedSemesterButtonText,
+                ])}
+              >
+                {item.name}
+              </CsText>
+            </Pressable>
+          )}
+        />
+      </View>
+
       <NoteHistoryView
         notes={savedNotes}
         onPressNote={handleNotePress}
@@ -464,6 +501,25 @@ const useStyles = (theme: ITheme) =>
       color: theme.textLight,
       textAlign: "center",
       marginTop: spacing.sm,
+    },
+    semesterButton: {
+      borderRadius: 8,
+      paddingHorizontal: spacing.sm,
+      paddingVertical: spacing.xs,
+      borderWidth: 1,
+      borderColor: theme.border,
+    },
+    semesterButtonText: {
+      color: theme.text,
+    },
+    selectedSemesterButton: {
+      backgroundColor: theme.primary,
+      borderColor: theme.primary,
+      borderRadius: 8,
+    },
+    selectedSemesterButtonText: {
+      color: theme.background,
+      fontWeight: "semibold",
     },
   });
 

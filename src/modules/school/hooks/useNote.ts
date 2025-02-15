@@ -15,6 +15,7 @@ interface UseNoteReturn {
     classId: string,
     teacherId: string,
     schoolYearId: number,
+    semesterId?: number,
     page?: number,
     limit?: number
   ) => Promise<{ notes: INoteDTO[]; totalCount: number } | null>;
@@ -28,13 +29,14 @@ export const useNote = (): UseNoteReturn => {
     classId: string,
     teacherId: string,
     schoolYearId: number,
+    semesterId?: number,
     page: number = 1,
-    limit: number = 10
+    limit: number = 10,
   ): Promise<{ notes: INoteDTO[]; totalCount: number } | null> => {
     setLoading(true);
     setError(null);
     try {
-      const _notes = await notes.getNotes(teacherId, classId, schoolYearId);
+      const _notes = await notes.getNotes(teacherId, classId, schoolYearId, semesterId);
 
       return {
         notes: _notes,
@@ -54,7 +56,7 @@ export const useNote = (): UseNoteReturn => {
     setError(null);
     try {
       await notes.saveNoteLocally(noteData);
-      await getNotes(noteData.classId, noteData.teacherId, noteData.schoolYearId);
+      await getNotes(noteData.classId, noteData.teacherId, noteData.schoolYearId, noteData.semesterId);
       return true;
     } catch (err) {
       setError("Failed to save note.");
