@@ -1,38 +1,39 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ColorSchemeName } from "react-native";
-import { IAppState, ISemester, ProfileCompletion } from "./IAppState";
+import type { PayloadAction } from '@reduxjs/toolkit'
+import type { ColorSchemeName } from 'react-native'
+import type { IAppState, ISemester, ProfileCompletion } from './IAppState'
+import { createSlice } from '@reduxjs/toolkit'
 
 /**
  * Initial state for the app slice.
  */
 const initialState: IAppState = {
   isSignedIn: false,
-  userColorScheme: "light",
+  userColorScheme: 'light',
   isLoading: false,
   user: undefined,
   schoolYear: undefined,
-  semesters: undefined,
+  semesters: [],
   selectedStudent: undefined,
   authToken: undefined,
   expoToken: undefined,
   profileCompletion: {
     currentStep: 0,
-    theme: "auto",
-    language: "english",
-    avatar: "",
-    gender: "",
-    country: "",
-    city: "",
-    grade: "",
-    referral: "",
+    theme: 'auto',
+    language: 'english',
+    avatar: '',
+    gender: '',
+    country: '',
+    city: '',
+    grade: '',
+    referral: '',
   },
-};
+}
 
 /**
  * A slice of the Redux store that manages app-related state.
  */
 const appSlice = createSlice({
-  name: "app",
+  name: 'app',
   initialState,
   reducers: {
     /**
@@ -41,7 +42,7 @@ const appSlice = createSlice({
      * @param action - Action containing the sign-in status.
      */
     setIsSignedIn(state: IAppState, action: PayloadAction<boolean>) {
-      state.isSignedIn = action.payload;
+      state.isSignedIn = action.payload
     },
 
     /**
@@ -51,9 +52,9 @@ const appSlice = createSlice({
      */
     setUserColorScheme(
       state: IAppState,
-      action: PayloadAction<ColorSchemeName>
+      action: PayloadAction<ColorSchemeName>,
     ) {
-      state.userColorScheme = action.payload;
+      state.userColorScheme = action.payload
     },
 
     /**
@@ -62,7 +63,7 @@ const appSlice = createSlice({
      * @param action - Action containing the loading status.
      */
     setIsLoading(state: IAppState, action: PayloadAction<boolean>) {
-      state.isLoading = action.payload;
+      state.isLoading = action.payload
     },
 
     /**
@@ -71,8 +72,8 @@ const appSlice = createSlice({
      * @param action - Action containing the user object.
      */
     setUser(state: IAppState, action: PayloadAction<any>) {
-      state.user = action.payload;
-      state.isSignedIn = true;
+      state.user = action.payload
+      state.isSignedIn = true
     },
 
     /**
@@ -81,7 +82,7 @@ const appSlice = createSlice({
      * @param action - Action containing the user object.
      */
     setSelectedStudent(state: IAppState, action: PayloadAction<any>) {
-      state.selectedStudent = action.payload;
+      state.selectedStudent = action.payload
     },
 
     /**
@@ -89,13 +90,13 @@ const appSlice = createSlice({
      * @param state - The current state.
      */
     loggedOut(state: IAppState) {
-      state.isSignedIn = false;
-      state.authToken = undefined;
-      state.expoToken = undefined;
-      state.selectedStudent = undefined;
+      state.isSignedIn = false
+      state.authToken = undefined
+      state.expoToken = undefined
+      state.selectedStudent = undefined
       // state.user = undefined;
-      state.schoolYear = undefined;
-      state.semesters = undefined;
+      state.schoolYear = undefined
+      state.semesters = []
     },
 
     /**
@@ -104,7 +105,7 @@ const appSlice = createSlice({
      * @param action - Action containing the authentication token.
      */
     setAuthToken(state: IAppState, action: PayloadAction<string | undefined>) {
-      state.authToken = action.payload;
+      state.authToken = action.payload
     },
 
     /**
@@ -113,7 +114,7 @@ const appSlice = createSlice({
      * @param action - Action containing the Expo token.
      */
     setExpoToken(state: IAppState, action: PayloadAction<string | undefined>) {
-      state.expoToken = action.payload;
+      state.expoToken = action.payload
     },
 
     /**
@@ -123,12 +124,12 @@ const appSlice = createSlice({
      */
     setProfileCompletion(
       state: IAppState,
-      action: PayloadAction<Partial<ProfileCompletion>>
+      action: PayloadAction<Partial<ProfileCompletion>>,
     ) {
       state.profileCompletion = {
         ...state.profileCompletion,
         ...action.payload,
-      };
+      }
     },
 
     /**
@@ -136,8 +137,8 @@ const appSlice = createSlice({
      * @param state - The current state.
      * @param action - Action containing the school year.
      */
-    setSchoolYear(state: IAppState, action: PayloadAction<{id: number, name: string}>) {
-      state.schoolYear = action.payload;
+    setSchoolYear(state: IAppState, action: PayloadAction<{ id: number, name: string }>) {
+      state.schoolYear = action.payload
     },
 
     /**
@@ -146,10 +147,10 @@ const appSlice = createSlice({
      * @param action - Action containing the semesters.
      */
     setSemesters(state: IAppState, action: PayloadAction<ISemester[]>) {
-      state.semesters = action.payload;
+      state.semesters = action.payload
     },
   },
-});
+})
 
 export const {
   setIsSignedIn,
@@ -163,6 +164,6 @@ export const {
   setProfileCompletion,
   setSchoolYear,
   setSemesters,
-} = appSlice.actions;
+} = appSlice.actions
 
-export default appSlice.reducer;
+export default appSlice.reducer
