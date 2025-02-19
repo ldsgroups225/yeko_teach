@@ -1,21 +1,19 @@
-/**
- * @author Ali Burhan Keskin <alikeskin@milvasoft.com>
- */
-import * as React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
-import { enableScreens } from "react-native-screens";
-import { useTheme } from "@src/hooks";
-import Routes, { ProfileStackParams } from "@utils/Routes";
-import ProfileScreen from "@modules/profile/screens/ProfileScreen";
-import translate from "@helpers/localization";
-import { ScreenOptions } from "@utils/ScreenOptions";
+import type { ProfileStackParams } from '@utils/Routes'
+import translate from '@helpers/localization'
+import ProfileScreen from '@modules/profile/screens/ProfileScreen'
+import { createStackNavigator } from '@react-navigation/stack'
+import { useTheme } from '@src/hooks'
+import Routes from '@utils/Routes'
+import { ScreenOptions } from '@utils/ScreenOptions'
+import * as React from 'react'
+import { enableScreens } from 'react-native-screens'
 
-enableScreens();
+enableScreens()
 
-const Stack = createStackNavigator<ProfileStackParams>();
+const Stack = createStackNavigator<ProfileStackParams>()
 
 function ProfileStack() {
-  const theme = useTheme();
+  const theme = useTheme()
   return (
     <Stack.Navigator
       initialRouteName={Routes.User}
@@ -25,12 +23,12 @@ function ProfileStack() {
         name={Routes.User}
         component={ProfileScreen}
         options={{
-          headerTitle: translate("navigation.profile"),
+          headerTitle: translate('navigation.profile'),
           headerShown: false,
         }}
       />
     </Stack.Navigator>
-  );
+  )
 }
 
-export default React.memo(ProfileStack);
+export default React.memo(ProfileStack)

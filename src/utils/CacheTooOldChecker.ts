@@ -10,9 +10,9 @@
  * console.log(isTooOld ? "Cache is too old" : "Cache is still valid");
  */
 export function isCacheTooOld(cacheDate: string): boolean {
-  const cacheTimestamp = new Date(cacheDate).getTime(); // Convert cacheDate to timestamp
-  const nowTimestamp = new Date().getTime(); // Current date in timestamp
-  const sevenDaysInMilliseconds = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+  const cacheTimestamp = new Date(cacheDate).getTime() // Convert cacheDate to timestamp
+  const nowTimestamp = new Date().getTime() // Current date in timestamp
+  const sevenDaysInMilliseconds = 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
 
-  return nowTimestamp - cacheTimestamp > sevenDaysInMilliseconds;
+  return nowTimestamp - cacheTimestamp > sevenDaysInMilliseconds
 }

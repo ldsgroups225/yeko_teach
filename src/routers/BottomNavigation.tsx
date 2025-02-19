@@ -1,27 +1,24 @@
-/**
- * @author Ali Burhan Keskin <alikeskin@milvasoft.com>
- */
-import React from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { AntDesign, Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@src/hooks";
-import ProfileStack from "./ProfileStack";
-import { StatusBar } from "react-native";
-import SchoolStack from "@routers/SchoolStack";
-import ChatStack from "@routers/ChatStack";
-import ScheduleStack from "@routers/ScheduleStack";
+import { AntDesign, Ionicons } from '@expo/vector-icons'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import ChatStack from '@routers/ChatStack'
+import ScheduleStack from '@routers/ScheduleStack'
+import SchoolStack from '@routers/SchoolStack'
+import { useTheme } from '@src/hooks'
+import React from 'react'
+import { StatusBar } from 'react-native'
+import ProfileStack from './ProfileStack'
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator()
 
 export default function TabNavigator() {
-  const theme = useTheme();
+  const theme = useTheme()
   return (
     <>
       <StatusBar backgroundColor={theme.primary} />
       <Tab.Navigator
         screenOptions={{
           tabBarActiveTintColor: theme.primary,
-          tabBarStyle: { backgroundColor: "#FFF" },
+          tabBarStyle: { backgroundColor: '#FFF' },
           headerShown: false,
         }}
       >
@@ -66,5 +63,5 @@ export default function TabNavigator() {
         />
       </Tab.Navigator>
     </>
-  );
+  )
 }

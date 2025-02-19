@@ -1,30 +1,30 @@
-import CsCard from "@components/CsCard";
-import CsText from "@components/CsText";
-import { Ionicons } from "@expo/vector-icons";
-import { useThemedStyles } from "@hooks/index";
-import { spacing } from "@styles/spacing";
-import React from "react";
-import { StyleSheet, View } from "react-native";
+import CsCard from '@components/CsCard'
+import CsText from '@components/CsText'
+import { Ionicons } from '@expo/vector-icons'
+import { useThemedStyles } from '@hooks/index'
+import { spacing } from '@styles/spacing'
+import React from 'react'
+import { StyleSheet, View } from 'react-native'
 
 interface SummaryItemProps {
-  label: string;
-  value: string | number;
-  icon: React.ComponentProps<typeof Ionicons>["name"];
-  color: string;
+  label: string
+  value: string | number
+  icon: React.ComponentProps<typeof Ionicons>['name']
+  color: string
 }
 
 interface NoteSummary {
-  averageNote: number;
-  bestSubject: string;
-  worstSubject: string;
+  averageNote: number
+  bestSubject: string
+  worstSubject: string
 }
 
-type SummaryCardProps = {
-  items: SummaryItemProps[] | NoteSummary;
-  primaryColor: string;
-  successColor: string;
-  warningColor: string;
-};
+interface SummaryCardProps {
+  items: SummaryItemProps[] | NoteSummary
+  primaryColor: string
+  successColor: string
+  warningColor: string
+}
 
 const SummaryCard: React.FC<SummaryCardProps> = ({
   items,
@@ -32,12 +32,13 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   successColor,
   warningColor,
 }) => {
-  const themedStyles = useThemedStyles<typeof styles>(styles);
+  const themedStyles = useThemedStyles<typeof styles>(styles)
 
   const renderItems = () => {
     if (Array.isArray(items)) {
-      return items.map((item, index) => <SummaryItem key={index} {...item} />);
-    } else {
+      return items.map((item, index) => <SummaryItem key={index} {...item} />)
+    }
+    else {
       return [
         <SummaryItem
           key="average"
@@ -60,16 +61,16 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
           icon="trending-up-outline"
           color={warningColor}
         />,
-      ];
+      ]
     }
-  };
+  }
 
   return (
     <CsCard style={themedStyles.summaryCard}>
       <View style={themedStyles.summaryRow}>{renderItems()}</View>
     </CsCard>
-  );
-};
+  )
+}
 
 const SummaryItem: React.FC<SummaryItemProps> = ({
   icon,
@@ -77,7 +78,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
   label,
   color,
 }) => {
-  const themedStyles = useThemedStyles<typeof styles>(styles);
+  const themedStyles = useThemedStyles<typeof styles>(styles)
   return (
     <View style={themedStyles.summaryItem}>
       <Ionicons name={icon} size={24} color={color} />
@@ -88,30 +89,31 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
         {label}
       </CsText>
     </View>
-  );
-};
+  )
+}
 
-const styles = () =>
-  StyleSheet.create({
+function styles() {
+  return StyleSheet.create({
     summaryCard: {
       marginBottom: spacing.md,
     },
     summaryRow: {
-      flexDirection: "row",
-      justifyContent: "space-around",
-      alignItems: "flex-start",
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      alignItems: 'flex-start',
     },
     summaryItem: {
-      alignItems: "center",
+      alignItems: 'center',
       flex: 1,
     },
     summaryValue: {
       marginVertical: spacing.xs,
-      textAlign: "center",
+      textAlign: 'center',
     },
     summaryLabel: {
-      textAlign: "center",
+      textAlign: 'center',
     },
-  });
+  })
+}
 
-export default SummaryCard;
+export default SummaryCard

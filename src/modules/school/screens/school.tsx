@@ -52,7 +52,7 @@ const SchoolScreen: React.FC = () => {
     data: schools,
     loading,
     refreshing,
-    fetchData: refetchData,
+    refetch: refetchData,
   } = useDataFetching<ISchoolDTO[]>(fetchSchools, []);
 
   const filteredAndSortedSchools = useMemo(() => {
