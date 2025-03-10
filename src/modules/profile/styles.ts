@@ -1,15 +1,17 @@
-import { StyleSheet } from "react-native";
-import { borderRadius, spacing } from "@styles/index";
-import { ITheme } from "@styles/theme";
+// src/modules/profile/styles.ts
 
-export const styles = (theme: ITheme) =>
-  StyleSheet.create({
+import type { ITheme } from '@styles/theme'
+import { borderRadius, spacing } from '@styles/index'
+import { StyleSheet } from 'react-native'
+
+export function styles(theme: ITheme) {
+  return StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: theme.background,
     },
     header: {
-      alignItems: "center",
+      alignItems: 'center',
       padding: spacing.xl,
       borderBottomWidth: 1,
       borderBottomColor: theme.border,
@@ -19,7 +21,7 @@ export const styles = (theme: ITheme) =>
     },
     userName: {
       color: theme.text,
-      fontWeight: "bold",
+      fontWeight: 'bold',
       marginTop: spacing.md,
     },
     userEmail: {
@@ -36,13 +38,13 @@ export const styles = (theme: ITheme) =>
     },
     infoText: {
       color: theme.textLight,
-      textAlign: "center",
+      textAlign: 'center',
       marginTop: spacing.xs,
     },
     clearCacheButton: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "center",
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
       padding: spacing.md,
       backgroundColor: theme.card,
       borderRadius: borderRadius.medium,
@@ -61,4 +63,5 @@ export const styles = (theme: ITheme) =>
       borderBottomWidth: 1,
       borderBottomColor: theme.border,
     },
-  });
+  })
+}

@@ -1,3 +1,5 @@
+// src/modules/profile/screens/ProfileScreen.tsx
+
 import type { ITheme } from '@styles/theme'
 import CsButton from '@components/CsButton'
 import { OtpForm } from '@components/OtpForm'

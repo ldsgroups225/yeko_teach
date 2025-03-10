@@ -1,15 +1,17 @@
-import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import CsText from "@components/CsText";
-import { useThemedStyles } from "@hooks/index";
-import { ITheme } from "@styles/theme";
-import { spacing, borderRadius } from "@styles/index";
-import { Ionicons } from "@expo/vector-icons";
+// src/modules/profile/components/ClearCacheSection.tsx
+
+import type { ITheme } from '@styles/theme'
+import CsText from '@components/CsText'
+import { Ionicons } from '@expo/vector-icons'
+import { useThemedStyles } from '@hooks/index'
+import { borderRadius, spacing } from '@styles/index'
+import React from 'react'
+import { StyleSheet, TouchableOpacity, View } from 'react-native'
 
 interface ClearCacheSectionProps {
-  onPress: () => void;
-  disabled: boolean;
-  loading: boolean;
+  onPress: () => void
+  disabled: boolean
+  loading: boolean
 }
 
 /**
@@ -22,7 +24,7 @@ export const ClearCacheSection: React.FC<ClearCacheSectionProps> = ({
   disabled,
   loading,
 }) => {
-  const themedStyles = useThemedStyles<typeof styles>(styles);
+  const themedStyles = useThemedStyles<typeof styles>(styles)
 
   return (
     <View style={themedStyles.section}>
@@ -37,27 +39,27 @@ export const ClearCacheSection: React.FC<ClearCacheSectionProps> = ({
           color={themedStyles.clearCacheButton.color}
         />
         <CsText variant="body" style={themedStyles.clearCacheButtonText}>
-          {loading ? "En cours..." : "Nouvelle données"}
+          {loading ? 'En cours...' : 'Nouvelle données'}
         </CsText>
       </TouchableOpacity>
       <CsText variant="caption" style={themedStyles.infoText}>
         ℹ️ L'obtention des nouvelle donnée ralentira vos interaction prochaine
       </CsText>
     </View>
-  );
-};
+  )
+}
 
-const styles = (theme: ITheme) =>
-  StyleSheet.create({
+function styles(theme: ITheme) {
+  return StyleSheet.create({
     section: {
       padding: spacing.lg,
       borderBottomWidth: 1,
       borderBottomColor: theme.border,
     },
     clearCacheButton: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "center",
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
       padding: spacing.md,
       backgroundColor: theme.card,
       borderRadius: borderRadius.medium,
@@ -69,8 +71,8 @@ const styles = (theme: ITheme) =>
     },
     infoText: {
       color: theme.textLight,
-      textAlign: "center",
+      textAlign: 'center',
       marginTop: spacing.xs,
     },
-  });
-
+  })
+}

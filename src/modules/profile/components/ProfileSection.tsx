@@ -1,17 +1,19 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import CsButton from "@components/CsButton";
-import CsText from "@components/CsText";
-import { useThemedStyles } from "@hooks/index";
-import { ITheme } from "@styles/theme";
-import { spacing } from "@styles/index";
+// src/modules/profile/components/ProfileSection.tsx
+
+import type { ITheme } from '@styles/theme'
+import CsButton from '@components/CsButton'
+import CsText from '@components/CsText'
+import { useThemedStyles } from '@hooks/index'
+import { spacing } from '@styles/index'
+import React from 'react'
+import { StyleSheet, View } from 'react-native'
 
 interface ProfileSectionProps {
-  title: string;
-  onPress: () => void;
-  disabled?: boolean;
-  loading?: boolean;
-  infoText: string;
+  title: string
+  onPress: () => void
+  disabled?: boolean
+  loading?: boolean
+  infoText: string
 }
 
 /**
@@ -26,7 +28,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
   loading = false,
   infoText,
 }) => {
-  const themedStyles = useThemedStyles<typeof styles>(styles);
+  const themedStyles = useThemedStyles<typeof styles>(styles)
 
   return (
     <View style={themedStyles.section}>
@@ -41,11 +43,11 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
         {infoText}
       </CsText>
     </View>
-  );
-};
+  )
+}
 
-const styles = (theme: ITheme) =>
-  StyleSheet.create({
+function styles(theme: ITheme) {
+  return StyleSheet.create({
     section: {
       padding: spacing.lg,
       borderBottomWidth: 1,
@@ -56,7 +58,8 @@ const styles = (theme: ITheme) =>
     },
     infoText: {
       color: theme.textLight,
-      textAlign: "center",
+      textAlign: 'center',
       marginTop: spacing.xs,
     },
-  });
+  })
+}

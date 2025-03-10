@@ -1,4 +1,5 @@
+// src/modules/profile/components/index.ts
 
-export * from "./ProfileHeader";
-export * from "./ProfileSection";
-export * from "./ClearCacheSection";
+export * from './ClearCacheSection'
+export * from './ProfileHeader'
+export * from './ProfileSection'
