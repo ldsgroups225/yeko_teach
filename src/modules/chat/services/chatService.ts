@@ -1,3 +1,5 @@
+// src/modules/chat/services/chatService.ts
+
 import type { Conversation, Message } from '../types/chat'
 import { supabase } from '@src/lib/supabase'
 import { formatFullName } from '@utils/Formatting'

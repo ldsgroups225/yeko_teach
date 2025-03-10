@@ -1,3 +1,6 @@
+// src/modules/chat/screens/chatDetails.tsx
+
+
 import { useEffect, useRef, useState } from "react";
 import { useChat } from "../hooks/useChat";
 import { useTheme } from '@src/hooks'

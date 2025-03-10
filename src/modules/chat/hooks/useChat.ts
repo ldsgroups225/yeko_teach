@@ -1,3 +1,5 @@
+// src/modules/chat/hooks/useChat.ts
+
 import type { Conversation, Message } from '../types/chat'
 import { useState } from 'react'
 import { chat } from '../services/chatService'

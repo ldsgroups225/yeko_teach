@@ -1,3 +1,5 @@
+// src/modules/chat/screens/chat.tsx
+
 import type { ITheme } from '@styles/theme'
 import CsText from '@components/CsText'
 import { useTheme } from '@src/hooks'
