@@ -1,41 +1,38 @@
-/**
- * @author Ali Burhan Keskin <alikeskin@milvasoft.com>
- */
-import React, { useEffect } from "react";
-import { enableScreens } from "react-native-screens";
-import "react-native-gesture-handler";
-import { Provider } from "react-redux";
-import * as ScreenOrientation from "expo-screen-orientation";
-import { Platform } from "react-native";
-import Store from "./src/store";
-import RootNavigation from "./src/routers";
-import CustomProvider from "./src/providers";
-import ErrorBoundary from "./src/providers/ErrorBoundary";
+// App.tsx
 
-enableScreens();
+import * as ScreenOrientation from 'expo-screen-orientation'
+import React, { useEffect } from 'react'
+import { Platform } from 'react-native'
+import { enableScreens } from 'react-native-screens'
+import { Provider } from 'react-redux'
+import CustomProvider from './src/providers'
+import ErrorBoundary from './src/providers/ErrorBoundary'
+import RootNavigation from './src/routers'
+import Store from './src/store'
+import 'react-native-gesture-handler'
+
+enableScreens()
 
 function App() {
   useEffect(() => {
-    if (Platform.OS !== "web") {
+    if (Platform.OS !== 'web') {
       // TODO: Orientation Configuration
       ScreenOrientation.lockAsync(
-        ScreenOrientation.OrientationLock.PORTRAIT_UP
-      );
+        ScreenOrientation.OrientationLock.PORTRAIT_UP,
+      )
     }
-  }, []);
+  }, [])
 
   return (
-    // @ts-ignore
+    // @ts-expect-error: ErrorBoundary requires children
     <ErrorBoundary>
       <Provider store={Store}>
-        {/* @ts-ignore */}
         <CustomProvider>
-          {/* @ts-ignore */}
           <RootNavigation />
         </CustomProvider>
       </Provider>
     </ErrorBoundary>
-  );
+  )
 }
 
-export default App;
+export default App

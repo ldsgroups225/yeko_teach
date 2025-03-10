@@ -1,12 +1,18 @@
+// src/utils/ManipulateColor.ts
+
 /**
  * Represents a color in various formats.
  */
-type ColorInput = string | [number, number, number] | [number, number, number, number] | {
-  r: number
-  g: number
-  b: number
-  a?: number
-}
+type ColorInput =
+  | string
+  | [number, number, number]
+  | [number, number, number, number]
+  | {
+    r: number
+    g: number
+    b: number
+    a?: number
+  }
 
 /**
  * Options for color manipulation.
@@ -31,7 +37,7 @@ interface ColorOptions {
  * @throws {Error} If the input color is invalid or any option is out of range.
  *
  * @example
- * // Returns "rgb(255 0 0 / 0.5)" (red with 50% opacity)
+ * // Returns "rgb(255 0 0 / 0.50)" (red with 50% opacity)
  * manipulateColor("#FF0000", 0.5);
  *
  * @example
@@ -45,66 +51,77 @@ interface ColorOptions {
  *   adjustments: { lightness: 0.25, hue: 60 }
  * });
  */
-export function manipulateColor(color: ColorInput, opacity?: number, options: ColorOptions = {}): string {
+export function manipulateColor(
+  color: ColorInput,
+  opacity?: number,
+  options: ColorOptions = {},
+): string {
   const { alpha = 1, format = 'rgb', adjustments = {} } = options
-
-  // Use provided opacity if available, otherwise use alpha from options
+  // Use provided opacity if available; otherwise, use alpha from options
   const finalAlpha = opacity !== undefined ? opacity : alpha
 
-  // Validate alpha
   if (finalAlpha < 0 || finalAlpha > 1) {
     throw new Error('Alpha/Opacity must be between 0 and 1')
   }
 
-  // Convert input to RGBA values
+  // Convert input color to RGBA components
   let r: number; let g: number; let b: number; let a: number = finalAlpha
 
   if (typeof color === 'string') {
+    // Remove leading '#' and normalize hex string
     const hex = color.replace(/^#/, '')
-    if (!/^([0-9A-F]{3}){1,2}([0-9A-F]{2})?$/i.test(hex)) {
+    // Supports 3-digit, 6-digit, and optionally 8-digit (with alpha) hex colors
+    if (!/^(?:[0-9A-F]{3}|[0-9A-F]{6}|[0-9A-F]{8})$/i.test(hex)) {
       throw new Error('Invalid hexadecimal color string')
     }
-    const fullHex = hex.length === 3 ? hex.split('').map(char => char + char).join('') : hex
-    r = Number.parseInt(fullHex.substr(0, 2), 16)
-    g = Number.parseInt(fullHex.substr(2, 2), 16)
-    b = Number.parseInt(fullHex.substr(4, 2), 16)
+
+    // Expand shorthand (3-digit) hex to full 6-digit
+    const fullHex = hex.length === 3 ? hex.split('').map(ch => ch + ch).join('') : hex
+
+    r = Number.parseInt(fullHex.slice(0, 2), 16)
+    g = Number.parseInt(fullHex.slice(2, 4), 16)
+    b = Number.parseInt(fullHex.slice(4, 6), 16)
+
+    // If an 8-digit hex is provided and opacity was not explicitly passed, use the hex alpha
     if (fullHex.length === 8 && opacity === undefined) {
-      a = Number.parseInt(fullHex.substr(6, 2), 16) / 255
+      a = Number.parseInt(fullHex.slice(6, 8), 16) / 255
     }
   }
   else if (Array.isArray(color)) {
+    // Destructure the array; if alpha is missing, default to finalAlpha
     [r, g, b, a = finalAlpha] = color
   }
   else {
+    // Destructure from object; if alpha is missing, default to finalAlpha
     ({ r, g, b, a = finalAlpha } = color)
   }
 
-  // Validate RGB values
+  // Clamp and round RGB values and clamp alpha
   r = clamp(Math.round(r), 0, 255)
   g = clamp(Math.round(g), 0, 255)
   b = clamp(Math.round(b), 0, 255)
   a = clamp(a, 0, 1)
 
-  // Convert to HSL for adjustments
+  // Convert RGB to HSL for potential adjustments
   let [h, s, l] = rgbToHsl(r, g, b)
 
-  // Apply adjustments
-  if (adjustments.hue) {
+  // Apply adjustments if provided (checking explicitly for defined values)
+  if (typeof adjustments.hue === 'number') {
     h = (h + adjustments.hue) % 360
     if (h < 0)
       h += 360 // Ensure positive hue
   }
-  if (adjustments.saturation) {
+  if (typeof adjustments.saturation === 'number') {
     s = clamp(s + adjustments.saturation, 0, 1)
   }
-  if (adjustments.lightness) {
+  if (typeof adjustments.lightness === 'number') {
     l = clamp(l + adjustments.lightness, 0, 1)
   }
 
-  // Convert back to RGB
+  // Convert adjusted HSL back to RGB
   [r, g, b] = hslToRgb(h, s, l)
 
-  // Convert to the specified format
+  // Format the final color output
   switch (format) {
     case 'hex':
       return rgbToHex(r, g, b, a)
@@ -121,14 +138,24 @@ export function manipulateColor(color: ColorInput, opacity?: number, options: Co
   }
 }
 
-// Helper functions
+// --- Helper Functions ---
 
+/**
+ * Converts an RGB color value to HSL.
+ * @param r - Red component (0-255)
+ * @param g - Green component (0-255)
+ * @param b - Blue component (0-255)
+ * @returns [hue (0-360), saturation (0-1), lightness (0-1)]
+ */
 function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
   r /= 255
   g /= 255
   b /= 255
-  const max = Math.max(r, g, b); const min = Math.min(r, g, b)
-  let h = 0; let s: number
+
+  const max = Math.max(r, g, b)
+  const min = Math.min(r, g, b)
+  let h = 0
+  let s = 0
   const l = (max + min) / 2
 
   if (max !== min) {
@@ -145,20 +172,24 @@ function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
         h = (r - g) / d + 4
         break
     }
-    h /= 6
-  }
-  else {
-    s = 0
+    h *= 60
   }
 
-  return [h * 360, s, l]
+  return [h, s, l]
 }
 
+/**
+ * Converts an HSL color value to RGB.
+ * @param h - Hue (0-360)
+ * @param s - Saturation (0-1)
+ * @param l - Lightness (0-1)
+ * @returns [red, green, blue] each in the range 0-255
+ */
 function hslToRgb(h: number, s: number, l: number): [number, number, number] {
   let r: number, g: number, b: number
 
   if (s === 0) {
-    r = g = b = l // achromatic
+    r = g = b = l // Achromatic
   }
   else {
     const hue2rgb = (p: number, q: number, t: number): number => {
@@ -177,19 +208,37 @@ function hslToRgb(h: number, s: number, l: number): [number, number, number] {
 
     const q = l < 0.5 ? l * (1 + s) : l + s - l * s
     const p = 2 * l - q
-    r = hue2rgb(p, q, h / 360 + 1 / 3)
-    g = hue2rgb(p, q, h / 360)
-    b = hue2rgb(p, q, h / 360 - 1 / 3)
+    const hk = h / 360
+    r = hue2rgb(p, q, hk + 1 / 3)
+    g = hue2rgb(p, q, hk)
+    b = hue2rgb(p, q, hk - 1 / 3)
   }
 
   return [r * 255, g * 255, b * 255]
 }
 
+/**
+ * Converts RGB(A) values to a hexadecimal string.
+ * @param r - Red component (0-255)
+ * @param g - Green component (0-255)
+ * @param b - Blue component (0-255)
+ * @param a - Alpha component (0-1)
+ * @returns Hexadecimal color string (includes alpha if less than 1)
+ */
 function rgbToHex(r: number, g: number, b: number, a: number = 1): string {
-  const toHex = (x: number) => Math.round(x).toString(16).padStart(2, '0')
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}${a < 1 ? toHex(Math.round(a * 255)) : ''}`
+  const toHex = (x: number): string =>
+    Math.round(x).toString(16).padStart(2, '0')
+  const hex = `#${toHex(r)}${toHex(g)}${toHex(b)}`
+  return a < 1 ? hex + toHex(a * 255) : hex
 }
 
+/**
+ * Clamps a number between a minimum and maximum value.
+ * @param value - The number to clamp.
+ * @param min - Minimum allowed value.
+ * @param max - Maximum allowed value.
+ * @returns The clamped value.
+ */
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max)
 }

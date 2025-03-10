@@ -1,8 +1,11 @@
+// src/utils/CacheTooOldChecker.ts
+
 /**
  * Checks if the given cache date is older than 7 days.
+ * If the provided date is invalid, the function will consider the cache as expired.
  *
  * @param {string} cacheDate - The cache date in ISO string format (e.g., "2023-09-15T10:00:00.000Z").
- * @returns {boolean} - Returns `true` if the cache is older than 7 days, otherwise `false`.
+ * @returns {boolean} - Returns `true` if the cache is older than 7 days or the date is invalid, otherwise `false`.
  *
  * @example
  * const cacheDate = "2023-09-15T10:00:00.000Z";
@@ -10,9 +13,14 @@
  * console.log(isTooOld ? "Cache is too old" : "Cache is still valid");
  */
 export function isCacheTooOld(cacheDate: string): boolean {
-  const cacheTimestamp = new Date(cacheDate).getTime() // Convert cacheDate to timestamp
-  const nowTimestamp = new Date().getTime() // Current date in timestamp
-  const sevenDaysInMilliseconds = 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+  const cacheTime = new Date(cacheDate).getTime()
+  if (Number.isNaN(cacheTime)) {
+    console.warn(`Invalid cache date provided: "${cacheDate}". Treating cache as expired.`)
+    return true
+  }
 
-  return nowTimestamp - cacheTimestamp > sevenDaysInMilliseconds
+  const now = Date.now()
+  const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000
+
+  return now - cacheTime > SEVEN_DAYS_MS
 }

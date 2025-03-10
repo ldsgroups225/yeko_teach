@@ -1,3 +1,5 @@
+// src/utils/ScreenOptions.ts
+
 import type {
   StackNavigationOptions,
 } from '@react-navigation/stack'

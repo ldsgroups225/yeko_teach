@@ -1,3 +1,5 @@
+// src/routers/SchoolStack.tsx
+
 import type { SchoolStackParams } from '@utils/Routes'
 import translate from '@helpers/localization'
 import SchoolClassDetails from '@modules/school/screens/class'

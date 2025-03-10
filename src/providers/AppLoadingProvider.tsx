@@ -1,19 +1,21 @@
-import React, { ReactElement, useCallback } from "react";
-import { View } from "react-native";
-import * as SplashScreen from "expo-splash-screen";
-import { useFonts } from "expo-font";
-import MontserratFont from "@assets/font";
-import migrations from '@src/drizzle/migrations';
-import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
-import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
-import { drizzleDb } from "@src/db/config";
+// src/providers/AppLoadingProvider.tsx
 
+import type { ReactElement } from 'react'
+import MontserratFont from '@assets/font'
+import { drizzleDb } from '@src/db/config'
+import migrations from '@src/drizzle/migrations'
+import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator'
+import { useDrizzleStudio } from 'expo-drizzle-studio-plugin'
+import { useFonts } from 'expo-font'
+import * as SplashScreen from 'expo-splash-screen'
+import React, { useCallback } from 'react'
+import { View } from 'react-native'
 
-SplashScreen.preventAutoHideAsync().then((r) => r);
+SplashScreen.preventAutoHideAsync().then(r => r)
 
-type Props = {
-  children: React.ReactNode;
-};
+interface Props {
+  children: React.ReactNode
+}
 
 /**
  * Provides an app loading screen that preloads fonts and hides the splash screen
@@ -24,26 +26,26 @@ type Props = {
  * @returns {ReactElement | null} The rendered component.
  */
 function AppLoadingProvider({ children }: Props): ReactElement | null {
-  const [fontsLoaded, fontError] = useFonts(MontserratFont);
-  const { success: dbMigrated, error: dbError } = useMigrations(drizzleDb, migrations);
+  const [fontsLoaded, fontError] = useFonts(MontserratFont)
+  const { success: dbMigrated, error: dbError } = useMigrations(drizzleDb, migrations)
 
-  useDrizzleStudio(drizzleDb);
+  useDrizzleStudio(drizzleDb)
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded || fontError) {
-      await SplashScreen.hideAsync();
+      await SplashScreen.hideAsync()
     }
-  }, [fontsLoaded, fontError]);
+  }, [fontsLoaded, fontError])
 
   if ((!fontsLoaded && !fontError) || (!dbMigrated && !dbError)) {
-    return null;
+    return null
   }
 
   return (
     <View onLayout={onLayoutRootView} style={{ flex: 1 }}>
       {children}
     </View>
-  );
+  )
 }
 
-export default AppLoadingProvider;
+export default AppLoadingProvider

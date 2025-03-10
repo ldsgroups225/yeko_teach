@@ -1,4 +1,6 @@
-import { ViewStyle } from 'react-native';
+// src/styles/shadows.ts
+
+import type { ViewStyle } from 'react-native'
 
 export const shadows: { [key: string]: ViewStyle } = {
   small: {
@@ -22,4 +24,4 @@ export const shadows: { [key: string]: ViewStyle } = {
     shadowRadius: 6,
     elevation: 6,
   },
-};
+}

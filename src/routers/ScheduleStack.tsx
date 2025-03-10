@@ -1,3 +1,5 @@
+// src/routers/ScheduleStack.tsx
+
 import type { ScheduleStackParams } from '@utils/Routes'
 import translate from '@helpers/localization'
 import ScheduleScreen from '@modules/schedule/screens/schedule'

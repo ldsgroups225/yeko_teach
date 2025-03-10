@@ -1,3 +1,5 @@
+// src/styles/colors.ts
+
 export default {
   primary: '#0047AB', // Blue Yeko
   secondary: '#FFA500', // Orange Yeko
@@ -10,4 +12,4 @@ export default {
   success: '#00FF00',
   warning: '#FFA500',
   info: '#0000FF',
-};
+}

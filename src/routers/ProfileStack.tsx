@@ -1,3 +1,5 @@
+// src/routers/ProfileStack.tsx
+
 import type { ProfileStackParams } from '@utils/Routes'
 import translate from '@helpers/localization'
 import ProfileScreen from '@modules/profile/screens/ProfileScreen'

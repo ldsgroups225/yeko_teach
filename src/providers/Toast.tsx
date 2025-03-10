@@ -1,23 +1,25 @@
-import React from "react";
-import { ToastMessage } from "@src/components";
-import { IToastType } from "@components/ToastMessage/IToastType";
+// src/providers/Toast.tsx
 
-let useToastRef: any;
+import type { IToastType } from '@components/ToastMessage/IToastType'
+import { ToastMessage } from '@src/components'
+import React from 'react'
+
+let useToastRef: any
 
 /**
  * Sets the reference to the `useToastRef` property.
  * @param useToastRefProp - The reference to the `useToastRef` property.
  */
-const setUseBackDropRef = (useToastRefProp: any) => {
-  useToastRef = useToastRefProp;
-};
+function setUseBackDropRef(useToastRefProp: any) {
+  useToastRef = useToastRefProp
+}
 
 /**
  * Utility function for displaying toast messages.
  * @returns A JSX element representing the toast message.
  */
 function ToastUtils() {
-  return <ToastMessage ref={setUseBackDropRef} />;
+  return <ToastMessage ref={setUseBackDropRef} />
 }
 
 /**
@@ -29,8 +31,8 @@ export const toastActions = {
    * @param param - The parameters for the toast notification.
    */
   open(param: IToastType) {
-    useToastRef?.open(param);
+    useToastRef?.open(param)
   },
-};
+}
 
-export default ToastUtils;
+export default ToastUtils

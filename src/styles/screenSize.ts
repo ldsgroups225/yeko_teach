@@ -1,9 +1,11 @@
-import { Dimensions } from 'react-native';
+// src/styles/screenSize.ts
 
-const { width, height } = Dimensions.get('window');
+import { Dimensions } from 'react-native'
+
+const { width, height } = Dimensions.get('window')
 
 export const screenSize = {
   width,
   height,
   isSmallDevice: width < 375,
-};
+}

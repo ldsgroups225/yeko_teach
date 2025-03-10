@@ -1,3 +1,5 @@
+// src/utils/Formatting.ts
+
 /**
  * Formats a full name by combining the first name and last name.
  *

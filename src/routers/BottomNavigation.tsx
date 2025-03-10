@@ -1,3 +1,5 @@
+// src/routers/BottomNavigation.tsx
+
 import { AntDesign, Ionicons } from '@expo/vector-icons'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import ChatStack from '@routers/ChatStack'

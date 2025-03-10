@@ -1,7 +1,9 @@
+// src/store/index.ts
+
 import type { TypedUseSelectorHook } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 import { useSelector } from 'react-redux'
-import RootReducer from './rootReducer'// Root reducer
+import RootReducer from './rootReducer'
 
 /**
  * The Redux store instance.

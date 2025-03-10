@@ -1,3 +1,5 @@
+// src/routers/index.tsx
+
 import type { RootStackParams } from '@utils/Routes'
 import LoadingSpinner from '@components/LoadingSpinner'
 import translate from '@helpers/localization'

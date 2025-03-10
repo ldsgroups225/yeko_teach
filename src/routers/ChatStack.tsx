@@ -1,3 +1,5 @@
+// src/routers/ChatStack.tsx
+
 import type { ChatStackParams } from '@utils/Routes'
 import translate from '@helpers/localization'
 import ChatScreen from '@modules/chat/screens/chat'

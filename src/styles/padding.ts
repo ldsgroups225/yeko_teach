@@ -1,3 +1,5 @@
+// src/styles/padding.ts
+
 /**
  * Defines the padding values used in the application.
  */
@@ -22,4 +24,4 @@ export default {
    * Huge padding value.
    */
   HUGE: 32,
-};
+}

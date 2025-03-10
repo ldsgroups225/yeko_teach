@@ -1,5 +1,7 @@
-import EnResource from './en';
-import TrResource from './tr';
-import FrResource from './fr';
+// src/localization/index.js
 
-export { EnResource, TrResource, FrResource };
+import EnResource from './en'
+import FrResource from './fr'
+import TrResource from './tr'
+
+export { EnResource, FrResource, TrResource }

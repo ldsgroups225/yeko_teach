@@ -1,17 +1,16 @@
-/**
- * @author Ali Burhan Keskin <alikeskin@milvasoft.com>
- */
-import React from "react";
-import NetworkInfoContainer from "./NetworkInfoContainer";
-import AppLoadingProvider from "./AppLoadingProvider";
-import "./Localization";
-import Toast from "./Toast";
-import ThemeProvider from "./ThemeProvider";
-import ThemeListener from "./ThemeListener";
+// src/providers/index.tsx
 
-type Props = {
-  children: React.ReactNode;
-};
+import React from 'react'
+import AppLoadingProvider from './AppLoadingProvider'
+import NetworkInfoContainer from './NetworkInfoContainer'
+import ThemeListener from './ThemeListener'
+import ThemeProvider from './ThemeProvider'
+import Toast from './Toast'
+import './Localization'
+
+interface Props {
+  children: React.ReactNode
+}
 
 /**
  * Providers for `global` transactions.
@@ -24,7 +23,7 @@ function CustomProvider({ children }: Props) {
         <ThemeProvider>
           <Toast />
 
-          {/*<PushNotificationSetup />*/}
+          {/* <PushNotificationSetup /> */}
 
           {children}
 
@@ -32,7 +31,7 @@ function CustomProvider({ children }: Props) {
         </ThemeProvider>
       </NetworkInfoContainer>
     </AppLoadingProvider>
-  );
+  )
 }
 
-export default CustomProvider;
+export default CustomProvider

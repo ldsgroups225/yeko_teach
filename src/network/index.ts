@@ -1,32 +1,35 @@
-import { BaseQueryFn, fetchBaseQuery } from "@reduxjs/toolkit/query";
-import {
+// src/network/index.ts
+
+import type { BaseQueryFn } from '@reduxjs/toolkit/query'
+import type {
   FetchArgs,
-  FetchBaseQueryArgs,
+  FetchBaseQueryArgs as FetchBaseQueryArgx,
   FetchBaseQueryError,
-} from "@reduxjs/toolkit/dist/query/fetchBaseQuery";
-import { RootState } from "@src/store";
-import { loggedOut, setAuthToken } from "@modules/app/redux/appSlice";
+} from '@reduxjs/toolkit/query/react'
+import type { RootState } from '@src/store'
+import { loggedOut, setAuthToken } from '@modules/app/redux/appSlice'
+import { fetchBaseQuery } from '@reduxjs/toolkit/query'
 
 /**
  * Configuration object for the base query used in network requests.
  */
-const FetchBaseQueryArgs: FetchBaseQueryArgs = {
-  baseUrl: "/",
+const FetchBaseQueryArgs: FetchBaseQueryArgx = {
+  baseUrl: '/',
   prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as RootState).AppReducer.authToken;
+    const token = (getState() as RootState).AppReducer.authToken
     // If we have a token set in state, let's assume that we should be passing it.
     if (token) {
-      headers.set("authorization", `Bearer ${token}`);
+      headers.set('authorization', `Bearer ${token}`)
     }
-    return headers;
+    return headers
   },
   responseHandler: (response) => {
     if (!response.ok) {
-      throw new Error(response.statusText);
+      throw new Error(response.statusText)
     }
-    return response.json();
+    return response.json()
   },
-};
+}
 
 /**
  * A function that represents the base query for network requests.
@@ -34,7 +37,7 @@ const FetchBaseQueryArgs: FetchBaseQueryArgs = {
  * @param args - The arguments for the base query.
  * @returns The result of the base query.
  */
-export const baseQuery = fetchBaseQuery(FetchBaseQueryArgs);
+export const baseQuery = fetchBaseQuery(FetchBaseQueryArgs)
 
 /**
  * A custom base query function that automatically handles re-authentication.
@@ -49,19 +52,20 @@ export const baseQueryWithReAuth: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
-  let result = await baseQuery(args, api, extraOptions);
+  let result = await baseQuery(args, api, extraOptions)
 
   if (result.error && result.error.status === 401) {
     // try to get a new token
-    const refreshResult = await baseQuery("/refreshToken", api, extraOptions);
+    const refreshResult = await baseQuery('/refreshToken', api, extraOptions)
     if (refreshResult.data) {
       // store the new token
-      api.dispatch(setAuthToken(refreshResult.data as never));
+      api.dispatch(setAuthToken(refreshResult.data as never))
       // retry the initial query
-      result = await baseQuery(args, api, extraOptions);
-    } else {
-      api.dispatch(loggedOut());
+      result = await baseQuery(args, api, extraOptions)
+    }
+    else {
+      api.dispatch(loggedOut())
     }
   }
-  return result;
-};
+  return result
+}

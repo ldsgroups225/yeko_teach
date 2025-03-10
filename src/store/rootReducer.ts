@@ -1,7 +1,6 @@
+// src/store/rootReducer.ts
+
 import AppReducer from '@modules/app/redux/appSlice'
-/**
- * @author Ali Burhan Keskin <alikeskin@milvasoft.com>
- */
 import { combineReducers } from 'redux'
 
 /**
