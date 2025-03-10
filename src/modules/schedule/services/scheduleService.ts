@@ -1,5 +1,7 @@
-import { supabase } from "@src/lib/supabase";
-import { IScheduleDTO } from "@modules/app/types/IScheduleDTO";
+// src/modules/schedule/services/scheduleService.ts
+
+import type { IScheduleDTO } from '@modules/app/types/IScheduleDTO'
+import { supabase } from '@src/lib/supabase'
 
 export const schedules = {
   /**
@@ -18,7 +20,7 @@ export const schedules = {
    */
   async getSchedules(teacherId: string): Promise<IScheduleDTO[]> {
     const { data, error } = await supabase
-      .from("schedules")
+      .from('schedules')
       .select(
         `
         id,
@@ -30,29 +32,29 @@ export const schedules = {
         day_of_week,
         start_time,
         end_time
-      `
+      `,
       )
-      .eq("teacher_id", teacherId);
+      .eq('teacher_id', teacherId)
 
     if (error) {
-      console.error("Error getting schedule records:", error);
-      throw new Error(`Failed to fetch schedules: ${error.message}`);
+      console.error('Error getting schedule records:', error)
+      throw new Error(`Failed to fetch schedules: ${error.message}`)
     }
 
     if (!data) {
-      return [];
+      return []
     }
 
     return data.map(
       (record): IScheduleDTO => ({
         id: record.id,
-        className: record.classes?.name ?? "",
-        schoolName: record.classes?.schools?.name ?? "",
-        subjectName: record.subjects?.name ?? "",
+        className: record.classes?.name ?? '',
+        schoolName: record.classes?.schools?.name ?? '',
+        subjectName: record.subjects?.name ?? '',
         dayOfWeek: record.day_of_week,
         startTime: record.start_time,
         endTime: record.end_time,
-      })
-    );
+      }),
+    )
   },
-};
+}

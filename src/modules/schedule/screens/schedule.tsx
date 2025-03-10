@@ -1,3 +1,5 @@
+// src/modules/schedule/screens/schedule.tsx
+
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { BackHandler, FlatList, Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useTheme } from "@src/hooks";
