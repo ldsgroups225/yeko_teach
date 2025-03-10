@@ -13,9 +13,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   orientation: 'portrait',
   icon: './src/assets/images/icon.png',
   userInterfaceStyle: 'automatic',
-  runtimeVersion: {
-    policy: 'sdkVersion',
-  },
+  runtimeVersion: '1.0.0',
   assetBundlePatterns: ['./src/assets/images/*'],
   locales: {
     tr: './src/assets/languages/turkish.json',
