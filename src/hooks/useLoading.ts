@@ -1,19 +1,22 @@
-import { useCallback, useState } from "react";
+// src/hooks/useLoading.ts
 
-export const useLoading = (initialState: boolean = false) => {
-  const [loading, setLoading] = useState(initialState);
+import { useCallback, useState } from 'react'
+
+export function useLoading(initialState: boolean = false) {
+  const [loading, setLoading] = useState(initialState)
 
   const withLoading = useCallback(
     async <T>(asyncFn: () => Promise<T>): Promise<T> => {
-      setLoading(true);
+      setLoading(true)
       try {
-        return await asyncFn();
-      } finally {
-        setLoading(false);
+        return await asyncFn()
+      }
+      finally {
+        setLoading(false)
       }
     },
-    []
-  );
+    [],
+  )
 
-  return { loading, withLoading };
-};
+  return { loading, withLoading }
+}

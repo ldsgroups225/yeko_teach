@@ -1,3 +1,5 @@
+// src/hooks/useClearCache.ts
+
 import { useState, useCallback } from 'react';
 import { removeStoreDataAsync } from "@helpers/storage";
 import { StoreEnum } from "@helpers/storage/storeEnum";

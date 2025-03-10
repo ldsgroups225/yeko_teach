@@ -1,4 +1,6 @@
-import useTheme from './useTheme';
-import useThemedStyles from './useThemedStyles';
+// src/hooks/index.ts
 
-export { useTheme, useThemedStyles };
+import useTheme from './useTheme'
+import useThemedStyles from './useThemedStyles'
+
+export { useTheme, useThemedStyles }
