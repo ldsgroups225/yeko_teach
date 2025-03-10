@@ -1,3 +1,5 @@
+// src/modules/school/components/CreateNoteModal.tsx
+
 import React, { useEffect, useState } from 'react';
 import { Modal, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { format } from 'date-fns';

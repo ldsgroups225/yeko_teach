@@ -1,20 +1,22 @@
-import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import CsText from "@components/CsText";
-import { useTheme } from "@src/hooks";
-import { spacing } from "@styles/spacing";
-import { ITheme } from "@styles/theme";
-import { IClassDTO } from "@modules/app/types/ILoginDTO";
+// src/modules/school/components/ClassHeader.tsx
+
+import type { IClassDTO } from '@modules/app/types/ILoginDTO'
+import type { ITheme } from '@styles/theme'
+import CsText from '@components/CsText'
+import { Ionicons } from '@expo/vector-icons'
+import { useTheme } from '@src/hooks'
+import { spacing } from '@styles/spacing'
+import React from 'react'
+import { StyleSheet, TouchableOpacity, View } from 'react-native'
 
 interface ClassHeaderProps {
-  classItem: IClassDTO;
-  schoolName: string;
-  onBackPress: () => void;
-  onOpenBottomSheet: () => void;
-  isEditing: boolean;
-  onUpdate: () => void;
-  onCancel: () => void;
+  classItem: IClassDTO
+  schoolName: string
+  onBackPress: () => void
+  onOpenBottomSheet: () => void
+  isEditing: boolean
+  onUpdate: () => void
+  onCancel: () => void
 }
 
 const ClassHeader: React.FC<ClassHeaderProps> = ({
@@ -26,8 +28,8 @@ const ClassHeader: React.FC<ClassHeaderProps> = ({
   onUpdate,
   onCancel,
 }) => {
-  const theme = useTheme();
-  const styles = useStyles(theme);
+  const theme = useTheme()
+  const styles = useStyles(theme)
 
   return (
     <View style={styles.container}>
@@ -49,38 +51,40 @@ const ClassHeader: React.FC<ClassHeaderProps> = ({
           {classItem.name}
         </CsText>
 
-        {isEditing ? (
-          <View style={styles.editActions}>
-            <TouchableOpacity
-              onPress={onCancel}
-              style={styles.actionCancelButton}
-            >
-              <CsText variant="body" style={styles.actionCancelText}>
-                Annuler
-              </CsText>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={onUpdate}
-              style={styles.actionSaveButton}
-            >
-              <CsText variant="body" style={styles.actionSaveText}>
-                Enreg.
-              </CsText>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={onOpenBottomSheet}
-            activeOpacity={0.7}
-          >
-            <Ionicons
-              name="ellipsis-vertical"
-              size={24}
-              color={theme.background}
-            />
-          </TouchableOpacity>
-        )}
+        {isEditing
+          ? (
+              <View style={styles.editActions}>
+                <TouchableOpacity
+                  onPress={onCancel}
+                  style={styles.actionCancelButton}
+                >
+                  <CsText variant="body" style={styles.actionCancelText}>
+                    Annuler
+                  </CsText>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={onUpdate}
+                  style={styles.actionSaveButton}
+                >
+                  <CsText variant="body" style={styles.actionSaveText}>
+                    Enreg.
+                  </CsText>
+                </TouchableOpacity>
+              </View>
+            )
+          : (
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={onOpenBottomSheet}
+                activeOpacity={0.7}
+              >
+                <Ionicons
+                  name="ellipsis-vertical"
+                  size={24}
+                  color={theme.background}
+                />
+              </TouchableOpacity>
+            )}
       </View>
 
       <View style={styles.bottomRow}>
@@ -89,19 +93,19 @@ const ClassHeader: React.FC<ClassHeaderProps> = ({
         </CsText>
       </View>
     </View>
-  );
-};
+  )
+}
 
-const useStyles = (theme: ITheme) =>
-  StyleSheet.create({
+function useStyles(theme: ITheme) {
+  return StyleSheet.create({
     container: {
       backgroundColor: theme.primary,
       padding: spacing.md,
     },
     topRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
       marginBottom: spacing.sm,
     },
     backButton: {
@@ -112,25 +116,25 @@ const useStyles = (theme: ITheme) =>
       flex: 1,
       color: theme.background,
       fontSize: 20,
-      fontWeight: "bold",
+      fontWeight: 'bold',
       paddingHorizontal: spacing.sm,
     },
     bottomRow: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
     },
     schoolName: {
-      color: theme.background + "80",
-      fontFamily: "monospace",
+      color: `${theme.background}80`,
+      fontFamily: 'monospace',
     },
     actionCancelButton: {
       padding: spacing.xs,
       marginLeft: spacing.sm,
       paddingHorizontal: spacing.sm,
       borderRadius: 8,
-      alignItems: "center",
-      borderColor: theme.background + "80",
+      alignItems: 'center',
+      borderColor: `${theme.background}80`,
       borderWidth: 1,
     },
     actionButton: {
@@ -143,10 +147,10 @@ const useStyles = (theme: ITheme) =>
       paddingHorizontal: spacing.sm,
       borderRadius: 8,
       backgroundColor: theme.background,
-      alignItems: "center",
+      alignItems: 'center',
     },
     editActions: {
-      flexDirection: "row",
+      flexDirection: 'row',
     },
     actionCancelText: {
       color: theme.background,
@@ -156,6 +160,7 @@ const useStyles = (theme: ITheme) =>
       color: theme.primary,
       marginHorizontal: spacing.sm,
     },
-  });
+  })
+}
 
-export default ClassHeader;
+export default ClassHeader

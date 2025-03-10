@@ -1,16 +1,18 @@
-import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import CsText from "@components/CsText";
-import { useTheme } from "@src/hooks";
-import { spacing } from "@styles/spacing";
-import { ITheme } from "@styles/theme";
-import { ISchoolDTO } from "@modules/app/types/ILoginDTO";
+// src/modules/school/components/SchoolHeader.tsx
+
+import type { ISchoolDTO } from '@modules/app/types/ILoginDTO'
+import type { ITheme } from '@styles/theme'
+import CsText from '@components/CsText'
+import { Ionicons } from '@expo/vector-icons'
+import { useTheme } from '@src/hooks'
+import { spacing } from '@styles/spacing'
+import React from 'react'
+import { StyleSheet, TouchableOpacity, View } from 'react-native'
 
 interface SchoolHeaderProps {
-  school: ISchoolDTO;
-  onGenerateQRCode: () => void;
-  onBackPress: () => void;
+  school: ISchoolDTO
+  onGenerateQRCode: () => void
+  onBackPress: () => void
 }
 
 const SchoolHeader: React.FC<SchoolHeaderProps> = ({
@@ -18,8 +20,8 @@ const SchoolHeader: React.FC<SchoolHeaderProps> = ({
   onGenerateQRCode,
   onBackPress,
 }) => {
-  const theme = useTheme();
-  const styles = useStyles(theme);
+  const theme = useTheme()
+  const styles = useStyles(theme)
 
   return (
     <View style={styles.container}>
@@ -48,18 +50,18 @@ const SchoolHeader: React.FC<SchoolHeaderProps> = ({
         </TouchableOpacity>
       </View>
     </View>
-  );
-};
+  )
+}
 
-const useStyles = (theme: ITheme) =>
-  StyleSheet.create({
+function useStyles(theme: ITheme) {
+  return StyleSheet.create({
     container: {
       backgroundColor: theme.primary,
       padding: spacing.md,
     },
     topRow: {
-      flexDirection: "row",
-      alignItems: "center",
+      flexDirection: 'row',
+      alignItems: 'center',
       marginBottom: spacing.sm,
     },
     backButton: {
@@ -69,19 +71,19 @@ const useStyles = (theme: ITheme) =>
       flex: 1,
       color: theme.background,
       fontSize: 20,
-      fontWeight: "bold",
+      fontWeight: 'bold',
     },
     bottomRow: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
     },
     schoolCode: {
       color: theme.background + 80,
     },
     qrButton: {
-      flexDirection: "row",
-      alignItems: "center",
+      flexDirection: 'row',
+      alignItems: 'center',
       backgroundColor: theme.secondary,
       paddingVertical: spacing.xs,
       paddingHorizontal: spacing.sm,
@@ -91,6 +93,7 @@ const useStyles = (theme: ITheme) =>
       color: theme.text,
       marginLeft: spacing.xs,
     },
-  });
+  })
+}
 
-export default SchoolHeader;
+export default SchoolHeader

@@ -1,3 +1,5 @@
+// src/modules/school/components/SearchSortFilter.tsx
+
 import type { ISelectOptions } from '@modules/app/types/ISelectOptions'
 import type { ITheme } from '@styles/theme'
 import CsText from '@components/CsText'

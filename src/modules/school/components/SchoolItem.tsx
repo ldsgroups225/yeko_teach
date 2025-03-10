@@ -1,3 +1,5 @@
+// src/modules/school/components/SchoolItem.tsx
+
 import type { ISchoolDTO } from '@modules/app/types/ILoginDTO'
 import type { StackNavigationProp } from '@react-navigation/stack'
 import type { ITheme } from '@styles/theme'

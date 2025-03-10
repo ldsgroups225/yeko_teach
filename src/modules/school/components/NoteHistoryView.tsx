@@ -1,3 +1,5 @@
+// src/modules/school/components/NoteHistoryView.tsx
+
 import type { INoteDTO } from '@modules/app/types/ILoginDTO'
 import type { ITheme } from '@styles/theme'
 import CsText from '@components/CsText'

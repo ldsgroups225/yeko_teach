@@ -1,5 +1,7 @@
-import { CLASS_TABLE_ID, supabase } from "@src/lib/supabase";
-import { IClassDTO, IStudentDTO } from "@modules/app/types/ILoginDTO";
+// src/modules/school/services/classService.ts
+
+import type { IClassDTO, IStudentDTO } from '@modules/app/types/ILoginDTO'
+import { CLASS_TABLE_ID, supabase } from '@src/lib/supabase'
 
 export const classes = {
   /**
@@ -41,24 +43,24 @@ export const classes = {
         last_name,
         id_number
       )
-    `
+    `,
       )
-      .eq("teacher_class_assignments.teacher_id", teacherId)
-      .eq("school_id", schoolId);
+      .eq('teacher_class_assignments.teacher_id', teacherId)
+      .eq('school_id', schoolId)
 
     if (error) {
-      console.error("Error getting classes records:", error);
-      throw new Error(`Failed to fetch classes: ${error.message}`);
+      console.error('Error getting classes records:', error)
+      throw new Error(`Failed to fetch classes: ${error.message}`)
     }
 
     if (!data) {
-      return [];
+      return []
     }
 
-    const classMap = new Map<string, IClassDTO>();
+    const classMap = new Map<string, IClassDTO>()
 
     data.forEach((classData) => {
-      const classId = classData.id;
+      const classId = classData.id
       if (!classMap.has(classId)) {
         classMap.set(classId, {
           id: classId,
@@ -72,23 +74,23 @@ export const classes = {
               firstName: student.first_name,
               lastName: student.last_name,
               idNumber: student.id_number,
-            })
+            }),
           ),
-        });
+        })
       }
 
-      const classDTO = classMap.get(classId)!;
+      const classDTO = classMap.get(classId)!
       classData.teacher_class_assignments.forEach((assignment) => {
-        const subject = assignment.subjects;
-        if (subject && !classDTO.subjects.some((s) => s.id === subject.id)) {
+        const subject = assignment.subjects
+        if (subject && !classDTO.subjects.some(s => s.id === subject.id)) {
           classDTO.subjects.push({
             id: subject.id,
             name: subject.name,
-          });
+          })
         }
-      });
-    });
+      })
+    })
 
-    return Array.from(classMap.values());
+    return Array.from(classMap.values())
   },
-};
+}

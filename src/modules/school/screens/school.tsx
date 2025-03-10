@@ -1,3 +1,5 @@
+// src/modules/school/screens/school.tsx
+
 import React, { useCallback, useMemo, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { useTheme, useThemedStyles } from "@src/hooks";

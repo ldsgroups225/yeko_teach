@@ -1,3 +1,5 @@
+// src/modules/school/components/StudentListItem.tsx
+
 import type { IStudentDTO } from '@modules/app/types/ILoginDTO'
 import type { ITheme } from '@styles/theme'
 import CsText from '@components/CsText'

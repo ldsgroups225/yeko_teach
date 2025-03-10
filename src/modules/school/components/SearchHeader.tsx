@@ -1,13 +1,15 @@
-import React from "react";
-import { StyleSheet, TextInput, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { spacing } from "@styles/spacing";
-import { ITheme } from "@styles/theme";
+// src/modules/school/components/SearchHeader.tsx
+
+import type { ITheme } from '@styles/theme'
+import { Ionicons } from '@expo/vector-icons'
+import { spacing } from '@styles/spacing'
+import React from 'react'
+import { StyleSheet, TextInput, View } from 'react-native'
 
 interface SearchHeaderProps {
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
-  theme: ITheme;
+  searchQuery: string
+  setSearchQuery: (query: string) => void
+  theme: ITheme
 }
 
 export const SearchHeader: React.FC<SearchHeaderProps> = ({
@@ -30,13 +32,13 @@ export const SearchHeader: React.FC<SearchHeaderProps> = ({
       onChangeText={setSearchQuery}
     />
   </View>
-);
+)
 
-const styles = (theme: ITheme) =>
-  StyleSheet.create({
+function styles(theme: ITheme) {
+  return StyleSheet.create({
     searchContainer: {
-      flexDirection: "row",
-      alignItems: "center",
+      flexDirection: 'row',
+      alignItems: 'center',
       backgroundColor: theme.card,
       borderRadius: 12,
       padding: spacing.sm,
@@ -50,4 +52,5 @@ const styles = (theme: ITheme) =>
       color: theme.text,
       fontSize: 16,
     },
-  });
+  })
+}

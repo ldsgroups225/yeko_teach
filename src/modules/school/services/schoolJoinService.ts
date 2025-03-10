@@ -1,9 +1,11 @@
-import { supabase } from "@src/lib/supabase";
+// src/modules/school/services/schoolJoinService.ts
+
+import { supabase } from '@src/lib/supabase'
 
 interface JoinSchoolResponse {
-  success: boolean;
-  message: string;
-  error?: any;
+  success: boolean
+  message: string
+  error?: any
 }
 
 /**
@@ -26,64 +28,64 @@ export const schoolJoinService = {
         .eq('otp', otp)
         .eq('is_used', false)
         .gte('expired_at', (new Date()).toISOString())
-        .single();
+        .single()
 
       if (error || !data) {
-        return { 
-          success: false, 
-          message: "Invalid or expired OTP",
-          error: error
-        };
+        return {
+          success: false,
+          message: 'Invalid or expired OTP',
+          error,
+        }
       }
 
       // If OTP is valid, update the record
       const { error: teacherApplingToSchoolError } = await supabase
-      .from('schools_teachers')
-      .insert({ 
-        school_id: data.school_id,
-        teacher_id: teacherId,
-      })
-      .eq('id', data.id);
+        .from('schools_teachers')
+        .insert({
+          school_id: data.school_id,
+          teacher_id: teacherId,
+        })
+        .eq('id', data.id)
 
       if (teacherApplingToSchoolError) {
         const isDuplicationError = teacherApplingToSchoolError.code === '23505'
-        
+
         if (!isDuplicationError) {
-          return { 
-            success: false, 
-            message: "Failed to join school",
-            error: teacherApplingToSchoolError
-          };
+          return {
+            success: false,
+            message: 'Failed to join school',
+            error: teacherApplingToSchoolError,
+          }
         }
       }
 
       // If success join
       const { error: updateError } = await supabase
         .from('invite_to_school')
-        .update({ 
+        .update({
           is_used: true,
         })
-        .eq('id', data.id);
-        
+        .eq('id', data.id)
 
       if (updateError) {
-        return { 
-          success: false, 
-          message: "Failed to join school",
-          error: updateError
-        };
+        return {
+          success: false,
+          message: 'Failed to join school',
+          error: updateError,
+        }
       }
-      return { 
-        success: true, 
-        message: "Successfully joined school" 
-      };
-    } catch (error) {
-      console.error("Error joining school:", error);
-      return { 
-        success: false, 
-        message: "An unexpected error occurred",
-        error: error
-      };
+      return {
+        success: true,
+        message: 'Successfully joined school',
+      }
     }
-  }
-};
+    catch (error) {
+      console.error('Error joining school:', error)
+      return {
+        success: false,
+        message: 'An unexpected error occurred',
+        error,
+      }
+    }
+  },
+}

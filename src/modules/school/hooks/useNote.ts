@@ -1,3 +1,5 @@
+// src/modules/school/hooks/useNote.ts
+
 import { useCallback, useState } from "react";
 import { INoteDTO, ISubjectDTO } from "@modules/app/types/ILoginDTO";
 import { notes } from "@modules/school/services/noteService";

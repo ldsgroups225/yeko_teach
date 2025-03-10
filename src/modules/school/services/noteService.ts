@@ -1,3 +1,5 @@
+// src/modules/school/services/noteService.ts
+
 import type { INoteDTO, ISubjectDTO } from '@modules/app/types/ILoginDTO'
 import { FROM_STRING_OPTIONS_MAP } from '@modules/app/constants/noteTypes'
 import { drizzleDb } from '@src/db/config'
