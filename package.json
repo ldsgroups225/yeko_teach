@@ -1,5 +1,4 @@
 {
-
   "name": "yeko_teach",
   "version": "1.0.0",
   "private": true,
@@ -38,7 +37,7 @@
     "babel-plugin-inline-import": "^3.0.0",
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.38.4",
-    "expo": "~52.0.23",
+    "expo": "^52.0.37",
     "expo-constants": "~17.0.3",
     "expo-dev-client": "~5.0.8",
     "expo-device": "~7.0.1",
