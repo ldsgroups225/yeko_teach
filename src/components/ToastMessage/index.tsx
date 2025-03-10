@@ -1,10 +1,12 @@
-import { IToastType } from '@components/ToastMessage/IToastType';
-import { ToastColorEnum } from '@components/ToastMessage/ToastColorEnum';
-import React, { forwardRef, memo, useCallback, useImperativeHandle, useRef, useState } from 'react';
-import { Animated, Text, TouchableWithoutFeedback } from 'react-native';
-import { styles, toastHeight } from './style';
+// src/components/ToastMessage/index.tsx
 
-let stop = false;
+import type { IToastType } from '@components/ToastMessage/IToastType'
+import { ToastColorEnum } from '@components/ToastMessage/ToastColorEnum'
+import React, { forwardRef, memo, useCallback, useImperativeHandle, useRef, useState } from 'react'
+import { Animated, Text, TouchableWithoutFeedback } from 'react-native'
+import { styles, toastHeight } from './style'
+
+let stop = false
 
 /**
  * A customizable toast message component.
@@ -16,45 +18,46 @@ let stop = false;
  * ```
  */
 const ToastMessage = forwardRef((props, ref) => {
-  const animatedValue = useRef(new Animated.Value(-toastHeight)).current;
+  const animatedValue = useRef(new Animated.Value(-toastHeight)).current
 
   const [state, setState] = useState<IToastType>({
     type: ToastColorEnum.Info,
     msg: '',
-  });
+  })
 
   const closeToast = useCallback(() => {
     setTimeout(() => {
-      if (!stop)
+      if (!stop) {
         Animated.timing(animatedValue, {
           toValue: -toastHeight,
           duration: 300,
           useNativeDriver: true,
-        }).start();
-    }, state?.duration || 1500);
-  }, [animatedValue, state?.duration]);
+        }).start()
+      }
+    }, state?.duration || 1500)
+  }, [animatedValue, state?.duration])
 
   const showToast = useCallback(() => {
     Animated.timing(animatedValue, {
       toValue: 0,
       duration: 300,
       useNativeDriver: true,
-    }).start(() => closeToast());
-  }, [animatedValue, closeToast]);
+    }).start(() => closeToast())
+  }, [animatedValue, closeToast])
 
   const handlePressIn = useCallback(() => {
-    stop = true;
-  }, []);
+    stop = true
+  }, [])
 
   const handlePressOut = useCallback(() => {
-    stop = false;
+    stop = false
 
     Animated.timing(animatedValue, {
       toValue: -toastHeight,
       duration: 300,
       useNativeDriver: true,
-    }).start();
-  }, [animatedValue]);
+    }).start()
+  }, [animatedValue])
 
   // Parent Component Func
   useImperativeHandle(ref, () => ({
@@ -71,11 +74,11 @@ const ToastMessage = forwardRef((props, ref) => {
         msg: param?.msg || '',
         duration: param.duration || 1500,
         type: param.type || ToastColorEnum.Info,
-      });
+      })
 
-      showToast();
+      showToast()
     },
-  }));
+  }))
 
   return (
     <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut}>
@@ -93,7 +96,7 @@ const ToastMessage = forwardRef((props, ref) => {
         </Text>
       </Animated.View>
     </TouchableWithoutFeedback>
-  );
-});
+  )
+})
 
-export default memo(ToastMessage);
+export default memo(ToastMessage)

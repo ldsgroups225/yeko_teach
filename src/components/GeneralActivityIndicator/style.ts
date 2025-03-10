@@ -1,8 +1,10 @@
-import type { ITheme } from '@styles/theme';
-import { StyleSheet } from 'react-native';
+// src/components/GeneralActivityIndicator/style.ts
 
-export const styles = (theme: ITheme) =>
-  StyleSheet.create({
+import type { ITheme } from '@styles/theme'
+import { StyleSheet } from 'react-native'
+
+export function styles(theme: ITheme) {
+  return StyleSheet.create({
     activityIndicator: {
       position: 'absolute',
       zIndex: 9999,
@@ -24,8 +26,9 @@ export const styles = (theme: ITheme) =>
 
     modalContainer: {
       flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: "rgba(0, 0, 0, 0.3)",
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.3)',
     },
-  });
+  })
+}

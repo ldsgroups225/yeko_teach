@@ -1,9 +1,11 @@
-import { spacing } from '@styles/spacing';
-import { ITheme } from '@styles/theme';
-import { StyleSheet } from 'react-native';
+// src/components/CsDivider/style.ts
 
-export const styles = (theme: ITheme) =>
-  StyleSheet.create({
+import type { ITheme } from '@styles/theme'
+import { spacing } from '@styles/spacing'
+import { StyleSheet } from 'react-native'
+
+export function styles(theme: ITheme) {
+  return StyleSheet.create({
     divider: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -19,4 +21,5 @@ export const styles = (theme: ITheme) =>
       marginHorizontal: spacing.sm,
       color: theme.textLight,
     },
-  });
+  })
+}

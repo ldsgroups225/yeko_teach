@@ -1,20 +1,22 @@
-import CsText from "@components/CsText";
-import { useThemedStyles } from "@hooks/index";
-import { spacing } from "@styles/spacing";
-import { ITheme } from "@styles/theme";
-import React from "react";
-import { StyleSheet, View } from "react-native";
+// src/components/ProgressSteps/index.tsx
+
+import type { ITheme } from '@styles/theme'
+import CsText from '@components/CsText'
+import { useThemedStyles } from '@hooks/index'
+import { spacing } from '@styles/spacing'
+import React from 'react'
+import { StyleSheet, View } from 'react-native'
 
 interface ProgressStepsProps {
-  totalSteps: number;
-  currentStep: number;
+  totalSteps: number
+  currentStep: number
 }
 
 const ProgressSteps: React.FC<ProgressStepsProps> = ({
   totalSteps,
   currentStep,
 }) => {
-  const themedStyles = useThemedStyles<typeof styles>(styles);
+  const themedStyles = useThemedStyles<typeof styles>(styles)
 
   return (
     <View style={themedStyles.container}>
@@ -36,8 +38,8 @@ const ProgressSteps: React.FC<ProgressStepsProps> = ({
               index < currentStep
                 ? themedStyles.completedStep
                 : index === currentStep
-                ? themedStyles.activeStep
-                : themedStyles.inactiveStep,
+                  ? themedStyles.activeStep
+                  : themedStyles.inactiveStep,
             ]}
           >
             <CsText
@@ -49,29 +51,29 @@ const ProgressSteps: React.FC<ProgressStepsProps> = ({
                   : themedStyles.inactiveStepText,
               ])}
             >
-              {index < currentStep ? "✓" : (index + 1).toString()}
+              {index < currentStep ? '✓' : (index + 1).toString()}
             </CsText>
           </View>
         </React.Fragment>
       ))}
     </View>
-  );
-};
+  )
+}
 
-const styles = (theme: ITheme) =>
-  StyleSheet.create({
+function styles(theme: ITheme) {
+  return StyleSheet.create({
     container: {
-      flexDirection: "row",
-      justifyContent: "center",
-      alignItems: "center",
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
       marginBottom: spacing.xl,
     },
     step: {
       width: 30,
       height: 30,
       borderRadius: 15,
-      justifyContent: "center",
-      alignItems: "center",
+      justifyContent: 'center',
+      alignItems: 'center',
       borderWidth: 2,
     },
     completedStep: {
@@ -88,7 +90,7 @@ const styles = (theme: ITheme) =>
     },
     stepText: {
       fontSize: 14,
-      fontWeight: "bold",
+      fontWeight: 'bold',
     },
     activeStepText: {
       color: theme.primary,
@@ -107,6 +109,7 @@ const styles = (theme: ITheme) =>
     inactiveConnector: {
       backgroundColor: theme.border,
     },
-  });
+  })
+}
 
-export default ProgressSteps;
+export default ProgressSteps

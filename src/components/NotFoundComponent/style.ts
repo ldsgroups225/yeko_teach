@@ -1,5 +1,7 @@
-import { spacing } from '@styles/index';
-import { StyleSheet } from 'react-native';
+// src/components/NotFoundComponent/style.ts
+
+import { spacing } from '@styles/index'
+import { StyleSheet } from 'react-native'
 
 export const styles = StyleSheet.create({
   root: {
@@ -12,4 +14,4 @@ export const styles = StyleSheet.create({
     fontSize: 20,
     color: '#f27a1a',
   },
-});
+})

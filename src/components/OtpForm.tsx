@@ -1,33 +1,35 @@
-import React, { useState, useCallback } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { OtpInput } from "react-native-otp-entry";
-import CsText from "@components/CsText";
-import CsButton from "@components/CsButton";
-import { useThemedStyles } from "@hooks/index";
-import { ITheme } from "@styles/theme";
-import { spacing, borderRadius } from "@styles/index";
-import { showToast } from "@helpers/toast/showToast";
-import { ToastColorEnum } from "@components/ToastMessage/ToastColorEnum";
+// src/components/OtpForm.tsx
+
+import type { ITheme } from '@styles/theme'
+import CsButton from '@components/CsButton'
+import CsText from '@components/CsText'
+import { ToastColorEnum } from '@components/ToastMessage/ToastColorEnum'
+import { showToast } from '@helpers/toast/showToast'
+import { useThemedStyles } from '@hooks/index'
+import { borderRadius, spacing } from '@styles/index'
+import React, { useCallback, useState } from 'react'
+import { StyleSheet, View } from 'react-native'
+import { OtpInput } from 'react-native-otp-entry'
 
 interface OtpFormProps {
   /** Callback function to be called when a valid OTP is submitted */
-  onComplete: (code: string) => void;
+  onComplete: (code: string) => void
   /** Optional callback function to be called when the user cancels the OTP input */
-  onCancel?: () => void;
+  onCancel?: () => void
   /** Indicates whether the form is in a loading state */
-  loading?: boolean;
+  loading?: boolean
   /** Indicates whether the cancel button should be shown */
 }
 
 /**
  * OtpForm component for inputting and submitting a 6-digit OTP code.
- * 
+ *
  * @param {OtpFormProps} props - The props for the OtpForm component
  * @returns {React.ReactElement} The rendered OtpForm component
  */
 export const OtpForm: React.FC<OtpFormProps> = ({ onComplete, onCancel, loading = false }) => {
-  const themedStyles = useThemedStyles<typeof styles>(styles);
-  const [otpValue, setOtpValue] = useState('');
+  const themedStyles = useThemedStyles<typeof styles>(styles)
+  const [otpValue, setOtpValue] = useState('')
 
   /**
    * Handles the submission of the OTP code
@@ -35,21 +37,22 @@ export const OtpForm: React.FC<OtpFormProps> = ({ onComplete, onCancel, loading 
   const handleOtpSubmit = useCallback((otp?: string) => {
     if (otp) {
       if (otp.length === 6) {
-        onComplete(otp);
-      } else {
+        onComplete(otp)
+      }
+      else {
         showToast('Veillez entrer un OTP valide à 6 chiffres')
       }
     }
 
     else {
       if (otpValue.length === 6) {
-        onComplete(otpValue);
-      } else {
-        showToast('Veillez entrer un OTP valide', ToastColorEnum.Warning);
+        onComplete(otpValue)
+      }
+      else {
+        showToast('Veillez entrer un OTP valide', ToastColorEnum.Warning)
       }
     }
-  }, [otpValue, onComplete]);
-
+  }, [otpValue, onComplete])
 
   return (
     <View style={themedStyles.container}>
@@ -57,7 +60,7 @@ export const OtpForm: React.FC<OtpFormProps> = ({ onComplete, onCancel, loading 
       <OtpInput
         numberOfDigits={6}
         onTextChange={setOtpValue}
-        onFilled={(val) => handleOtpSubmit(val)}
+        onFilled={val => handleOtpSubmit(val)}
         theme={{
           containerStyle: themedStyles.otpInputContainer,
           pinCodeContainerStyle: themedStyles.otpInputField,
@@ -86,11 +89,11 @@ export const OtpForm: React.FC<OtpFormProps> = ({ onComplete, onCancel, loading 
         />
       )}
     </View>
-  );
-};
+  )
+}
 
-const styles = (theme: ITheme) =>
-  StyleSheet.create({
+function styles(theme: ITheme) {
+  return StyleSheet.create({
     container: {
       width: '100%',
       alignItems: 'center',
@@ -141,4 +144,5 @@ const styles = (theme: ITheme) =>
       textAlign: 'center',
       color: theme.textLight,
     },
-  });
+  })
+}

@@ -1,3 +1,5 @@
+// src/components/ToastMessage/ToastColorEnum.ts
+
 export enum ToastColorEnum {
   Error = '#F44336',
   Success = '#4CAF50',

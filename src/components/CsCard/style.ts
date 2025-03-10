@@ -1,12 +1,14 @@
-import borderRadius from '@styles/borderRadius';
-import { shadows } from '@styles/shadows';
-import { spacing } from '@styles/spacing';
-import type { ITheme } from '@styles/theme';
-import { typography } from '@styles/typography';
-import { StyleSheet } from 'react-native';
+// src/components/CsCard/style.ts
 
-export const styles = (theme: ITheme) =>
-  StyleSheet.create({
+import type { ITheme } from '@styles/theme'
+import borderRadius from '@styles/borderRadius'
+import { shadows } from '@styles/shadows'
+import { spacing } from '@styles/spacing'
+import { typography } from '@styles/typography'
+import { StyleSheet } from 'react-native'
+
+export function styles(theme: ITheme) {
+  return StyleSheet.create({
     container: {
       backgroundColor: theme.card,
       borderRadius: borderRadius.large,
@@ -26,4 +28,5 @@ export const styles = (theme: ITheme) =>
     footer: {
       marginTop: spacing.md,
     },
-  });
+  })
+}

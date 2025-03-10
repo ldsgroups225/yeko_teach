@@ -1,14 +1,16 @@
-import borderRadius from "@styles/borderRadius";
-import { spacing } from "@styles/spacing";
-import type { ITheme } from "@styles/theme";
-import { manipulateColor } from "@utils/ManipulateColor";
-import { StyleSheet } from "react-native";
+// src/components/CsTextField/style.ts
 
-export const styles = (theme: ITheme) =>
-  StyleSheet.create({
+import type { ITheme } from '@styles/theme'
+import borderRadius from '@styles/borderRadius'
+import { spacing } from '@styles/spacing'
+import { manipulateColor } from '@utils/ManipulateColor'
+import { StyleSheet } from 'react-native'
+
+export function styles(theme: ITheme) {
+  return StyleSheet.create({
     inputContainer: {
-      flexDirection: "row",
-      alignItems: "center",
+      flexDirection: 'row',
+      alignItems: 'center',
       borderWidth: 1,
       borderColor: theme.border,
       borderRadius: borderRadius.medium,
@@ -28,7 +30,7 @@ export const styles = (theme: ITheme) =>
       color: theme.text,
     },
     label: {
-      position: "absolute",
+      position: 'absolute',
       left: 12,
       top: 14,
       color: manipulateColor(theme.text, 0.2),
@@ -54,4 +56,5 @@ export const styles = (theme: ITheme) =>
       fontSize: 18,
       color: theme.text,
     },
-  });
+  })
+}

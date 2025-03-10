@@ -1,6 +1,8 @@
-import { StyleSheet } from 'react-native';
+// src/components/ToastMessage/style.ts
 
-export const toastHeight = 120;
+import { StyleSheet } from 'react-native'
+
+export const toastHeight = 120
 
 export const styles = StyleSheet.create({
   root: {
@@ -22,4 +24,4 @@ export const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
   },
-});
+})

@@ -1,15 +1,18 @@
-import translate from "@helpers/localization";
-import { useTheme, useThemedStyles } from "@src/hooks";
-import React, { JSX, memo } from "react";
-import { ActivityIndicator, Modal, Text, View } from "react-native";
-import { styles } from "./style";
-import type { GeneralActivityIndicatorProps } from "./type";
+// src/components/GeneralActivityIndicator/index.tsx
 
-const testID = "generalActivityIndicator";
+import type { JSX } from 'react'
+import type { GeneralActivityIndicatorProps } from './type'
+import translate from '@helpers/localization'
+import { useTheme, useThemedStyles } from '@src/hooks'
+import React, { memo } from 'react'
+import { ActivityIndicator, Modal, Text, View } from 'react-native'
+import { styles } from './style'
+
+const testID = 'generalActivityIndicator'
 
 function GeneralActivityIndicator({
   text,
-  size = "large",
+  size = 'large',
   color,
   containerStyle,
   indicatorStyle,
@@ -18,13 +21,13 @@ function GeneralActivityIndicator({
   isVisible = true,
   accessibilityLabel,
 }: GeneralActivityIndicatorProps): JSX.Element {
-  const theme = useTheme();
-  const themedStyles = useThemedStyles<typeof styles>(styles);
-  
-  const translatedText = text || translate("generalActivityIndicatorText");
-  const indicatorColor = color ?? theme.primary;
-  const a11yLabel = accessibilityLabel 
-    || (translatedText ? `${translatedText} loading` : "Loading");
+  const theme = useTheme()
+  const themedStyles = useThemedStyles<typeof styles>(styles)
+
+  const translatedText = text || translate('generalActivityIndicatorText')
+  const indicatorColor = color ?? theme.primary
+  const a11yLabel = accessibilityLabel
+    || (translatedText ? `${translatedText} loading` : 'Loading')
 
   const Content = (
     <View
@@ -33,7 +36,7 @@ function GeneralActivityIndicator({
         containerStyle,
       ]}
       testID={`${testID}-container-view`}
-      accessible={true}
+      accessible
     >
       <ActivityIndicator
         testID={`${testID}-activity-indicator`}
@@ -53,18 +56,20 @@ function GeneralActivityIndicator({
         </Text>
       )}
     </View>
-  );
+  )
 
-  return useModal ? (
-    <Modal
-      transparent
-      visible={isVisible}
-      statusBarTranslucent
-      testID={`${testID}-modal`}
-    >
-      {Content}
-    </Modal>
-  ) : Content;
+  return useModal
+    ? (
+        <Modal
+          transparent
+          visible={isVisible}
+          statusBarTranslucent
+          testID={`${testID}-modal`}
+        >
+          {Content}
+        </Modal>
+      )
+    : Content
 }
 
-export default memo(GeneralActivityIndicator);
+export default memo(GeneralActivityIndicator)

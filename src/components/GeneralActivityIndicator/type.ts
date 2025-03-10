@@ -1,13 +1,15 @@
-import type { ViewStyle, TextStyle } from "react-native";
+// src/components/GeneralActivityIndicator/type.ts
 
-export type GeneralActivityIndicatorProps = {
-  text?: string;
-  size?: "small" | "large" | number;
-  color?: string;
-  containerStyle?: ViewStyle;
-  indicatorStyle?: ViewStyle;
-  textStyle?: TextStyle;
-  useModal?: boolean;
-  isVisible?: boolean;
-  accessibilityLabel?: string;
-};
+import type { TextStyle, ViewStyle } from 'react-native'
+
+export interface GeneralActivityIndicatorProps {
+  text?: string
+  size?: 'small' | 'large' | number
+  color?: string
+  containerStyle?: ViewStyle
+  indicatorStyle?: ViewStyle
+  textStyle?: TextStyle
+  useModal?: boolean
+  isVisible?: boolean
+  accessibilityLabel?: string
+}

@@ -1,22 +1,26 @@
-import React from "react";
-import { Text, View } from "react-native";
-import { styles } from "./style";
-import { NotFoundComponentProps } from "./type";
+// src/components/NotFoundComponent/index.tsx
 
-const testID = "notFoundComponent";
+import type { JSX } from 'react'
+import type { NotFoundComponentProps } from './type'
+import { Text, View } from 'react-native'
+import { styles } from './style'
+
+const testID = 'notFoundComponent'
 /**
  * Renders a component for displaying a "Not Found" message.
  *
- * @param {Object} props - The component props.
+ * @param {object} props - The component props.
  * @param {string} props.title - The title to be displayed.
  * @returns {JSX.Element} The rendered component.
  */
-const NotFoundComponent = ({ title }: NotFoundComponentProps): JSX.Element => (
-  <View style={styles.root} testID={`${testID}-container-view`}>
-    <Text style={styles.title} testID={`${testID}-title-text`}>
-      {title}
-    </Text>
-  </View>
-);
+function NotFoundComponent({ title }: NotFoundComponentProps): JSX.Element {
+  return (
+    <View style={styles.root} testID={`${testID}-container-view`}>
+      <Text style={styles.title} testID={`${testID}-title-text`}>
+        {title}
+      </Text>
+    </View>
+  )
+}
 
-export default NotFoundComponent;
+export default NotFoundComponent

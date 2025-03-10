@@ -1,11 +1,13 @@
-import borderRadius from '@styles/borderRadius';
-import { spacing } from '@styles/spacing';
-import type { ITheme } from '@styles/theme';
-import { typography } from '@styles/typography';
-import { StyleSheet } from 'react-native';
+// src/components/CsButton/style.ts
 
-export const styles = (theme: ITheme) =>
-  StyleSheet.create({
+import type { ITheme } from '@styles/theme'
+import borderRadius from '@styles/borderRadius'
+import { spacing } from '@styles/spacing'
+import { typography } from '@styles/typography'
+import { StyleSheet } from 'react-native'
+
+export function styles(theme: ITheme) {
+  return StyleSheet.create({
     button: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -67,4 +69,5 @@ export const styles = (theme: ITheme) =>
     icon: {
       marginRight: 8,
     },
-  });
+  })
+}

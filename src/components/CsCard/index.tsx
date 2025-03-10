@@ -1,18 +1,20 @@
-import { useTheme, useThemedStyles } from '@src/hooks';
-import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+// src/components/CsCard/index.tsx
+
+import type { CsCardProps } from './type'
+import { useTheme, useThemedStyles } from '@src/hooks'
+import React from 'react'
+import { Pressable, Text, View } from 'react-native'
 import Animated, {
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-} from 'react-native-reanimated';
-import { styles } from './style';
-import type { CsCardProps } from './type';
+} from 'react-native-reanimated'
+import { styles } from './style'
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
 
-const testID = 'csCard';
+const testID = 'csCard'
 
 const CsCard: React.FC<CsCardProps> = ({
   title,
@@ -25,38 +27,38 @@ const CsCard: React.FC<CsCardProps> = ({
   footerStyle,
   children,
 }) => {
-  const theme = useTheme();
-  const themedStyles = useThemedStyles<typeof styles>(styles);
+  const theme = useTheme()
+  const themedStyles = useThemedStyles<typeof styles>(styles)
 
-  const scale = useSharedValue(1);
-  const opacity = useSharedValue(1);
+  const scale = useSharedValue(1)
+  const opacity = useSharedValue(1)
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
     opacity: opacity.value,
-  }));
+  }))
 
   const handlePressIn = () => {
     if (onPress) {
-      scale.value = withSpring(0.98);
-      opacity.value = withSpring(0.9);
+      scale.value = withSpring(0.98)
+      opacity.value = withSpring(0.9)
     }
-  };
+  }
 
   const handlePressOut = () => {
     if (onPress) {
-      scale.value = withSpring(1);
-      opacity.value = withSpring(1);
+      scale.value = withSpring(1)
+      opacity.value = withSpring(1)
     }
-  };
+  }
 
   const handlePress = () => {
     if (onPress) {
-      runOnJS(onPress)();
+      runOnJS(onPress)()
     }
-  };
+  }
 
-  const containerStyle = [themedStyles.container, style];
+  const containerStyle = [themedStyles.container, style]
 
   const cardContent = (
     <>
@@ -65,7 +67,7 @@ const CsCard: React.FC<CsCardProps> = ({
       {children}
       {footer && <View style={[themedStyles.footer, footerStyle]}>{footer}</View>}
     </>
-  );
+  )
 
   if (onPress) {
     return (
@@ -79,14 +81,14 @@ const CsCard: React.FC<CsCardProps> = ({
       >
         {cardContent}
       </AnimatedPressable>
-    );
+    )
   }
 
   return (
     <View testID={`${testID}-container`} style={containerStyle}>
       {cardContent}
     </View>
-  );
-};
+  )
+}
 
-export default CsCard;
+export default CsCard

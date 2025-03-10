@@ -1,11 +1,13 @@
-import { Ionicons } from '@expo/vector-icons';
-import { useTheme, useThemedStyles } from '@src/hooks';
-import React, { useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
-import { styles } from './style';
-import { CsTextFieldProps } from './type';
+// src/components/CsTextField/index.tsx
 
-const testID = 'csTextfield';
+import type { CsTextFieldProps } from './type'
+import { Ionicons } from '@expo/vector-icons'
+import { useTheme, useThemedStyles } from '@src/hooks'
+import React, { useState } from 'react'
+import { Pressable, Text, TextInput, View } from 'react-native'
+import { styles } from './style'
+
+const testID = 'csTextfield'
 
 const CsTextField: React.FC<CsTextFieldProps> = ({
   label,
@@ -22,13 +24,13 @@ const CsTextField: React.FC<CsTextFieldProps> = ({
   returnKeyType = 'next',
   ...textInputProps
 }) => {
-  const theme = useTheme();
-  const themedStyles = useThemedStyles<typeof styles>(styles);
-  const [isPasswordVisible, setIsPasswordVisible] = useState(!secureTextEntry);
+  const theme = useTheme()
+  const themedStyles = useThemedStyles<typeof styles>(styles)
+  const [isPasswordVisible, setIsPasswordVisible] = useState(!secureTextEntry)
 
   const togglePasswordVisibility = () => {
-    setIsPasswordVisible(!isPasswordVisible);
-  };
+    setIsPasswordVisible(!isPasswordVisible)
+  }
 
   return (
     <View style={style}>
@@ -73,7 +75,7 @@ const CsTextField: React.FC<CsTextFieldProps> = ({
       </View>
       {error && <Text style={themedStyles.errorText}>{error}</Text>}
     </View>
-  );
-};
+  )
+}
 
-export default CsTextField;
+export default CsTextField

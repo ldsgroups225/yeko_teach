@@ -1,12 +1,14 @@
-import CsText from '@components/CsText';
-import { useThemedStyles } from '@hooks/index';
-import * as React from 'react';
-import { View } from 'react-native';
-import { styles } from './style';
-import { CsDividerProps } from './type';
+// src/components/CsDivider/index.tsx
 
-export const CsDivider = ({ title }: CsDividerProps) => {
-  const themedStyles = useThemedStyles<typeof styles>(styles);
+import type { CsDividerProps } from './type'
+import CsText from '@components/CsText'
+import { useThemedStyles } from '@hooks/index'
+import * as React from 'react'
+import { View } from 'react-native'
+import { styles } from './style'
+
+export function CsDivider({ title }: CsDividerProps) {
+  const themedStyles = useThemedStyles<typeof styles>(styles)
 
   return (
     <View style={themedStyles.divider}>
@@ -20,7 +22,7 @@ export const CsDivider = ({ title }: CsDividerProps) => {
         </>
       )}
     </View>
-  );
-};
+  )
+}
 
-export default CsDivider;
+export default CsDivider
