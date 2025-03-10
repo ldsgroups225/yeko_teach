@@ -1,4 +1,23 @@
 {
+
+  "name": "yeko_teach",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "android": "expo run:android",
+    "dev": "expo run:android",
+    "eject": "expo eject",
+    "ios": "expo run:ios",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "start": "expo start",
+    "test": "jest --coverage=false",
+    "testDebug": "jest -o --watch --coverage=false",
+    "testFinal": "jest",
+    "typecheck": "tsc --noEmit",
+    "updateSnapshots": "jest -u --coverage=false",
+    "web": "expo start --web"
+  },
   "dependencies": {
     "@expo-google-fonts/montserrat": "^0.2.0",
     "@expo/config": "^10.0.0",
@@ -32,14 +51,14 @@
     "expo-splash-screen": "~0.29.18",
     "expo-sqlite": "^15.0.6",
     "expo-system-ui": "~4.0.6",
-    "expo-updates": "~0.26.10",
+    "expo-updates": "~0.27.1",
     "i18n-js": "^4.4.3",
     "jest-expo": "~52.0.2",
     "lodash.throttle": "^4.1.1",
     "metro-react-native-babel-preset": "^0.66.2",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "react-native": "0.76.5",
+    "react-native": "0.76.7",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-modal": "^13.0.1",
     "react-native-otp-entry": "^1.7.2",
@@ -76,23 +95,5 @@
     "react-test-renderer": "^18.2.0",
     "redux-mock-store": "^1.5.4",
     "typescript": "~5.3.3"
-  },
-  "name": "yeko_teach",
-  "private": true,
-  "scripts": {
-    "android": "expo run:android",
-    "dev": "expo run:android",
-    "eject": "expo eject",
-    "ios": "expo run:ios",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "start": "expo start",
-    "test": "jest --coverage=false",
-    "testDebug": "jest -o --watch --coverage=false",
-    "testFinal": "jest",
-    "typecheck": "tsc --noEmit",
-    "updateSnapshots": "jest -u --coverage=false",
-    "web": "expo start --web"
-  },
-  "version": "1.0.0"
+  }
 }
