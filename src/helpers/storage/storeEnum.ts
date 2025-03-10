@@ -1,9 +1,5 @@
-/**
- * @author Ali Burhan Keskin <alikeskin@milvasoft.com>
- */
-/**
- * Enum representing the different types of data that can be stored in the storage.
- */
+// src/helpers/storage/storeEnum.ts
+
 export enum StoreEnum {
   Token,
   User,

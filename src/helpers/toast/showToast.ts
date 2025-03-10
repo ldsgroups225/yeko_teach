@@ -1,5 +1,7 @@
-import { toastActions } from "@src/providers/Toast";
-import { ToastColorEnum } from "@components/ToastMessage/ToastColorEnum";
+// src/helpers/toast/showToast.ts
+
+import type { ToastColorEnum } from '@components/ToastMessage/ToastColorEnum'
+import { toastActions } from '@src/providers/Toast'
 
 /**
  * Displays a toast message.
@@ -11,7 +13,7 @@ import { ToastColorEnum } from "@components/ToastMessage/ToastColorEnum";
 export function showToast(
   msg: string,
   type?: ToastColorEnum,
-  duration?: number
+  duration?: number,
 ) {
-  toastActions.open({ msg, type, duration });
+  toastActions.open({ msg, type, duration })
 }

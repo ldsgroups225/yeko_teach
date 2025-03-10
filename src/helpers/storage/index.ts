@@ -1,9 +1,8 @@
-/**
- * @author Ali Burhan Keskin <alikeskin@milvasoft.com>
- */
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { isObjectLike } from "@helpers/global";
-import { StoreEnum } from "./storeEnum";
+// src/helpers/storage/index.ts
+
+import type { StoreEnum } from './storeEnum'
+import { isObjectLike } from '@helpers/global'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 /**
  * Adds data to the storage with the specified key.
@@ -13,59 +12,56 @@ import { StoreEnum } from "./storeEnum";
  * @param value - The value to store.
  * @returns A Promise that resolves when the data is successfully stored, or rejects if there was an error.
  */
-export const addStoreDataAsync = async (
-  key: StoreEnum,
-  value: unknown
-): Promise<void> => {
+export async function addStoreDataAsync(key: StoreEnum, value: unknown): Promise<void> {
   try {
     if (isObjectLike(value)) {
-      value = JSON.stringify(value);
+      value = JSON.stringify(value)
     }
 
-    await AsyncStorage.setItem(key.toString(), value as string);
-  } catch (e) {
-    // saving error
-    console.error("Error saving data:", e);
+    await AsyncStorage.setItem(key.toString(), value as string)
   }
-};
+  catch (e) {
+    // saving error
+    console.error('Error saving data:', e)
+  }
+}
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 /**
  * Retrieves data from AsyncStorage based on the provided key.
  *
  * @param key - The key to retrieve the data from AsyncStorage.
  * @returns A promise that resolves to the retrieved data, or an empty string if the data is not found or an error occurs.
  */
-export const getStoreDataAsync = async <T>(
-  key: StoreEnum
-): Promise<T | null> => {
+export async function getStoreDataAsync<T>(key: StoreEnum): Promise<T | null> {
   try {
-    const value = await AsyncStorage.getItem(key.toString());
+    const value = await AsyncStorage.getItem(key.toString())
     if (value !== null) {
-      return JSON.parse(value) as T;
+      return JSON.parse(value) as T
     }
-    return null;
-  } catch (e) {
-    return null;
+    return null
   }
-};
+  catch {
+    return null
+  }
+}
 
 /**
  * Retrieves a string value from the storage based on the provided key.
  * @param key - The key used to retrieve the value from the storage.
  * @returns A promise that resolves to the retrieved string value, or an empty string if the value is not found or an error occurs.
  */
-export const getStoreStringAsync = async (key: StoreEnum): Promise<string> => {
+export async function getStoreStringAsync(key: StoreEnum): Promise<string> {
   try {
-    const value = await AsyncStorage.getItem(key.toString());
+    const value = await AsyncStorage.getItem(key.toString())
     if (value !== null) {
-      return value;
+      return value
     }
-    return "";
-  } catch (e) {
-    return "";
+    return ''
   }
-};
+  catch {
+    return ''
+  }
+}
 
 /**
  * Removes the data associated with the specified key from the storage.
@@ -73,10 +69,11 @@ export const getStoreStringAsync = async (key: StoreEnum): Promise<string> => {
  * @param key - The key of the data to be removed.
  * @returns A Promise that resolves when the data is successfully removed.
  */
-export const removeStoreDataAsync = async (key: StoreEnum): Promise<void> => {
+export async function removeStoreDataAsync(key: StoreEnum): Promise<void> {
   try {
-    await AsyncStorage.removeItem(key.toString());
-  } catch (exception) {
-    console.error("error");
+    await AsyncStorage.removeItem(key.toString())
   }
-};
+  catch {
+    console.error('error')
+  }
+}

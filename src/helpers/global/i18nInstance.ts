@@ -1,19 +1,16 @@
-/**
- * @fileoverview This module creates and exports the i18n instance.
- * @author Your Name
- */
+// src/helpers/global/i18nInstance.ts
 
-import { I18n } from "i18n-js";
-import { EnResource, FrResource, TrResource } from "@src/localization/index";
+import { EnResource, FrResource, TrResource } from '@src/localization/index'
+import { I18n } from 'i18n-js'
 
-export const DEFAULT_LOCALE = "fr" as const;
-export type SupportedLocale = "en" | "fr" | "tr";
+export const DEFAULT_LOCALE = 'fr' as const
+export type SupportedLocale = 'en' | 'fr' | 'tr'
 
-type LocalizationResources = {
-  en: typeof EnResource;
-  fr: typeof FrResource;
-  tr: typeof TrResource;
-};
+interface LocalizationResources {
+  en: typeof EnResource
+  fr: typeof FrResource
+  tr: typeof TrResource
+}
 
 const i18n = new I18n(
   {
@@ -25,7 +22,7 @@ const i18n = new I18n(
     locale: DEFAULT_LOCALE,
     enableFallback: true,
     defaultLocale: DEFAULT_LOCALE,
-  }
-);
+  },
+)
 
-export default i18n;
+export default i18n

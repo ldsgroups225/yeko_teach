@@ -1,10 +1,7 @@
-/**
- * @fileoverview This module provides a translate function that uses the i18n instance for translations.
- * @author Ali Burhan Keskin <alikeskin@milvasoft.com>
- */
+// src/helpers/localization/index.ts
 
-import { Scope, TranslateOptions } from "i18n-js";
-import i18n from "@helpers/global/i18nInstance";
+import type { Scope, TranslateOptions } from 'i18n-js'
+import i18n from '@helpers/global/i18nInstance'
 
 /**
  * Translates the given key into the current language.
@@ -13,8 +10,8 @@ import i18n from "@helpers/global/i18nInstance";
  * @param options - Optional translation options.
  * @returns The translated text.
  */
-const translate = (key: Scope, options?: TranslateOptions): string => {
-  return i18n.t(key, options);
-};
+function translate(key: Scope, options?: TranslateOptions): string {
+  return i18n.t(key, options)
+}
 
-export default translate;
+export default translate

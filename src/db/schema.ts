@@ -1,4 +1,6 @@
-import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
+// src/db/schema.ts
+
+import { int, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 
 export const noteTable = sqliteTable('notes', () => ({
   id: int({ mode: 'number' }).primaryKey({ autoIncrement: true }),
@@ -16,7 +18,7 @@ export const noteTable = sqliteTable('notes', () => ({
   isGraded: int('is_graded').notNull().default(1),
   dueDate: text('due_date'),
   createdAt: text('created_at').$default(() => new Date().toISOString()),
-}));
+}))
 
 export const noteDetailTable = sqliteTable('note_details', () => ({
   id: int({ mode: 'number' }).primaryKey({ autoIncrement: true }),
@@ -24,4 +26,4 @@ export const noteDetailTable = sqliteTable('note_details', () => ({
   studentId: text('student_id').notNull(),
   note: int('note').notNull(),
   gradedAt: text('graded_at'),
-}));
+}))

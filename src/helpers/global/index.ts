@@ -1,19 +1,12 @@
-/**
- * @author Ali Burhan Keskin <alikeskin@milvasoft.com>
- */
+// src/helpers/global/index.ts
 
-/**
- * Checks if a given string is a valid JSON.
- *
- * @param str - The string to be checked.
- * @returns A boolean indicating whether the string is a valid JSON or not.
- */
 export function isValidJSON(str: any) {
   try {
-    JSON.parse(str);
-    return true;
-  } catch (e) {
-    return false;
+    JSON.parse(str)
+    return true
+  }
+  catch {
+    return false
   }
 }
 
@@ -23,5 +16,6 @@ export function isValidJSON(str: any) {
  * @param val - The value to check.
  * @returns Returns `true` if the value is object-like, else `false`.
  */
-export const isObjectLike = (val: any): any =>
-  val !== null && typeof val === "object";
+export function isObjectLike(val: any): any {
+  return val !== null && typeof val === 'object'
+}

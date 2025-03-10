@@ -1,6 +1,8 @@
-import { openDatabaseSync } from "expo-sqlite";
-import { drizzle } from "drizzle-orm/expo-sqlite";
+// src/db/config.ts
 
-const expoDb = openDatabaseSync("db.db");
+import { drizzle } from 'drizzle-orm/expo-sqlite'
+import { openDatabaseSync } from 'expo-sqlite'
 
-export const drizzleDb = drizzle(expoDb);
+const expoDb = openDatabaseSync('db.db')
+
+export const drizzleDb = drizzle(expoDb)

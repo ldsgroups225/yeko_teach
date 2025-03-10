@@ -1,25 +1,27 @@
-import { toastActions } from "@providers/Toast";
-import { showToast } from "./showToast";
-import { ToastColorEnum } from "@components/ToastMessage/ToastColorEnum";
+// src/helpers/toast/showToast.test.ts
 
-jest.mock("@providers/Toast");
+import { ToastColorEnum } from '@components/ToastMessage/ToastColorEnum'
+import { toastActions } from '@providers/Toast'
+import { showToast } from './showToast'
 
-describe("showToast", () => {
-  it("should call toastActions.open with the provided message", () => {
-    const msg = "Test message";
+jest.mock('@providers/Toast')
 
-    showToast(msg);
+describe('showToast', () => {
+  it('should call toastActions.open with the provided message', () => {
+    const msg = 'Test message'
 
-    expect(toastActions.open).toHaveBeenCalledWith({ msg });
-  });
+    showToast(msg)
 
-  it("should call toastActions.open with the provided message, type, and duration", () => {
-    const msg = "Test message";
-    const type = ToastColorEnum.Success;
-    const duration = 3000;
+    expect(toastActions.open).toHaveBeenCalledWith({ msg })
+  })
 
-    showToast(msg, type, duration);
+  it('should call toastActions.open with the provided message, type, and duration', () => {
+    const msg = 'Test message'
+    const type = ToastColorEnum.Success
+    const duration = 3000
 
-    expect(toastActions.open).toHaveBeenCalledWith({ msg, type, duration });
-  });
-});
+    showToast(msg, type, duration)
+
+    expect(toastActions.open).toHaveBeenCalledWith({ msg, type, duration })
+  })
+})
