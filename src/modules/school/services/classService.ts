@@ -1,7 +1,28 @@
 // src/modules/school/services/classService.ts
 
 import type { IClassDTO, IStudentDTO } from '@modules/app/types/ILoginDTO'
+import type { Database } from '@src/lib/supabase/types'
 import { CLASS_TABLE_ID, supabase } from '@src/lib/supabase'
+
+type ClassRecord = Database['public']['Tables']['classes']['Row']
+type Student = Database['public']['Tables']['students']['Row']
+
+interface ClassQueryResult extends ClassRecord {
+  grades: {
+    id: number
+    name: string
+  }
+  teacher_class_assignments: Array<{
+    subject_id: string
+    subjects: {
+      id: string
+      name: string
+    } | null
+  }>
+  student_school_class: Array<{
+    student: Student | null
+  }>
+}
 
 export const classes = {
   /**
@@ -63,16 +84,18 @@ export const classes = {
 
     const classMap = new Map<string, IClassDTO>()
 
-    data.forEach((classData) => {
+    ;(data as ClassQueryResult[]).forEach((classData) => {
       const classId = classData.id
       if (!classMap.has(classId)) {
         // Get unique students from student_school_class
         const students = classData.student_school_class
-          .filter(enrollment => enrollment.student) // Filter out null students
+          .filter((enrollment): enrollment is { student: Student } =>
+            enrollment.student !== null,
+          )
           .map(enrollment => enrollment.student)
           .filter((student, index, self) =>
             index === self.findIndex(s => s.id === student.id),
-          ) // Remove duplicates
+          )
 
         classMap.set(classId, {
           id: classId,
