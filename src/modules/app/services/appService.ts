@@ -1,32 +1,32 @@
-import { supabase } from "@src/lib/supabase";
-import {
+import type {
   AuthError,
   AuthTokenResponsePassword,
   Session,
-} from "@supabase/auth-js";
-import { PostgrestError } from "@supabase/supabase-js";
+} from '@supabase/auth-js'
+import type { PostgrestError } from '@supabase/supabase-js'
+import { supabase } from '@src/lib/supabase'
 
 interface IGetSession {
   data: {
-    session: Session | null;
-  };
-  error: AuthError | null;
+    session: Session | null
+  }
+  error: AuthError | null
 }
 
 interface SchoolYear {
-  id: number;
-  name: string | null;
+  id: number
+  name: string | null
 }
 
 interface Semester {
-  id: number;
-  name: string;
-  isCurrent: boolean;
+  id: number
+  name: string
+  isCurrent: boolean
 }
 
 interface SchoolYearWithSemesters {
-  schoolYear: SchoolYear | null;
-  semesters: Semester[];
+  schoolYear: SchoolYear | null
+  semesters: Semester[]
 }
 
 /**
@@ -42,18 +42,18 @@ export const auth = {
    */
   async loginWithEmailAndPassword(
     email: string,
-    password: string
+    password: string,
   ): Promise<AuthTokenResponsePassword> {
     const response = await supabase.auth.signInWithPassword({
       email,
       password,
-    });
+    })
 
     if (response.error) {
-      console.error("Error creating session:", response.error);
+      console.error('Error creating session:', response.error)
     }
 
-    return response;
+    return response
   },
 
   /**
@@ -62,13 +62,13 @@ export const auth = {
    * @returns {Promise<IGetSession>} - An object containing session data or an error.
    */
   async getAccount(): Promise<IGetSession> {
-    const response = await supabase.auth.getSession();
+    const response = await supabase.auth.getSession()
 
     if (response.error) {
-      console.error("Error getting account information:", response.error);
+      console.error('Error getting account information:', response.error)
     }
 
-    return response;
+    return response
   },
 
   /**
@@ -77,26 +77,26 @@ export const auth = {
    * @returns {Promise<{ error: AuthError | null }>} - The result of the sign-out request, with potential errors.
    */
   async deleteSession(): Promise<{ error: AuthError | null }> {
-    const response = await supabase.auth.signOut();
+    const response = await supabase.auth.signOut()
 
     if (response.error) {
-      console.error("Error deleting session:", response.error);
+      console.error('Error deleting session:', response.error)
     }
 
-    return response;
+    return response
   },
-};
+}
 
 export const schoolYear = {
   /**
    * Fetches the current school year based on the current date and its related semesters.
    * A school year is considered current if the current date falls between its start_date and end_date.
-   * 
+   *
    * @returns {Promise<SchoolYearWithSemesters>} The current school year and its semesters
    */
   async getCurrentSchoolYearWithSemesters(): Promise<{
-    data: SchoolYearWithSemesters | null;
-    error: PostgrestError | null;
+    data: SchoolYearWithSemesters | null
+    error: PostgrestError | null
   }> {
     try {
       // First, fetch the current school year
@@ -105,17 +105,17 @@ export const schoolYear = {
         .select('*')
         .lte('start_date', new Date().toISOString())
         .gte('end_date', new Date().toISOString())
-        .single();
+        .single()
 
       if (schoolYearError) {
-        throw schoolYearError;
+        throw schoolYearError
       }
 
       if (!schoolYearData) {
         return {
           data: null,
-          error: null
-        };
+          error: null,
+        }
       }
 
       // Then fetch related semesters
@@ -123,10 +123,10 @@ export const schoolYear = {
         .from('semesters')
         .select('*')
         .eq('school_year_id', schoolYearData.id)
-        .order('start_date', { ascending: true });
+        .order('start_date', { ascending: true })
 
       if (semestersError) {
-        throw semestersError;
+        throw semestersError
       }
 
       return {
@@ -135,32 +135,32 @@ export const schoolYear = {
             id: schoolYearData.id,
             name: schoolYearData.academic_year_name,
           },
-          semesters: semestersData.map((semester) => ({
+          semesters: semestersData.map(semester => ({
             id: semester.id,
             name: semester.semester_name,
-            isCurrent: semester.is_current
-          }))
+            isCurrent: semester.is_current,
+          })),
         },
-        error: null
-      };
-    } catch (error) {
-      console.error('Error fetching current school year:', error);
+        error: null,
+      }
+    }
+    catch (error) {
+      console.error('Error fetching current school year:', error)
       return {
         data: null,
-        error: error as PostgrestError
-      };
+        error: error as PostgrestError,
+      }
     }
   },
 
-
   /**
    * Gets the current semester based on the current date.
-   * 
+   *
    * @returns {Promise<Semester | null>} The current semester or null if not found
    */
   async getCurrentSemester(): Promise<{
-    data: Semester | null;
-    error: PostgrestError | null;
+    data: Semester | null
+    error: PostgrestError | null
   }> {
     try {
       const { data: semesterData, error: semesterError } = await supabase
@@ -168,26 +168,27 @@ export const schoolYear = {
         .select('*')
         .lte('start_date', new Date().toISOString())
         .gte('end_date', new Date().toISOString())
-        .single();
+        .single()
 
       if (semesterError) {
-        throw semesterError;
+        throw semesterError
       }
 
       return {
         data: {
           id: semesterData.id,
           name: semesterData.semester_name,
-          isCurrent: semesterData.is_current
+          isCurrent: semesterData.is_current,
         },
-        error: null
-      };
-    } catch (error) {
-      console.error('Error fetching current semester:', error);
+        error: null,
+      }
+    }
+    catch (error) {
+      console.error('Error fetching current semester:', error)
       return {
         data: null,
-        error: error as PostgrestError
-      };
+        error: error as PostgrestError,
+      }
     }
   },
 }
