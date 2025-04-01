@@ -133,7 +133,7 @@ export const notes = {
   async saveNoteLocally(noteData: INoteDTO): Promise<void> {
     try {
       // Validate data structure
-      const requiredFields = ['title', 'description', 'noteType']
+      const requiredFields = ['title', 'description', 'noteType', 'schoolId', 'subjectId', 'teacherId', 'classId']
       for (const field of requiredFields) {
         if (!noteData[field as keyof INoteDTO]) {
           throw new Error(`Missing required field: ${field}`)
@@ -150,10 +150,11 @@ export const notes = {
         noteType: noteData.noteType,
         title: noteData.title ?? '',
         description: noteData.description ?? '',
-        totalPoints: noteData.totalPoints,
+        totalPoints: noteData.totalPoints ?? 0,
         weight: noteData.weight ?? 0,
         isGraded: noteData.isGraded ? 1 : 0,
-        dueDate: noteData.dueDate?.toISOString() ?? '',
+        dueDate: noteData.dueDate?.toISOString() ?? null,
+        createdAt: new Date().toISOString(),
       }
 
       // Insert note then retrieve its ID with drizzle
@@ -163,16 +164,19 @@ export const notes = {
         throw new Error('Failed to save note')
       }
 
-      // Update note with ID
-      const noteDetails: typeof noteDetailTable.$inferInsert[] = noteData.noteDetails?.map(detail => ({
-        noteId: note[0].insertedId,
-        studentId: detail.studentId,
-        note: detail.note ?? 0,
-        gradedAt: null,
-      })) ?? []
+      // Only insert note details if there are any
+      if (noteData.noteDetails && noteData.noteDetails.length > 0) {
+        const noteDetails: typeof noteDetailTable.$inferInsert[] = noteData.noteDetails.map(detail => ({
+          noteId: note[0].insertedId,
+          studentId: detail.studentId,
+          note: detail.note ?? 0,
+          gradedAt: null,
+          createdAt: new Date().toISOString(),
+        }))
 
-      // Insert note details
-      await drizzleDb.insert(noteDetailTable).values(noteDetails)
+        // Insert note details
+        await drizzleDb.insert(noteDetailTable).values(noteDetails)
+      }
     }
     catch (error) {
       console.error('Error saving notes locally:', error)
