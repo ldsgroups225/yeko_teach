@@ -286,7 +286,7 @@ const SchoolClassDetails: React.FC = () => {
       </TouchableOpacity>
 
       <View>
-        <CsText variant="caption" style={{ fontSize: 14, paddingHorizontal: 20 }}>Filter par trimestre</CsText>
+        <CsText variant="caption" style={{ fontSize: 14, paddingHorizontal: 20 }}>Filtrer par trimestre</CsText>
         <FlatList
           data={semesters}
           horizontal

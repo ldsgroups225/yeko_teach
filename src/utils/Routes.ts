@@ -1,6 +1,7 @@
 // src/utils/Routes.ts
 
 import type { IClassDTO, ISchoolDTO } from '@modules/app/types/ILoginDTO'
+import type { ParamListBase } from '@react-navigation/native'
 
 /**
  * Enum representing the available routes in the application.
@@ -35,7 +36,7 @@ export interface ScheduleStackParams {
 /**
  * Represents the parameter types for the school stack routes.
  */
-export interface SchoolStackParams {
+export interface SchoolStackParams extends ParamListBase {
   [Routes.School]: undefined
   [Routes.SchoolDetails]: ISchoolDTO
   [Routes.SchoolClassDetails]: {
@@ -47,7 +48,7 @@ export interface SchoolStackParams {
 /**
  * Represents the parameter types for the chat stack routes.
  */
-export interface ChatStackParams {
+export interface ChatStackParams extends ParamListBase {
   [Routes.Chat]: undefined
   [Routes.ChatDetails]: {
     chatId: string
@@ -57,7 +58,7 @@ export interface ChatStackParams {
 /**
  * Represents the parameter types for the profile stack routes.
  */
-export interface ProfileStackParams {
+export interface ProfileStackParams extends ParamListBase {
   [Routes.User]: undefined
 }
 
