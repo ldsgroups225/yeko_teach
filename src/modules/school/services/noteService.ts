@@ -474,7 +474,7 @@ export const notes = {
 
   async teachedSubjects(classId: string, teacherId: string): Promise<ISubjectDTO[]> {
     const { data, error } = await supabase
-      .from(SCHEDULE_TABLE_ID)
+      .from('teacher_class_assignments')
       .select('subjects(id, name)')
       .eq('class_id', classId)
       .eq('teacher_id', teacherId)
@@ -484,6 +484,10 @@ export const notes = {
       throw new Error(`Failed to fetch subjects: ${error.message}`)
     }
 
-    return data.map(subject => subject.subjects)
+    if (!data || data.length === 0) {
+      return []
+    }
+
+    return data.map(item => item.subjects)
   },
 }
