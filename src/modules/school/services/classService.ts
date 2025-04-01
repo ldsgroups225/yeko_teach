@@ -37,16 +37,20 @@ export const classes = {
           name
         )
       ),
-      students (
-        id,
-        first_name,
-        last_name,
-        id_number
+      student_school_class (
+        student:students (
+          id,
+          first_name,
+          last_name,
+          id_number
+        )
       )
     `,
       )
       .eq('teacher_class_assignments.teacher_id', teacherId)
       .eq('school_id', schoolId)
+      .eq('student_school_class.is_active', true)
+      .eq('student_school_class.enrollment_status', 'accepted')
 
     if (error) {
       console.error('Error getting classes records:', error)
@@ -62,13 +66,21 @@ export const classes = {
     data.forEach((classData) => {
       const classId = classData.id
       if (!classMap.has(classId)) {
+        // Get unique students from student_school_class
+        const students = classData.student_school_class
+          .filter(enrollment => enrollment.student) // Filter out null students
+          .map(enrollment => enrollment.student)
+          .filter((student, index, self) =>
+            index === self.findIndex(s => s.id === student.id),
+          ) // Remove duplicates
+
         classMap.set(classId, {
           id: classId,
           name: classData.name,
           gradeId: classData.grades.id,
           gradeName: classData.grades.name,
           subjects: [],
-          students: classData.students.map(
+          students: students.map(
             (student): IStudentDTO => ({
               id: student.id,
               firstName: student.first_name,
