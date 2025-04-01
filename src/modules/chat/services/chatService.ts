@@ -21,11 +21,16 @@ export const chat = {
     if (error)
       throw error
 
+    if (!data || data.length === 0) {
+      return []
+    }
+
     const students = data.map(d => formatFullName(d.student.last_name, d.student.first_name))
     const classrooms = data.map((c) => {
+      const currentClass = c.student.student_school_class?.[0]?.classroom
       return {
-        classroom: c.student.student_school_class[0].classroom?.name ?? 'Pas de classe',
-        school: c.student.student_school_class[0].classroom?.schools.name ?? 'Pas d\'école',
+        classroom: currentClass?.name ?? 'Pas de classe',
+        school: currentClass?.schools?.name ?? 'Pas d\'école',
       }
     })
 
@@ -44,20 +49,50 @@ export const chat = {
 
       if (error)
         throw error
-      messages.push({ chat_id: chatIDs[i], content: msg![0].content, date: new Date(msg![0].created_at!), isRead: !!msg![0].read_by?.length })
+
+      if (msg && msg.length > 0) {
+        messages.push({
+          chat_id: chatIDs[i],
+          content: msg[0].content ?? '',
+          date: new Date(msg[0].created_at ?? new Date()),
+          isRead: !!msg[0].read_by?.length,
+        })
+      }
+      else {
+        // Handle case where there are no messages
+        messages.push({
+          chat_id: chatIDs[i],
+          content: '',
+          date: new Date(),
+          isRead: true,
+        })
+      }
     }
 
-    const chats = data.map((c, i) => ({
-      id: c.id,
-      topic: c.chat_topics!.title,
-      lastMessage: messages.find(m => m.chat_id === c.id)!.content,
-      lastMessageDate: messages.find(m => m.chat_id === c.id)!.date,
-      unreadCount: messages.find(m => m.chat_id === c.id)!.isRead ? 0 : 1,
-      participants: [
-        formatFullName(c.teacher.first_name!, c.teacher.last_name!),
-        `Parent de ${students[i]} (${classrooms[i].classroom}) au ${classrooms[i].school}!`,
-      ],
-    } satisfies Conversation))
+    const chats = data.map((c, i) => {
+      const messageInfo = messages.find(m => m.chat_id === c.id) ?? {
+        content: '',
+        date: new Date(),
+        isRead: true,
+      }
+
+      const teacherName = formatFullName(
+        c.teacher?.first_name ?? '',
+        c.teacher?.last_name ?? '',
+      )
+
+      return {
+        id: c.id,
+        topic: c.chat_topics?.title ?? 'Discussion',
+        lastMessage: messageInfo.content,
+        lastMessageDate: messageInfo.date,
+        unreadCount: messageInfo.isRead ? 0 : 1,
+        participants: [
+          teacherName,
+          `Parent de ${students[i]} (${classrooms[i].classroom}) au ${classrooms[i].school}`,
+        ],
+      } satisfies Conversation
+    })
 
     return chats
   },
@@ -88,14 +123,14 @@ export const chat = {
       throw messagesError
 
     return {
-      title: chatData?.chat_topics?.title ?? 'Untitled',
+      title: chatData?.chat_topics?.title ?? 'Discussion',
       messageCount: chatData?.message_count ?? 0,
-      status: (chatData?.status) as Message['status'],
+      status: (chatData?.status ?? 'open') as Message['status'],
       messages: messages?.map(msg => ({
         id: msg.id,
         text: msg.content,
         sender: msg.sender_id === userId ? 'user' : 'other',
-        timestamp: new Date(msg.created_at!),
+        timestamp: new Date(msg.created_at ?? new Date()),
       })) ?? [],
     }
   },
