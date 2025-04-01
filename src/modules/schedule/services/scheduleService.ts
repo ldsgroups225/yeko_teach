@@ -19,11 +19,31 @@ export const schedules = {
    * console.log(scheduleList);
    */
   async getSchedules(teacherId: string): Promise<IScheduleDTO[]> {
+    // First get the teacher's assigned classes
+    const { data: teacherClasses, error: teacherError } = await supabase
+      .from('teacher_class_assignments')
+      .select('class_id')
+      .eq('teacher_id', teacherId)
+
+    if (teacherError) {
+      console.error('Error getting teacher class assignments:', teacherError)
+      throw new Error(`Failed to fetch teacher classes: ${teacherError.message}`)
+    }
+
+    if (!teacherClasses || teacherClasses.length === 0) {
+      return []
+    }
+
+    const classIds = teacherClasses.map(tc => tc.class_id)
+
+    // Then get schedules for those classes
     const { data, error } = await supabase
       .from('schedules')
       .select(
         `
         id,
+        class_id,
+        subject_id,
         classes (
           name,
           schools (name)
@@ -34,7 +54,7 @@ export const schedules = {
         end_time
       `,
       )
-      .eq('teacher_id', teacherId)
+      .in('class_id', classIds)
 
     if (error) {
       console.error('Error getting schedule records:', error)
