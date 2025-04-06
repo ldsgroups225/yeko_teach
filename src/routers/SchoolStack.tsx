@@ -3,6 +3,7 @@
 import type { SchoolStackParams } from '@utils/Routes'
 import translate from '@helpers/localization'
 import SchoolClassDetails from '@modules/school/screens/class'
+import ClassNotesScreen from '@modules/school/screens/ClassNotesScreen' // Import the new screen
 import SchoolDetailsScreen from '@modules/school/screens/details'
 import SchoolScreen from '@modules/school/screens/school'
 import { createStackNavigator } from '@react-navigation/stack'
@@ -42,6 +43,16 @@ function SchoolStack() {
         name={Routes.SchoolClassDetails}
         component={SchoolClassDetails}
         options={{ headerShown: false }}
+      />
+
+      {/* Add the new screen for Class Notes */}
+      <Stack.Screen
+        name={Routes.SchoolClassNotes}
+        component={ClassNotesScreen}
+        options={{
+          title: 'Les notes de la classe',
+          // Add other options if needed, e.g., headerShown: true
+        }}
       />
     </Stack.Navigator>
   )

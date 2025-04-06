@@ -1,11 +1,16 @@
 // src/modules/school/components/ClassHeader.tsx
 
 import type { IClassDTO } from '@modules/app/types/ILoginDTO'
+import type { StackNavigationProp } from '@react-navigation/stack'
 import type { ITheme } from '@styles/theme'
+import type { SchoolClassNotesStackParams } from '@utils/Routes'
+import CsButton from '@components/CsButton'
 import CsText from '@components/CsText'
 import { Ionicons } from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/native'
 import { useTheme } from '@src/hooks'
 import { spacing } from '@styles/spacing'
+import { Routes } from '@utils/Routes'
 import React from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 
@@ -30,6 +35,14 @@ const ClassHeader: React.FC<ClassHeaderProps> = ({
 }) => {
   const theme = useTheme()
   const styles = useStyles(theme)
+
+  const navigation = useNavigation<StackNavigationProp<SchoolClassNotesStackParams>>()
+
+  const goToNotes = () => {
+    navigation.navigate(Routes.SchoolClassNotes, {
+      classId: classItem.id,
+    })
+  }
 
   return (
     <View style={styles.container}>
@@ -73,17 +86,27 @@ const ClassHeader: React.FC<ClassHeaderProps> = ({
               </View>
             )
           : (
-              <TouchableOpacity
-                style={styles.actionButton}
-                onPress={onOpenBottomSheet}
-                activeOpacity={0.7}
-              >
-                <Ionicons
-                  name="ellipsis-vertical"
-                  size={24}
-                  color={theme.background}
+              <View style={styles.actionButtons}>
+                <CsButton
+                  variant="secondary"
+                  size="small"
+                  onPress={goToNotes}
+                  title="Les notes"
+                  style={styles.actionButton}
                 />
-              </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={onOpenBottomSheet}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons
+                    name="ellipsis-vertical"
+                    size={24}
+                    color={theme.background}
+                  />
+                </TouchableOpacity>
+              </View>
             )}
       </View>
 
@@ -159,6 +182,13 @@ function useStyles(theme: ITheme) {
     actionSaveText: {
       color: theme.primary,
       marginHorizontal: spacing.sm,
+    },
+    actionButtonText: {
+      color: theme.background,
+    },
+    actionButtons: {
+      flexDirection: 'row',
+      alignItems: 'center',
     },
   })
 }

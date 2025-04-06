@@ -16,6 +16,7 @@ export enum Routes {
   Chat = 'Chat',
   ChatDetails = 'ChatDetails',
   Schedule = 'Schedule',
+  SchoolClassNotes = 'SchoolClassNotes',
 }
 
 /**
@@ -60,6 +61,15 @@ export interface ChatStackParams extends ParamListBase {
  */
 export interface ProfileStackParams extends ParamListBase {
   [Routes.User]: undefined
+}
+
+/**
+ * Represents the parameter types for the school class notes stack routes.
+ */
+export interface SchoolClassNotesStackParams extends ParamListBase {
+  [Routes.SchoolClassNotes]: {
+    classId: string
+  }
 }
 
 /**
