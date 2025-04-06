@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/home/darius-kassi/Projects/Yeko/yeko_teach"
+      ],
+      "command": "npx"
+    },
+    "git": {
+      "args": [
+        "--directory",
+        "/home/darius-kassi/Projects/Yeko/yeko_teach",
+        "run",
+        "mcp-server-git"
+      ],
+      "command": "uv"
+    }
+  }
+}
