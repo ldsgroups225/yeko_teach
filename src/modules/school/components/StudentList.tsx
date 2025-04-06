@@ -14,11 +14,13 @@ import StudentListItem from './StudentListItem'
 interface StudentListProps {
   groupedStudents: Array<{ title: string, data: IStudentDTO[] }>
   isAssigningGrade: boolean
-  onNoteChange: (id: string, note: number) => void
+  onNoteChange: (id: string, note: number | null) => void
   searchQuery: string
   setSearchQuery: (query: string) => void
   sortOrder: 'asc' | 'desc'
   setSortOrder: (order: 'asc' | 'desc') => void
+  isReadOnly: boolean
+  maxPoints: number
 }
 
 /**
@@ -32,6 +34,8 @@ const StudentList: React.FC<StudentListProps> = ({
   setSearchQuery,
   sortOrder,
   setSortOrder,
+  isReadOnly,
+  maxPoints,
 }) => {
   const theme = useTheme()
   const styles = useStyles(theme)
@@ -41,6 +45,8 @@ const StudentList: React.FC<StudentListProps> = ({
       student={item}
       isAssigningGrade={isAssigningGrade}
       onNoteChange={onNoteChange}
+      isReadOnly={isReadOnly}
+      maxPoints={maxPoints}
     />
   )
 

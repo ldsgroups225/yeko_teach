@@ -22,7 +22,7 @@ export enum Routes {
 /**
  * Represents the parameter types for the root stack navigation.
  */
-export interface RootStackParams {
+export interface RootStackParams extends ParamListBase {
   [Routes.Core]: undefined
   [Routes.Login]: undefined
 }
@@ -30,7 +30,7 @@ export interface RootStackParams {
 /**
  * Represents the parameter types for the schedule stack routes.
  */
-export interface ScheduleStackParams {
+export interface ScheduleStackParams extends ParamListBase {
   [Routes.Schedule]: undefined
 }
 

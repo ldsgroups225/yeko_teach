@@ -1,6 +1,7 @@
 import type { IUserDTO } from '@modules/app/types/ILoginDTO'
 import type { RouteProp } from '@react-navigation/native'
 import type { Routes, SchoolClassNotesStackParams } from '@utils/Routes'
+import type { StackScreenProps } from '@react-navigation/stack'
 
 import CsPicker from '@components/CsPicker'
 import CsText from '@components/CsText'
@@ -43,11 +44,11 @@ interface StudentNotes {
   }
 }
 
+// Screen Props
+type Props = StackScreenProps<SchoolClassNotesStackParams, Routes.SchoolClassNotes>
+
 // Route Prop Type
-type ClassNotesRouteProp = RouteProp<
-  SchoolClassNotesStackParams,
-  Routes.SchoolClassNotes
->
+type ClassNotesRouteProp = RouteProp<SchoolClassNotesStackParams, Routes.SchoolClassNotes>
 
 // Styles definition moved to top to avoid "used before defined" error
 const styles = StyleSheet.create({
@@ -184,7 +185,7 @@ const styles = StyleSheet.create({
  * Screen to display notes for a specific class in a table format.
  * Shows students in the first column and their notes (I1, I2, D1, D2, etc.) in subsequent columns.
  */
-const ClassNotesScreen: React.FC = () => {
+const ClassNotesScreen: React.FC<Props> = () => {
   const route = useRoute<ClassNotesRouteProp>()
   const { classId } = route.params
 

@@ -38,8 +38,7 @@ export function pop(count: number) {
  */
 export function navigate<RouteName extends keyof NavigationParams>(name: string, params?: NavigationParams[RouteName]) {
   if (navigationRef.isReady()) {
-    // @ts-expect-error: The types are incorrect.
-    navigationRef.navigate(name, params)
+    navigationRef.current?.navigate(name, params)
   }
 }
 
