@@ -15,7 +15,8 @@ export const chat = {
       teacher: users!chats_teacher_id_fkey(first_name, last_name),
       parent: users!chats_parent_id_fkey(first_name, last_name)
     `)
-      .eq('parent_id', userId)
+      .eq('teacher_id', userId)
+      .neq('status', 'archived')
       .order('created_at', { ascending: false })
 
     if (error)
@@ -102,7 +103,7 @@ export const chat = {
       .from('chats')
       .select('chat_topics(title), message_count, status')
       .eq('id', chatId)
-      .eq('initiated_by', userId)
+      .eq('teacher_id', userId)
       .neq('status', 'archived')
       .single()
 

@@ -52,6 +52,7 @@ export function useChat(): UseChatReturn {
     }
     catch (err) {
       setError('Failed to get messages.')
+      console.error('[E_GET_MESSAGES]:', err)
       throw err
     }
     finally {
@@ -67,6 +68,7 @@ export function useChat(): UseChatReturn {
     }
     catch (err) {
       setError('Failed to create message.')
+      console.error('[E_CREATE_MESSAGE]:', err)
       throw err
     }
     finally {
