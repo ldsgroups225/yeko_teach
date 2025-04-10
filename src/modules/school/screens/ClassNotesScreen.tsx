@@ -12,8 +12,11 @@ import { useTeacherData } from '@hooks/useTeacherData'
 import { FROM_STRING_OPTIONS_MAP, NOTE_TYPE } from '@modules/app/constants/noteTypes'
 import { useRoute } from '@react-navigation/native'
 import { supabase } from '@src/lib/supabase'
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { StyleSheet, View, ScrollView } from 'react-native'
+import { students } from '../services/studentService'
+import { subjects as remoteSubjects } from '../services/teachSubjectsInClassService'
+import { notes } from '../services/noteService'
 
 // Define specific types for state data
 interface Subject { id: string, name: string }
@@ -21,8 +24,8 @@ interface Subject { id: string, name: string }
 // Define interfaces for database types
 interface ClassStudent {
   id: string
-  first_name: string
-  last_name: string
+  firstName: string
+  lastName: string
 }
 
 // Define structured note types
@@ -218,84 +221,33 @@ const ClassNotesScreen: React.FC<Props> = () => {
         // Check auth first as we need the user ID
         const currentUser = await checkAuth()
         if (!currentUser?.id) {
-          throw new Error('User not authenticated.')
+          throw new Error('Vous n\'êtes pas authentifié.')
         }
 
         // Fetch teacher data, students and subjects in parallel
-        const [teacherDataResult, studentsResult, subjectsResult] = await Promise.all([
+        const [
+          teacherData,
+          studentsData,
+          subjectsData,
+        ] = await Promise.all([
           // 1. Fetch teacher data
           fetchTeacherData(currentUser.id),
 
           // 2. Fetch class students
-          supabase
-            .from('student_school_class')
-            .select(`
-              student_id,
-              students (
-                id,
-                first_name,
-                last_name
-              )
-            `)
-            .eq('class_id', classId)
-            .eq('is_active', true),
+          students.getClassStudents(classId),
 
           // 3. Fetch subjects (will be filtered once we have teacher data)
-          supabase
-            .from('teacher_class_assignments')
-            .select(`
-              subject_id,
-              subjects (
-                id,
-                name
-              )
-            `)
-            .eq('class_id', classId)
+          remoteSubjects.getTeachSubjectsInClass(classId),
         ])
 
         // Handle teacher data
-        if (!teacherDataResult) {
-          throw new Error('Données de l\'enseignant non disponibles.')
-        }
-        setTeacherData(teacherDataResult)
-
-        // Handle students data
-        if (studentsResult.error) throw studentsResult.error
-        if (!studentsResult.data || studentsResult.data.length === 0) {
-          throw new Error('Aucun élève trouvé dans cette classe')
-        }
-
-        // Transform and set students data
-        const formattedStudents: ClassStudent[] = studentsResult.data
-          .filter(s => s.students)
-          .map(s => ({
-            id: s.students.id,
-            first_name: s.students.first_name,
-            last_name: s.students.last_name,
-          }))
-          .sort((a, b) => {
-            const lastNameCompare = a.last_name.localeCompare(b.last_name)
-            return lastNameCompare !== 0 ? lastNameCompare : a.first_name.localeCompare(b.first_name)
-          })
-
-        setClassStudents(formattedStudents)
-
-        // Handle subjects data
-        if (subjectsResult.error) throw subjectsResult.error
-
-        // Filter subjects for the teacher and transform data
-        const teacherSubjects = subjectsResult.data
-          .filter(ta => ta.subjects)
-          .map(ta => ({
-            id: ta.subjects.id,
-            name: ta.subjects.name,
-          }))
-
-        setSubjects(teacherSubjects)
+        setTeacherData(teacherData)
+        setClassStudents(studentsData)
+        setSubjects(subjectsData)
         
         // Set first subject as selected by default if no subject is selected
-        if (!selectedSubjectId && teacherSubjects.length > 0) {
-          setSelectedSubjectId(teacherSubjects[0].id)
+        if (!selectedSubjectId && subjectsData.length > 0) {
+          setSelectedSubjectId(subjectsData[0].id)
         }
       }
       catch (err: any) {
@@ -321,31 +273,7 @@ const ClassNotesScreen: React.FC<Props> = () => {
     const fetchNoteDetails = async () => {
       setIsLoading(true)
       try {
-        const { data, error } = await supabase
-          .from('notes')
-          .select(`
-            id,
-            title,
-            note_type,
-            created_at,
-            is_graded,
-            note_details (
-              id,
-              note,
-              student: students (
-                id,
-                first_name,
-                last_name
-              )
-            )
-          `)
-          .eq('teacher_id', teacherId)
-          .eq('class_id', classId)
-          .eq('subject_id', selectedSubjectId)
-          .eq('is_graded', true)
-          .order('created_at')
-
-        if (error) throw error
+        const data = await notes.getClassesNotesForRevision(teacherId, classId, selectedSubjectId)
 
         // Process notes to create sequence numbers for each type
         const typeSequences: { [key: string]: number } = {}
@@ -355,15 +283,15 @@ const ClassNotesScreen: React.FC<Props> = () => {
         classStudents.forEach(student => {
           studentNotesMap[student.id] = {
             studentId: student.id,
-            firstName: student.first_name,
-            lastName: student.last_name,
+            firstName: student.firstName,
+            lastName: student.lastName,
             notes: {},
           }
         })
 
         // Process each note and its details
         data?.forEach((note) => {
-          const noteType = FROM_STRING_OPTIONS_MAP[note.note_type]
+          const noteType = FROM_STRING_OPTIONS_MAP[note.noteType]
           const prefix = noteType === NOTE_TYPE.WRITING_QUESTION
             ? 'I'
             : noteType === NOTE_TYPE.CLASS_TEST
@@ -375,14 +303,14 @@ const ClassNotesScreen: React.FC<Props> = () => {
             const sequence = typeSequences[noteType]
             const columnKey = `${prefix}${sequence}`
 
-            note.note_details?.forEach((detail) => {
-              if (detail.student && studentNotesMap[detail.student.id]) {
-                studentNotesMap[detail.student.id].notes[columnKey] = {
+            note.noteDetails?.forEach((detail) => {
+              if (detail.studentId && studentNotesMap[detail.studentId]) {
+                studentNotesMap[detail.studentId].notes[columnKey] = {
                   id: note.id,
                   noteType,
                   sequence,
                   note: detail.note,
-                  createdAt: note.created_at,
+                  createdAt: note.createdAt,
                   title: note.title,
                 }
               }

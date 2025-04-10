@@ -494,4 +494,49 @@ export const notes = {
 
     return data.map(item => item.subjects)
   },
+
+  async getClassesNotesForRevision(teacherId: string, classId: string, subjectId: string) {
+    const { data, error } = await supabase
+      .from('notes')
+      .select(`
+      id,
+      title,
+      weight,
+      note_type,
+      created_at,
+      note_details (
+        id,
+        note,
+        student: students (
+          id,
+          first_name,
+          last_name
+        )
+      )
+    `)
+      .eq('teacher_id', teacherId)
+      .eq('class_id', classId)
+      .eq('subject_id', subjectId)
+      .eq('is_graded', true)
+      .order('created_at')
+
+    if (error) {
+      console.error('Error fetching notes:', error)
+      throw new Error('Oups, nous n\'avons pas pu récupérer les notes pour cette matière')
+    }
+
+    return data.map(note => ({
+      id: note.id,
+      title: note.title,
+      weight: note.weight,
+      noteType: FROM_STRING_OPTIONS_MAP[note.note_type],
+      createdAt: note.created_at,
+      noteDetails: note.note_details.map(detail => ({
+        note: detail.note,
+        studentId: detail.student.id,
+        firstName: detail.student.first_name,
+        lastName: detail.student.last_name,
+      })),
+    }))
+  },
 }
