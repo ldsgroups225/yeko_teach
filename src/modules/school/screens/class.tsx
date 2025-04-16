@@ -72,10 +72,12 @@ const SchoolClassDetails: React.FC = () => {
   );
 
   useEffect(() => {
-    fetchSavedNotes().then(r => r);
-  }, [currentSubject]);
+    setCurrentPage(1)
+    fetchSavedNotes(1).then(r => r);
+  }, [currentSubject, selectedSemester]);
 
   const fetchSavedNotes = useCallback(async (page: number = 1) => {
+    console.log('selectedSemester', selectedSemester)
     const result = await getNotes(
       classItem.id,
       user?.id ?? "",
@@ -302,6 +304,7 @@ const SchoolClassDetails: React.FC = () => {
               onPress={() => {
                 if (selectedSemester?.id === item.id) setSelectedSemester(undefined);
                 else setSelectedSemester(item);
+                console.log('Pressed', selectedSemester?.id)
               }}
             >
               <CsText

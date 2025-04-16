@@ -9,7 +9,7 @@ import { and, count, desc, eq, lt } from 'drizzle-orm'
 
 export const notes = {
   async getNotes(teacherId: string, classId: string, schoolYearId: number, semesterId?: number): Promise<INoteDTO[]> {
-    const { notes: localData } = await this.getAllSavedNotesLocally(teacherId, classId)
+    const { notes: localData } = await this.getAllSavedNotesLocally(teacherId, classId, semesterId)
 
     let query = supabase
       .from(NOTE_TABLE_ID)
@@ -367,18 +367,26 @@ export const notes = {
     }
   },
 
-  async getAllSavedNotesLocally(teacherId: string, classId: string, page: number = 1, limit: number = 10): Promise<{ notes: INoteDTO[], totalCount: number }> {
+  async getAllSavedNotesLocally(teacherId: string, classId: string, semesterId?: number, page: number = 1, limit: number = 10): Promise<{ notes: INoteDTO[], totalCount: number }> {
     try {
       // Clean up old notes (older than 30 days)
       const thirtyDaysAgo = new Date()
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
+      const conditions = [
+        eq(noteTable.classId, classId),
+        eq(noteTable.teacherId, teacherId),
+      ]
+
+      if (semesterId !== undefined) {
+        conditions.push(eq(noteTable.semesterId, semesterId))
+      }
+
       await drizzleDb
         .delete(noteTable)
         .where(
           and(
-            eq(noteTable.classId, classId),
-            eq(noteTable.teacherId, teacherId),
+            ...conditions,
             lt(noteTable.createdAt, thirtyDaysAgo.toISOString()),
           ),
         )
@@ -390,12 +398,7 @@ export const notes = {
       const notesResult = await drizzleDb
         .select()
         .from(noteTable)
-        .where(
-          and(
-            eq(noteTable.classId, classId),
-            eq(noteTable.teacherId, teacherId),
-          ),
-        )
+        .where(and(...conditions))
         .orderBy(desc(noteTable.createdAt))
         .limit(limit)
         .offset(startIndex)
@@ -404,12 +407,7 @@ export const notes = {
       const totalCountResult = await drizzleDb
         .select({ count: count() })
         .from(noteTable)
-        .where(
-          and(
-            eq(noteTable.classId, classId),
-            eq(noteTable.teacherId, teacherId),
-          ),
-        )
+        .where(and(...conditions))
 
       // Get note details for all fetched notes
       const notesWithDetails = await Promise.all(
