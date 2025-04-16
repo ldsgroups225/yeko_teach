@@ -1,170 +1,42 @@
 // src/modules/chat/screens/chat.tsx
 
+import type { StackNavigationProp } from '@react-navigation/stack'
 import type { ITheme } from '@styles/theme'
+import type { ChatStackParams } from '@utils/Routes'
+import type { Conversation } from '../types/chat'
 import CsText from '@components/CsText'
+import { CsCard } from '@components/index'
+import useDataFetching from '@hooks/useDataFetching'
+import { LoadingScreen, SummaryCard } from '@modules/app/components'
+import { formatDate } from '@modules/app/utils'
+import { useNavigation } from '@react-navigation/native'
 import { useTheme } from '@src/hooks'
+import { supabase } from '@src/lib/supabase'
 import { useAppSelector } from '@store/index'
+import { shadows } from '@styles/shadows'
 import { spacing } from '@styles/spacing'
+import Routes from '@utils/Routes'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Animated, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { useChat } from '../hooks/useChat'
-import useDataFetching from '@hooks/useDataFetching'
-import { Conversation } from '../types/chat'
-import { supabase } from '@src/lib/supabase'
-import { LoadingScreen, SummaryCard } from '@modules/app/components'
-import { shadows } from '@styles/shadows'
-import { CsCard } from '@components/index'
-import { formatDate } from '@modules/app/utils'
-import { navigationRef } from "@helpers/router";
-import Routes, { ChatStackParams } from '@utils/Routes'
-import { useNavigation } from '@react-navigation/native'
-import { StackNavigationProp } from '@react-navigation/stack'
 
-const ChatScreen: React.FC = () => {
-  const theme = useTheme()
-  const styles = useStyles(theme)
-  const navigation = useNavigation<StackNavigationProp<ChatStackParams>>()
+const $black = '#000'
 
-  const user = useAppSelector(s => s?.AppReducer?.user)
-  const { getConversations } = useChat()
-
-  const [selectedFilter, setSelectedFilter] = useState("all");
-  const [conversations, setConversations] = useState<Conversation[]>([])
-  const fetchConversations = useCallback(async () => await getConversations(user!.id).then(r => setConversations(r)), []);
-
-  const {
-      loading,
-      refreshing,
-      refetch: refetchData,
-    } = useDataFetching(fetchConversations);
-
-  useEffect(() => {
-      const channel = supabase
-        .channel('chats')
-        .on('postgres_changes', {
-          event: '*',
-          schema: 'public',
-          table: 'chats',
-          filter: `parent_id=eq.${user?.id}`
-        }, () => refetchData())
-        .subscribe();
-
-      // if is insert eve
-
-      return () => {
-        channel.unsubscribe();
-      };
-    }, [user?.id]);
-
-
-  const summary = useMemo(() => {
-      if (!conversations) return { totalConversations: 0, unreadMessages: 0 };
-      return {
-        totalConversations: conversations.length,
-        unreadMessages: conversations.reduce(
-          (sum, converse) => sum + converse.unreadCount,
-          0
-        ),
-      };
-    }, [conversations?.length]);
-
-  const summaryItems = [
-      {
-        label: "Conversations",
-        value: summary.totalConversations,
-        icon: "chatbubbles-outline" as const,
-        color: styles.primary.color,
-      },
-      {
-        label: "Messages non lus",
-        value: summary.unreadMessages,
-        icon: "mail-unread-outline" as const,
-        color: styles.warning.color,
-      },
-    ];
-
-  const renderHeader = () => (
-      <View style={styles.header}>
-        <CsText style={styles.headerTitle}>Discussions</CsText>
-        <View style={styles.filterContainer}>
-          {["all", "unread"].map((filter) => (
-            <TouchableOpacity
-              key={filter}
-              style={[
-                styles.filterButton,
-                selectedFilter === filter && styles.selectedFilterButton,
-              ]}
-              onPress={() => setSelectedFilter(filter)}
-            >
-              <CsText
-                style={StyleSheet.flatten([
-                  styles.filterButtonText,
-                  selectedFilter === filter &&
-                    styles.selectedFilterButtonText,
-                ])}
-              >
-                {filter === "unread"
-                  ? "Non lus"
-                  : "Tout"}
-              </CsText>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-    );
-
-  const handleConversationPress = (chatId: string) => {
-    navigation.navigate(Routes.ChatDetails, { chatId })
-  }
-
-  if (loading) {
-    return <LoadingScreen />;
-  }
-
-  return (
-    <View style={styles.container}>
-      {renderHeader()}
-      <FlatList
-        style={styles.conversationList}
-        data={conversations}
-        renderItem={({ item }) => (
-          <ConversationItem
-            conversation={item}
-            onPress={() => handleConversationPress(item.id)}
-          />
-        )}
-        keyExtractor={(item) => item.id}
-        ListHeaderComponent={
-          <SummaryCard
-            items={summaryItems}
-            primaryColor={styles.primary.color}
-            successColor={styles.success.color}
-            warningColor={styles.warning.color}
-          />
-        }
-        onRefresh={refetchData}
-        refreshing={refreshing}
-        showsVerticalScrollIndicator={false}
-      />
-    </View>
-  )
-}
-
-const ConversationItem: React.FC<{ conversation: Conversation; onPress: () => void }> = ({
+const ConversationItem: React.FC<{ conversation: Conversation, onPress: () => void }> = ({
   conversation,
   onPress,
 }) => {
   const theme = useTheme()
   const themedStyles = useStyles(theme)
-  const opacity = useRef(new Animated.Value(0)).current;
+  const opacity = useRef(new Animated.Value(0)).current
 
   useEffect(() => {
     Animated.timing(opacity, {
       toValue: 1,
       duration: 500,
       useNativeDriver: true,
-    }).start();
-  }, []);
+    }).start()
+  }, [])
 
   const animatedStyle = {
     opacity,
@@ -176,7 +48,7 @@ const ConversationItem: React.FC<{ conversation: Conversation; onPress: () => vo
         }),
       },
     ],
-  };
+  }
 
   return (
     <Animated.View style={[themedStyles.conversationItem, animatedStyle]}>
@@ -205,13 +77,143 @@ const ConversationItem: React.FC<{ conversation: Conversation; onPress: () => vo
             {conversation.participants[1]}
           </CsText>
           <CsText variant="caption" style={themedStyles.dateText}>
-            {formatDate(conversation.lastMessageDate, "d MMM yyyy")}
+            {formatDate(conversation.lastMessageDate, 'd MMM yyyy')}
           </CsText>
         </View>
       </CsCard>
     </Animated.View>
-  );
-};
+  )
+}
+
+const ChatScreen: React.FC = () => {
+  const theme = useTheme()
+  const styles = useStyles(theme)
+  const navigation = useNavigation<StackNavigationProp<ChatStackParams>>()
+
+  const user = useAppSelector(s => s?.AppReducer?.user)
+  const { getConversations } = useChat()
+
+  const [selectedFilter, setSelectedFilter] = useState('all')
+  const [conversations, setConversations] = useState<Conversation[]>([])
+  const fetchConversations = useCallback(async () => await getConversations(user!.id).then(r => setConversations(r)), [])
+
+  const {
+    loading,
+    refreshing,
+    refetch: refetchData,
+  } = useDataFetching(fetchConversations)
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('chats')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'chats',
+        filter: `parent_id=eq.${user?.id}`,
+      }, () => refetchData())
+      .subscribe()
+
+    // if is insert eve
+
+    return () => {
+      channel.unsubscribe()
+    }
+  }, [user?.id])
+
+  const summary = useMemo(() => {
+    if (!conversations)
+      return { totalConversations: 0, unreadMessages: 0 }
+    return {
+      totalConversations: conversations.length,
+      unreadMessages: conversations.reduce(
+        (sum, converse) => sum + converse.unreadCount,
+        0,
+      ),
+    }
+  }, [conversations?.length])
+
+  const summaryItems = [
+    {
+      label: 'Conversations',
+      value: summary.totalConversations,
+      icon: 'chatbubbles-outline' as const,
+      color: styles.primary.color,
+    },
+    {
+      label: 'Messages non lus',
+      value: summary.unreadMessages,
+      icon: 'mail-unread-outline' as const,
+      color: styles.warning.color,
+    },
+  ]
+
+  const renderHeader = () => (
+    <View style={styles.header}>
+      <CsText style={styles.headerTitle}>Discussions</CsText>
+      <View style={styles.filterContainer}>
+        {['all', 'unread'].map(filter => (
+          <TouchableOpacity
+            key={filter}
+            style={[
+              styles.filterButton,
+              selectedFilter === filter && styles.selectedFilterButton,
+            ]}
+            onPress={() => setSelectedFilter(filter)}
+          >
+            <CsText
+              style={StyleSheet.flatten([
+                styles.filterButtonText,
+                selectedFilter === filter
+                && styles.selectedFilterButtonText,
+              ])}
+            >
+              {filter === 'unread'
+                ? 'Non lus'
+                : 'Tout'}
+            </CsText>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
+  )
+
+  const handleConversationPress = (chatId: string) => {
+    navigation.navigate(Routes.ChatDetails, { chatId })
+  }
+
+  if (loading) {
+    return <LoadingScreen />
+  }
+
+  return (
+    <View style={styles.container}>
+      {renderHeader()}
+      <FlatList
+        style={styles.conversationList}
+        data={conversations}
+        renderItem={({ item }) => (
+          <ConversationItem
+            conversation={item}
+            onPress={() => handleConversationPress(item.id)}
+          />
+        )}
+        keyExtractor={item => item.id}
+        ListHeaderComponent={(
+          <SummaryCard
+            items={summaryItems}
+            primaryColor={styles.primary.color}
+            successColor={styles.success.color}
+            warningColor={styles.warning.color}
+          />
+        )}
+        onRefresh={refetchData}
+        refreshing={refreshing}
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
+  )
+}
 
 function useStyles(theme: ITheme) {
   return StyleSheet.create({
@@ -227,18 +229,18 @@ function useStyles(theme: ITheme) {
     headerTitle: {
       color: theme.background,
       fontSize: 24,
-      fontWeight: "bold",
+      fontWeight: 'bold',
       marginBottom: spacing.sm,
     },
     filterContainer: {
-      flexDirection: "row",
-      justifyContent: "space-between",
+      flexDirection: 'row',
+      justifyContent: 'space-between',
       backgroundColor: theme.card,
       borderRadius: 8,
       padding: spacing.xs,
     },
     filterButton: {
-      alignItems: "center",
+      alignItems: 'center',
       paddingVertical: spacing.xs,
       paddingHorizontal: spacing.xl,
     },
@@ -265,9 +267,9 @@ function useStyles(theme: ITheme) {
       ...shadows.small,
     },
     conversationHeader: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
       marginBottom: spacing.xs,
     },
     conversationTopic: {
@@ -282,28 +284,28 @@ function useStyles(theme: ITheme) {
     unreadBadgeText: {
       color: theme.background,
       fontSize: 12,
-      fontWeight: "bold",
+      fontWeight: 'bold',
     },
     lastMessage: {
       color: theme.textLight,
       marginBottom: spacing.xs,
     },
     conversationFooter: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "flex-start",
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
     },
     participantText: {
       color: theme.textLight,
-      width: "80%",
+      width: '80%',
     },
     dateText: {
       color: theme.textLight,
     },
     newConversationButton: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "center",
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
       backgroundColor: theme.primary,
       padding: spacing.sm,
       borderRadius: 8,
@@ -312,17 +314,17 @@ function useStyles(theme: ITheme) {
     buttonText: {
       color: theme.background,
       marginLeft: spacing.xs,
-      fontWeight: "bold",
+      fontWeight: 'bold',
     },
     modalBackground: {
       ...StyleSheet.absoluteFillObject,
-      backgroundColor: "black",
+      backgroundColor: $black,
     },
     primary: {
       color: theme.primary,
     },
-    success: { color: "#4CAF50" },
-    warning: { color: "#FFA500" },
+    success: { color: theme.success },
+    warning: { color: theme.warning },
   })
 }
 

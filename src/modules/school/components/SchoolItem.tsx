@@ -26,6 +26,9 @@ import Animated, {
 const AnimatedTouchableOpacity
   = Animated.createAnimatedComponent(TouchableOpacity)
 
+const $black = '#000'
+const $black30 = '#00000030'
+
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 const COLUMN_WIDTH = SCREEN_WIDTH / 2 - spacing.md * 1.5
 
@@ -38,8 +41,6 @@ interface SchoolItemProps {
 
 export const SchoolItem: React.FC<SchoolItemProps> = ({
   item,
-  index,
-  totalItems,
   theme,
 }) => {
   const navigation = useNavigation<StackNavigationProp<SchoolStackParams>>()
@@ -119,7 +120,7 @@ function styles(theme: ITheme) {
       overflow: 'hidden',
       backgroundColor: theme.card,
       elevation: 4,
-      shadowColor: '#000',
+      shadowColor: $black,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
       shadowRadius: 4,
@@ -134,7 +135,7 @@ function styles(theme: ITheme) {
     },
     overlay: {
       ...StyleSheet.absoluteFillObject,
-      backgroundColor: 'rgba(0, 0, 0, 0.3)',
+      backgroundColor: $black30,
     },
     schoolIcon: {
       position: 'absolute',

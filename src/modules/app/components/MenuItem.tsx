@@ -1,18 +1,18 @@
-import CsCard from "@components/CsCard";
-import CsText from "@components/CsText";
-import { useThemedStyles } from "@hooks/index";
-import { spacing } from "@src/styles";
-import React from "react";
-import { StyleSheet, View } from "react-native";
+import CsCard from '@components/CsCard'
+import CsText from '@components/CsText'
+import { useThemedStyles } from '@hooks/index'
+import { spacing } from '@src/styles'
+import React from 'react'
+import { StyleSheet, View } from 'react-native'
 
-export type MenuItemProps = {
-  icon: React.ReactNode;
-  label: string;
-  onPress: () => void;
-};
+export interface MenuItemProps {
+  icon: React.ReactNode
+  label: string
+  onPress: () => void
+}
 
 export const MenuItem: React.FC<MenuItemProps> = ({ icon, label, onPress }) => {
-  const themedStyles = useThemedStyles<typeof styles>(styles);
+  const themedStyles = useThemedStyles<typeof styles>(styles)
 
   return (
     <CsCard style={themedStyles.menuItem} onPress={onPress}>
@@ -23,23 +23,24 @@ export const MenuItem: React.FC<MenuItemProps> = ({ icon, label, onPress }) => {
         </CsText>
       </View>
     </CsCard>
-  );
-};
+  )
+}
 
-const styles = () =>
-  StyleSheet.create({
+function styles() {
+  return StyleSheet.create({
     menuItem: {
-      width: "45%",
+      width: '45%',
       aspectRatio: 1,
       marginBottom: spacing.md,
     },
     menuItemContent: {
       flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     menuItemText: {
       marginTop: spacing.xs,
-      textAlign: "center",
+      textAlign: 'center',
     },
-  });
+  })
+}

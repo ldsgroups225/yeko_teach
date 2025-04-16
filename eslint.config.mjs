@@ -1,10 +1,12 @@
 import antfu from '@antfu/eslint-config'
+import reactPlugin from 'eslint-plugin-react'
+import reactHooksPlugin from 'eslint-plugin-react-hooks'
 import reactNativePlugin from 'eslint-plugin-react-native'
 
 export default antfu(
   {
     // Core Antfu configuration
-    react: true,
+    react: false, // Disable antfu's automatic react handling
     typescript: true,
     stylistic: {
       indent: 2,
@@ -29,6 +31,8 @@ export default antfu(
     files: ['**/*.{tsx,jsx,ts,js}'],
     plugins: {
       'react-native': reactNativePlugin,
+      'react': reactPlugin,
+      'react-hooks': reactHooksPlugin,
     },
     languageOptions: {
       globals: {
@@ -43,6 +47,7 @@ export default antfu(
       'react-native/no-color-literals': 'warn',
       'react/jsx-uses-vars': 'error',
       'react/react-in-jsx-scope': 'off',
+      'react-hooks/exhaustive-deps': 'off', // Temporarily disable due to ESLint v9 incompatibility
     },
   },
 

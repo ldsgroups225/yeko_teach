@@ -26,6 +26,26 @@ interface SummaryCardProps {
   warningColor: string
 }
 
+const SummaryItem: React.FC<SummaryItemProps> = ({
+  icon,
+  value,
+  label,
+  color,
+}) => {
+  const themedStyles = useThemedStyles<typeof styles>(styles)
+  return (
+    <View style={themedStyles.summaryItem}>
+      <Ionicons name={icon} size={24} color={color} />
+      <CsText variant="h3" style={{ ...themedStyles.summaryValue, color }}>
+        {value}
+      </CsText>
+      <CsText variant="caption" style={themedStyles.summaryLabel}>
+        {label}
+      </CsText>
+    </View>
+  )
+}
+
 const SummaryCard: React.FC<SummaryCardProps> = ({
   items,
   primaryColor,
@@ -69,26 +89,6 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
     <CsCard style={themedStyles.summaryCard}>
       <View style={themedStyles.summaryRow}>{renderItems()}</View>
     </CsCard>
-  )
-}
-
-const SummaryItem: React.FC<SummaryItemProps> = ({
-  icon,
-  value,
-  label,
-  color,
-}) => {
-  const themedStyles = useThemedStyles<typeof styles>(styles)
-  return (
-    <View style={themedStyles.summaryItem}>
-      <Ionicons name={icon} size={24} color={color} />
-      <CsText variant="h3" style={{ ...themedStyles.summaryValue, color }}>
-        {value}
-      </CsText>
-      <CsText variant="caption" style={themedStyles.summaryLabel}>
-        {label}
-      </CsText>
-    </View>
   )
 }
 

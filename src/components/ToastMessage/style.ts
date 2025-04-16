@@ -4,6 +4,8 @@ import { StyleSheet } from 'react-native'
 
 export const toastHeight = 120
 
+const $white = '#FFF'
+
 export const styles = StyleSheet.create({
   root: {
     height: toastHeight,
@@ -21,7 +23,7 @@ export const styles = StyleSheet.create({
   },
   text: {
     fontWeight: '700',
-    color: 'white',
+    color: $white,
     fontSize: 16,
   },
 })

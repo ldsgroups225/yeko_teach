@@ -18,6 +18,9 @@ interface CsPickerProps {
 
 function styles(theme: ITheme) {
   return StyleSheet.create({
+    h40: {
+      height: 40,
+    },
     pickerContainer: {
       marginBottom: spacing.md,
     },
@@ -53,7 +56,7 @@ const CsPicker: React.FC<CsPickerProps> = ({
         onValueChange={onValueChange}
         style={[
           themedStyles.picker,
-          Platform.OS === 'android' && { height: 40 },
+          Platform.OS === 'android' && themedStyles.h40,
         ]} // Adjust height for Android
         dropdownIconColor={theme.text}
       >

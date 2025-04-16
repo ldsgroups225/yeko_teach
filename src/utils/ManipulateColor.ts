@@ -65,7 +65,10 @@ export function manipulateColor(
   }
 
   // Convert input color to RGBA components
-  let r: number; let g: number; let b: number; let a: number = finalAlpha
+  let r: number
+  let g: number
+  let b: number
+  let a: number = finalAlpha
 
   if (typeof color === 'string') {
     // Remove leading '#' and normalize hex string

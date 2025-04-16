@@ -1,86 +1,90 @@
 // src/modules/schedule/screens/schedule.tsx
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { BackHandler, FlatList, Image, StyleSheet, TouchableOpacity, View } from "react-native";
-import { useTheme } from "@src/hooks";
-import CsText from "@components/CsText";
-import { spacing } from "@styles/spacing";
-import { ITheme } from "@styles/theme";
-import { useAppSelector } from "@src/store";
-import { useSchedule } from "@modules/schedule/hooks/useSchedule";
-import { LoadingScreen } from "@modules/app/components";
-import { IScheduleDTO } from "@modules/app/types/IScheduleDTO";
-import { Ionicons } from "@expo/vector-icons";
-import { OtpForm } from "@components/OtpForm";
-import { useSchoolJoin } from "@hooks/useSchoolJoin";
-import { useClearCache } from "@hooks/useClearCache";
-import { showToast } from "@helpers/toast/showToast";
-import { ToastColorEnum } from "@components/ToastMessage/ToastColorEnum";
-import { useAuthCheck } from "@hooks/useAuthCheck";
+import type { IScheduleDTO } from '@modules/app/types/IScheduleDTO'
+import type { ITheme } from '@styles/theme'
+import CsText from '@components/CsText'
+import { OtpForm } from '@components/OtpForm'
+import { ToastColorEnum } from '@components/ToastMessage/ToastColorEnum'
+import { Ionicons } from '@expo/vector-icons'
+import { showToast } from '@helpers/toast/showToast'
+import { useAuthCheck } from '@hooks/useAuthCheck'
+import { useClearCache } from '@hooks/useClearCache'
+import { useSchoolJoin } from '@hooks/useSchoolJoin'
+import { LoadingScreen } from '@modules/app/components'
+import { useSchedule } from '@modules/schedule/hooks/useSchedule'
+import { useTheme } from '@src/hooks'
+import { useAppSelector } from '@src/store'
+import { spacing } from '@styles/spacing'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { BackHandler, FlatList, Image, StyleSheet, TouchableOpacity, View } from 'react-native'
 
-const daysOfWeek = ["LUN", "MAR", "MER", "JEU", "VEN"];
-const fullDaysOfWeek = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
+const daysOfWeek = ['LUN', 'MAR', 'MER', 'JEU', 'VEN']
+const fullDaysOfWeek = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi']
 
-const ITEM_HEIGHT = 100;
+const $black = '#000'
+
+const ITEM_HEIGHT = 100
 
 const ScheduleScreen: React.FC = () => {
-  const theme = useTheme();
-  const styles = useStyles(theme);
+  const theme = useTheme()
+  const styles = useStyles(theme)
   const checkAuth = useAuthCheck()
-  const { clearCache } = useClearCache();
-  const user = useAppSelector((s) => s?.AppReducer?.user);
-  const { getSchedules, loading, error: scheduleError } = useSchedule();
-  const { joinSchool, loading: isJoiningSchool, error: joinSchoolError } = useSchoolJoin(user?.id || '');
+  const { clearCache } = useClearCache()
+  const user = useAppSelector(s => s?.AppReducer?.user)
+  const { getSchedules, loading, error: scheduleError } = useSchedule()
+  const { joinSchool, loading: isJoiningSchool, error: joinSchoolError } = useSchoolJoin(user?.id || '')
 
-  const [schedules, setSchedules] = useState<IScheduleDTO[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedDay, setSelectedDay] = useState(new Date().getDay() || 1);
+  const [schedules, setSchedules] = useState<IScheduleDTO[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [selectedDay, setSelectedDay] = useState(new Date().getDay() || 1)
 
   const fetchSchedules = useCallback(async () => {
-    if (!user || !user.schools.length) return;
-    const fetchedSchedules = await getSchedules(user.id);
+    if (!user || !user.schools.length)
+      return
+    const fetchedSchedules = await getSchedules(user.id)
     if (fetchedSchedules) {
-      setSchedules(fetchedSchedules);
-      setError(null);
-    } else {
-      setError(scheduleError || "Impossible de récupérer l'emploi du temps");
+      setSchedules(fetchedSchedules)
+      setError(null)
     }
-  }, [user, getSchedules, scheduleError]);
+    else {
+      setError(scheduleError || 'Impossible de récupérer l\'emploi du temps')
+    }
+  }, [user, getSchedules, scheduleError])
 
   useEffect(() => {
-    fetchSchedules();
-  }, [fetchSchedules]);
+    fetchSchedules()
+  }, [fetchSchedules])
 
   useEffect(() => {
     if (joinSchoolError) {
-      showToast(joinSchoolError, ToastColorEnum.Error);
+      showToast(joinSchoolError, ToastColorEnum.Error)
     }
-  }, [joinSchoolError]);
+  }, [joinSchoolError])
 
   const memoizedSchedules = useMemo(() => {
-    const schedulesMap = new Map();
+    const schedulesMap = new Map()
     daysOfWeek.forEach((_, index) => {
       schedulesMap.set(
         index + 1,
-        schedules.filter((schedule) => schedule.dayOfWeek === index + 1)
-      );
-    });
-    return schedulesMap;
-  }, [schedules]);
+        schedules.filter(schedule => schedule.dayOfWeek === index + 1),
+      )
+    })
+    return schedulesMap
+  }, [schedules])
 
   const currentDaySchedule = useMemo(
     () => memoizedSchedules.get(selectedDay) || [],
-    [memoizedSchedules, selectedDay]
-  );
+    [memoizedSchedules, selectedDay],
+  )
 
   const handleOtpComplete = useCallback(async (code: string) => {
-    const joined = await joinSchool(code);
+    const joined = await joinSchool(code)
     if (joined) {
-      await clearCache();
-      await checkAuth();
-      BackHandler.exitApp();
+      await clearCache()
+      await checkAuth()
+      BackHandler.exitApp()
     }
-  }, [joinSchool, clearCache]);
+  }, [joinSchool, clearCache])
 
   const renderDaySelector = useCallback(
     () => (
@@ -106,8 +110,8 @@ const ScheduleScreen: React.FC = () => {
         ))}
       </View>
     ),
-    [styles, selectedDay]
-  );
+    [styles, selectedDay],
+  )
 
   const renderItem = useCallback(
     ({ item }: { item: IScheduleDTO }) => (
@@ -127,8 +131,8 @@ const ScheduleScreen: React.FC = () => {
         </View>
       </View>
     ),
-    [styles]
-  );
+    [styles],
+  )
 
   const getItemLayout = useCallback(
     (_: any, index: number) => ({
@@ -136,10 +140,10 @@ const ScheduleScreen: React.FC = () => {
       offset: ITEM_HEIGHT * index,
       index,
     }),
-    []
-  );
+    [],
+  )
 
-  const keyExtractor = useCallback((item: IScheduleDTO) => item.id, []);
+  const keyExtractor = useCallback((item: IScheduleDTO) => item.id, [])
 
   const ListEmptyComponent = useCallback(
     () => (
@@ -147,11 +151,11 @@ const ScheduleScreen: React.FC = () => {
         Aucun cours prévu pour ce jour
       </CsText>
     ),
-    [styles]
-  );
+    [styles],
+  )
 
   if (loading) {
-    return <LoadingScreen />;
+    return <LoadingScreen />
   }
 
   if (error) {
@@ -159,14 +163,14 @@ const ScheduleScreen: React.FC = () => {
       <View style={styles.container}>
         <CsText style={styles.errorText}>{error}</CsText>
       </View>
-    );
+    )
   }
 
   if (!user?.schools.length) {
     return (
       <View style={styles.centeredView}>
         <Image
-          source={require("@assets/images/icon.png")}
+          source={require('@assets/images/icon.png')}
           style={styles.logo}
         />
 
@@ -213,33 +217,33 @@ const ScheduleScreen: React.FC = () => {
         style={styles.flatList}
       />
     </View>
-  );
-};
+  )
+}
 
-const useStyles = (theme: ITheme) =>
-  StyleSheet.create({
+function useStyles(theme: ITheme) {
+  return StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: theme.background,
     },
     centeredView: {
       flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     logo: {
       width: 150,
       height: 200,
-      alignSelf: "center",
-      objectFit: "contain",
+      alignSelf: 'center',
+      objectFit: 'contain',
     },
     otpWrapper: {
       margin: 20,
       backgroundColor: theme.background,
       borderRadius: 20,
       padding: 35,
-      alignItems: "center",
-      shadowColor: "#000",
+      alignItems: 'center',
+      shadowColor: $black,
       shadowOffset: {
         width: 0,
         height: 2,
@@ -250,31 +254,31 @@ const useStyles = (theme: ITheme) =>
       width: '90%',
     },
     header: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
       padding: spacing.md,
       borderBottomWidth: 1,
       borderBottomColor: theme.border,
     },
     title: {
       fontSize: 24,
-      fontWeight: "bold",
+      fontWeight: 'bold',
       color: theme.text,
     },
     subtitle: {
       fontSize: 16,
-       fontWeight: "bold",
-       color: theme.text,
-       textAlign: "center",
-       margin: 20,
+      fontWeight: 'bold',
+      color: theme.text,
+      textAlign: 'center',
+      margin: 20,
     },
     refreshButton: {
       padding: spacing.sm,
     },
     daySelector: {
-      flexDirection: "row",
-      justifyContent: "space-around",
+      flexDirection: 'row',
+      justifyContent: 'space-around',
       padding: spacing.md,
       backgroundColor: theme.card,
     },
@@ -291,11 +295,11 @@ const useStyles = (theme: ITheme) =>
     },
     selectedDayButtonText: {
       color: theme.background,
-      fontWeight: "bold",
+      fontWeight: 'bold',
     },
     selectedDayText: {
       fontSize: 18,
-      fontWeight: "bold",
+      fontWeight: 'bold',
       color: theme.text,
       padding: spacing.md,
     },
@@ -306,18 +310,18 @@ const useStyles = (theme: ITheme) =>
       flexGrow: 1,
     },
     scheduleItem: {
-      flexDirection: "row",
+      flexDirection: 'row',
       marginBottom: spacing.md,
       backgroundColor: theme.card,
       borderRadius: 8,
-      overflow: "hidden",
+      overflow: 'hidden',
       height: ITEM_HEIGHT,
     },
     timeContainer: {
       width: 80,
       backgroundColor: theme.primary,
-      justifyContent: "center",
-      alignItems: "center",
+      justifyContent: 'center',
+      alignItems: 'center',
       padding: spacing.sm,
     },
     timeText: {
@@ -330,7 +334,7 @@ const useStyles = (theme: ITheme) =>
     },
     className: {
       fontSize: 16,
-      fontWeight: "bold",
+      fontWeight: 'bold',
       color: theme.text,
       marginBottom: spacing.xs,
     },
@@ -346,15 +350,16 @@ const useStyles = (theme: ITheme) =>
     errorText: {
       color: theme.error,
       fontSize: 16,
-      textAlign: "center",
+      textAlign: 'center',
       marginTop: spacing.lg,
     },
     noScheduleText: {
       fontSize: 16,
       color: theme.textLight,
-      textAlign: "center",
+      textAlign: 'center',
       marginTop: spacing.xl,
     },
-  });
+  })
+}
 
-export default React.memo(ScheduleScreen);
+export default React.memo(ScheduleScreen)

@@ -3,6 +3,9 @@
 import type { ITheme } from '@styles/theme'
 import { StyleSheet } from 'react-native'
 
+const $black30 = '#00000030'
+const $black85 = '#00000085'
+
 export function styles(theme: ITheme) {
   return StyleSheet.create({
     activityIndicator: {
@@ -14,7 +17,7 @@ export function styles(theme: ITheme) {
       alignItems: 'center',
       justifyContent: 'center',
       flexDirection: 'column',
-      backgroundColor: 'rgba(0, 0, 0, 0.85)',
+      backgroundColor: $black85,
     },
 
     activityIndicatorText: {
@@ -28,7 +31,7 @@ export function styles(theme: ITheme) {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: 'rgba(0, 0, 0, 0.3)',
+      backgroundColor: $black30,
     },
   })
 }

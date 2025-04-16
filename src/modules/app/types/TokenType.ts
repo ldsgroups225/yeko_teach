@@ -1,3 +1,3 @@
-export type TokenType = {
-  accessToken: string;
-};
+export interface TokenType {
+  accessToken: string
+}

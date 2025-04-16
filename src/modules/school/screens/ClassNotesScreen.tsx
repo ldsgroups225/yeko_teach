@@ -1,7 +1,7 @@
 import type { IUserDTO } from '@modules/app/types/ILoginDTO'
 import type { RouteProp } from '@react-navigation/native'
-import type { Routes, SchoolClassNotesStackParams } from '@utils/Routes'
 import type { StackScreenProps } from '@react-navigation/stack'
+import type { Routes, SchoolClassNotesStackParams } from '@utils/Routes'
 
 import CsPicker from '@components/CsPicker'
 import CsText from '@components/CsText'
@@ -11,12 +11,11 @@ import { useAuth } from '@hooks/useAuth'
 import { useTeacherData } from '@hooks/useTeacherData'
 import { FROM_STRING_OPTIONS_MAP, NOTE_TYPE } from '@modules/app/constants/noteTypes'
 import { useRoute } from '@react-navigation/native'
-import { supabase } from '@src/lib/supabase'
 import { useCallback, useEffect, useState } from 'react'
-import { StyleSheet, View, ScrollView } from 'react-native'
+import { ScrollView, StyleSheet, View } from 'react-native'
+import { notes } from '../services/noteService'
 import { students } from '../services/studentService'
 import { subjects as remoteSubjects } from '../services/teachSubjectsInClassService'
-import { notes } from '../services/noteService'
 
 // Define specific types for state data
 interface Subject { id: string, name: string }
@@ -53,19 +52,29 @@ type Props = StackScreenProps<SchoolClassNotesStackParams, Routes.SchoolClassNot
 // Route Prop Type
 type ClassNotesRouteProp = RouteProp<SchoolClassNotesStackParams, Routes.SchoolClassNotes>
 
+const $black = '#000'
+const $white = '#FFF'
+const $gray1 = '#F1F3F5'
+const $gray2 = '#F8F9FA'
+const $gray3 = '#E9ECEF'
+const $gray4 = '#6c757d'
+const $gray5 = '#212529'
+const $gray6 = '#495057'
+const $red = '#DC3545'
+
 // Styles definition moved to top to avoid "used before defined" error
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 15,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: $gray1,
   },
   pickerContainer: {
     marginBottom: 15,
-    backgroundColor: '#fff',
+    backgroundColor: $white,
     borderRadius: 8,
     padding: 10,
-    shadowColor: '#000',
+    shadowColor: $black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -73,9 +82,9 @@ const styles = StyleSheet.create({
   },
   tableContainer: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: $white,
     borderRadius: 8,
-    shadowColor: '#000',
+    shadowColor: $black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -87,9 +96,9 @@ const styles = StyleSheet.create({
   },
   fixedColumn: {
     width: 150,
-    backgroundColor: '#fff',
+    backgroundColor: $white,
     borderRightWidth: 1,
-    borderRightColor: '#e9ecef',
+    borderRightColor: $gray3,
     zIndex: 1,
   },
   scrollableArea: {
@@ -97,9 +106,9 @@ const styles = StyleSheet.create({
   },
   headerRow: {
     height: 48,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: $gray2,
     borderBottomWidth: 1,
-    borderBottomColor: '#e9ecef',
+    borderBottomColor: $gray3,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -108,36 +117,36 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     fontWeight: '600',
     fontSize: 15,
-    color: '#495057',
+    color: $gray6,
   },
   headerNote: {
     width: 80,
     textAlign: 'center',
     fontWeight: '600',
     fontSize: 15,
-    color: '#495057',
+    color: $gray6,
   },
   row: {
     height: 48,
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: '#f1f3f5',
+    borderBottomColor: $gray1,
   },
   rowAlternate: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: $gray2,
   },
   studentName: {
     width: 150,
     paddingHorizontal: 15,
     fontSize: 14,
-    color: '#212529',
+    color: $gray5,
   },
   noteCell: {
     width: 80,
     textAlign: 'center',
     fontSize: 14,
-    color: '#495057',
+    color: $gray6,
   },
   listContainer: {
     paddingBottom: 20,
@@ -146,7 +155,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: $white,
     borderRadius: 8,
     margin: 15,
     padding: 20,
@@ -154,20 +163,20 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 14,
-    color: '#6c757d',
+    color: $gray4,
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: $white,
     borderRadius: 8,
     margin: 15,
     padding: 20,
   },
   errorText: {
     fontSize: 15,
-    color: '#dc3545',
+    color: $red,
     textAlign: 'center',
   },
   emptyContainer: {
@@ -176,7 +185,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 15,
-    color: '#6c757d',
+    color: $gray4,
     textAlign: 'center',
   },
   subjectPickerContainer: {
@@ -244,7 +253,7 @@ const ClassNotesScreen: React.FC<Props> = () => {
         setTeacherData(teacherData)
         setClassStudents(studentsData)
         setSubjects(subjectsData)
-        
+
         // Set first subject as selected by default if no subject is selected
         if (!selectedSubjectId && subjectsData.length > 0) {
           setSelectedSubjectId(subjectsData[0].id)
@@ -280,7 +289,7 @@ const ClassNotesScreen: React.FC<Props> = () => {
         const studentNotesMap: { [key: string]: StudentNotes } = {}
 
         // Initialize studentNotesMap with all class students
-        classStudents.forEach(student => {
+        classStudents.forEach((student) => {
           studentNotesMap[student.id] = {
             studentId: student.id,
             firstName: student.firstName,
@@ -419,7 +428,9 @@ const ClassNotesScreen: React.FC<Props> = () => {
             {structuredNotes.map((student, index) => (
               <View key={student.studentId} style={[styles.row, index % 2 !== 0 && styles.rowAlternate]}>
                 <CsText style={styles.studentName}>
-                  {student.firstName} {student.lastName}
+                  {student.firstName}
+                  {' '}
+                  {student.lastName}
                 </CsText>
               </View>
             ))}
@@ -451,7 +462,7 @@ const ClassNotesScreen: React.FC<Props> = () => {
         {structuredNotes.length === 0 && (
           <View style={styles.emptyContainer}>
             <CsText style={styles.emptyText}>
-              {selectedSubjectId 
+              {selectedSubjectId
                 ? 'Aucune note trouvée pour les critères sélectionnés.'
                 : 'Veuillez sélectionner une matière pour voir les notes.'}
             </CsText>

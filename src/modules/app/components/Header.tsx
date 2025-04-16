@@ -1,7 +1,7 @@
-import { FontAwesome5 } from '@expo/vector-icons';
-import { useThemedStyles } from '@src/hooks';
-import { colors, spacing, typography } from '@styles/index';
-import React from 'react';
+import { FontAwesome5 } from '@expo/vector-icons'
+import { useThemedStyles } from '@src/hooks'
+import { colors, spacing, typography } from '@styles/index'
+import React from 'react'
 import {
   Dimensions,
   Image,
@@ -10,14 +10,16 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
+} from 'react-native'
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const ASPECT_RATIO = 16 / 9; // Adjust this to match your image's aspect ratio
-const IMAGE_HEIGHT = SCREEN_WIDTH / ASPECT_RATIO;
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
+const ASPECT_RATIO = 16 / 9 // Adjust this to match your image's aspect ratio
+const IMAGE_HEIGHT = SCREEN_WIDTH / ASPECT_RATIO
+
+const $black30 = '#00000030'
 
 export const Header: React.FC = () => {
-  const themedStyles = useThemedStyles<typeof styles>(styles);
+  const themedStyles = useThemedStyles<typeof styles>(styles)
 
   return (
     <View style={themedStyles.headerContainer}>
@@ -43,11 +45,11 @@ export const Header: React.FC = () => {
       </ImageBackground>
       <View style={themedStyles.orangeBar} />
     </View>
-  );
-};
+  )
+}
 
-const styles = () =>
-  StyleSheet.create({
+function styles() {
+  return StyleSheet.create({
     headerContainer: {
       height: IMAGE_HEIGHT,
       maxHeight: SCREEN_HEIGHT * 0.4, // Limit to 40% of screen height
@@ -59,7 +61,7 @@ const styles = () =>
     },
     overlay: {
       ...StyleSheet.absoluteFillObject,
-      backgroundColor: 'rgba(0, 0, 0, 0.3)', // Add a slight dark overlay for better text visibility
+      backgroundColor: $black30,
     },
     headerContent: {
       flexDirection: 'row',
@@ -94,4 +96,5 @@ const styles = () =>
       height: 4,
       backgroundColor: colors.secondary,
     },
-  });
+  })
+}

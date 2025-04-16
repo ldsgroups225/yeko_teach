@@ -1,27 +1,28 @@
 // src/modules/chat/screens/chatDetails.tsx
 
-
-import { useEffect, useRef, useState } from "react";
-import { useChat } from "../hooks/useChat";
+import type { RouteProp } from '@react-navigation/native'
+import type { StackNavigationProp } from '@react-navigation/stack'
+import type { ITheme } from '@styles/theme'
+import type { ChatStackParams } from '@utils/Routes'
+import type Routes from '@utils/Routes'
+import { CsCard, CsText } from '@components/index'
+import { Ionicons } from '@expo/vector-icons'
+import { showToast } from '@helpers/toast/showToast'
+import { useNavigation, useRoute } from '@react-navigation/native'
 import { useTheme } from '@src/hooks'
-import { showToast } from "@helpers/toast/showToast";
-import { supabase } from "@src/lib/supabase";
-import { CsCard, CsText } from "@components/index";
-import { Animated, KeyboardAvoidingView, FlatList, Platform, TextInput, TouchableOpacity, View, StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { ITheme } from "@styles/theme";
-import { useAppSelector } from "@store/index";
-import { shadows, spacing } from "@styles/index";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
-import Routes, { ChatStackParams } from "@utils/Routes";
-import { StackNavigationProp } from "@react-navigation/stack";
+import { supabase } from '@src/lib/supabase'
+import { useAppSelector } from '@store/index'
+import { shadows, spacing } from '@styles/index'
+import { useEffect, useRef, useState } from 'react'
+import { Alert, Animated, FlatList, KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
+import { useChat } from '../hooks/useChat'
 
 // Message Interface
 interface Message {
-  id: string;
-  text: string;
-  sender: "user" | "other";
-  timestamp: Date;
+  id: string
+  text: string
+  sender: 'user' | 'other'
+  timestamp: Date
 }
 
 const ChatDetailScreen: React.FC = () => {
@@ -29,83 +30,87 @@ const ChatDetailScreen: React.FC = () => {
   const theme = useTheme()
   const styles = useStyles(theme)
 
-  const navigation = useNavigation<StackNavigationProp<ChatStackParams>>();
-  const route = useRoute<RouteProp<ChatStackParams, Routes.ChatDetails>>();
-  const chatId = route.params.chatId;
+  const navigation = useNavigation<StackNavigationProp<ChatStackParams>>()
+  const route = useRoute<RouteProp<ChatStackParams, Routes.ChatDetails>>()
+  const chatId = route.params.chatId
 
-  const user = useAppSelector((s) => s?.AppReducer?.user);
+  const user = useAppSelector(s => s?.AppReducer?.user)
 
-  const { getMessages, createMessage } = useChat();
+  const { getMessages, createMessage } = useChat()
 
   // States
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [chat, setChat] = useState<{ messageCount: number; title: string, status: 'active' | 'ended' | 'archived' } | null>(null);
-  const [inputText, setInputText] = useState("");
+  const [messages, setMessages] = useState<Message[]>([])
+  const [chat, setChat] = useState<{ messageCount: number, title: string, status: 'active' | 'ended' | 'archived' } | null>(null)
+  const [inputText, setInputText] = useState('')
 
   // Refs
-  const flatListRef = useRef<FlatList>(null);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const flatListRef = useRef<FlatList>(null)
+  const fadeAnim = useRef(new Animated.Value(0)).current
 
   // Effects
   useEffect(() => {
-    if (user === null) return;
+    if (user === null)
+      return
 
     const loadMessages = async () => {
       try {
-        const result = await getMessages({ userId: user!.id, chatId });
+        const result = await getMessages({ userId: user!.id, chatId })
 
-        setChat({ messageCount: result.messageCount, title: result.title, status: result.status });
-        setMessages(result.messages);
-      } catch (error) {
-        showToast((error as Error).message);
+        setChat({ messageCount: result.messageCount, title: result.title, status: result.status })
+        setMessages(result.messages)
       }
-    };
+      catch (error) {
+        showToast((error as Error).message)
+      }
+    }
 
-    loadMessages();
-  }, [chatId]);
+    loadMessages()
+  }, [chatId])
 
   useEffect(() => {
     // Scroll to end and fade in new message when messages array updates
     if (messages.length > 0) {
-      flatListRef.current?.scrollToEnd({ animated: true });
+      flatListRef.current?.scrollToEnd({ animated: true })
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 500,
         useNativeDriver: true,
-      }).start();
+      }).start()
     }
-  }, [messages, fadeAnim]);
+  }, [messages, fadeAnim])
 
   // Callbacks
   const sendMessage = async () => {
-    if (!inputText.trim()) return;
+    if (!inputText.trim())
+      return
 
     try {
       // Check message limit
       if (chat!.messageCount >= 10) {
-        alert('Vous avez atteint le nombre maximum de messages par chat. (10 max)');
-        return;
+        Alert.alert('Vous avez atteint le nombre maximum de messages par chat. (10 max)')
+        return
       }
       await createMessage({
         chatId,
         senderId: user!.id,
-        content: inputText.trim()
-      });
+        content: inputText.trim(),
+      })
 
-      setInputText('');
+      setInputText('')
       setMessages(prev => [
         ...prev,
         {
           id: Date.now().toString(),
           sender: 'user',
           text: inputText.trim(),
-          timestamp: new Date()
+          timestamp: new Date(),
         },
       ])
-    } catch (error) {
-      console.error('Error sending message:', error);
     }
-  };
+    catch (error) {
+      console.error('Error sending message:', error)
+    }
+  }
 
   // Add real-time listener
   useEffect(() => {
@@ -115,9 +120,9 @@ const ChatDetailScreen: React.FC = () => {
         event: 'INSERT',
         schema: 'public',
         table: 'messages',
-        filter: `chat_id=eq.${chatId}`
+        filter: `chat_id=eq.${chatId}`,
       }, (payload) => {
-        const newMessage = payload.new;
+        const newMessage = payload.new
         if (newMessage.sender !== user!.id) {
           setMessages(
             prev => [
@@ -126,13 +131,13 @@ const ChatDetailScreen: React.FC = () => {
                 id: newMessage.id,
                 sender: newMessage.sender_id === user!.id ? 'user' : 'other',
                 text: newMessage.content,
-                timestamp: newMessage.created_at
-              }
-            ]
-          );
+                timestamp: newMessage.created_at,
+              },
+            ],
+          )
         }
       })
-      .subscribe();
+      .subscribe()
 
     // const updateChannel = supabase
     //   .channel('messages')
@@ -163,18 +168,18 @@ const ChatDetailScreen: React.FC = () => {
     //   .subscribe();
 
     return () => {
-      channel.unsubscribe();
+      channel.unsubscribe()
       // updateChannel.unsubscribe()
-    };
-  }, [chatId, user]);
+    }
+  }, [chatId, user])
 
-  const renderMessage = ({ item, index }: { item: Message; index: number }) => {
-    const isLastMessage = index === messages.length - 1;
+  const renderMessage = ({ item, index }: { item: Message, index: number }) => {
+    const isLastMessage = index === messages.length - 1
     return (
       <Animated.View
         style={[
           styles.messageContainer,
-          item.sender === "user"
+          item.sender === 'user'
             ? styles.userMessage
             : styles.otherMessage,
           isLastMessage && { opacity: fadeAnim },
@@ -184,21 +189,21 @@ const ChatDetailScreen: React.FC = () => {
           <CsText style={styles.messageText}>{item.text}</CsText>
           <CsText style={styles.timestamp}>
             {item.timestamp.toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
+              hour: '2-digit',
+              minute: '2-digit',
             })}
           </CsText>
         </CsCard>
       </Animated.View>
-    );
-  };
+    )
+  }
 
   // Main Render
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
     >
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -229,12 +234,13 @@ const ChatDetailScreen: React.FC = () => {
                   Vous avez atteint le nombre maximum de messages par chat. (10 max)
                 </CsText>
               </CsCard>
-            );
-          } else {
-            return null;
+            )
+          }
+          else {
+            return null
           }
         }}
-        keyExtractor={(item) => item.id}
+        keyExtractor={item => item.id}
         contentContainerStyle={styles.messageList}
         showsVerticalScrollIndicator={false}
       />
@@ -256,20 +262,20 @@ const ChatDetailScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
-  );
-};
+  )
+}
 
 // Styles
-const useStyles = (theme: ITheme) =>
-  StyleSheet.create({
+function useStyles(theme: ITheme) {
+  return StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: theme.background,
     },
     header: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
       padding: spacing.md,
       paddingTop: spacing.xl,
       backgroundColor: theme.primary,
@@ -277,10 +283,10 @@ const useStyles = (theme: ITheme) =>
     },
     headerText: {
       fontSize: 16,
-      fontWeight: "semibold",
+      fontWeight: 'semibold',
       color: theme.background,
       flex: 1,
-      textAlign: "right",
+      textAlign: 'right',
     },
     recipientText: {
       fontSize: 14,
@@ -291,14 +297,14 @@ const useStyles = (theme: ITheme) =>
       paddingBottom: spacing.md,
     },
     messageContainer: {
-      maxWidth: "80%",
+      maxWidth: '80%',
       marginVertical: spacing.xs,
     },
     userMessage: {
-      alignSelf: "flex-end",
+      alignSelf: 'flex-end',
     },
     otherMessage: {
-      alignSelf: "flex-start",
+      alignSelf: 'flex-start',
     },
     messageCard: {
       padding: spacing.sm,
@@ -310,11 +316,11 @@ const useStyles = (theme: ITheme) =>
     timestamp: {
       fontSize: 12,
       color: theme.textLight,
-      alignSelf: "flex-end",
+      alignSelf: 'flex-end',
       marginTop: spacing.xs,
     },
     inputContainer: {
-      flexDirection: "row",
+      flexDirection: 'row',
       padding: spacing.sm,
       backgroundColor: theme.card,
       ...shadows.small,
@@ -336,8 +342,8 @@ const useStyles = (theme: ITheme) =>
       borderRadius: 20,
       width: 40,
       height: 40,
-      justifyContent: "center",
-      alignItems: "center",
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     sendButtonText: {
       color: theme.background,
@@ -346,6 +352,7 @@ const useStyles = (theme: ITheme) =>
       backgroundColor: theme.warning,
       marginVertical: spacing.sm,
     },
-  });
+  })
+}
 
-export default ChatDetailScreen;
+export default ChatDetailScreen

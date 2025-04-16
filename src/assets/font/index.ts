@@ -1,7 +1,6 @@
-/* eslint-disable react/jsx-no-useless-fragment */
 /**
  * @author Ali Burhan Keskin <alikeskin@milvasoft.com>
-*/
+ */
 import {
   Montserrat_100Thin,
   Montserrat_200ExtraLight,
@@ -12,17 +11,17 @@ import {
   Montserrat_700Bold,
   Montserrat_800ExtraBold,
   Montserrat_900Black,
-} from '@expo-google-fonts/montserrat';
+} from '@expo-google-fonts/montserrat'
 
-const Thin = Montserrat_100Thin;
-const ExtraLight = Montserrat_200ExtraLight;
-const Light = Montserrat_300Light;
-const Regular = Montserrat_400Regular;
-const Medium = Montserrat_500Medium;
-const SemiBold = Montserrat_600SemiBold;
-const Bold = Montserrat_700Bold;
-const ExtraBold = Montserrat_800ExtraBold;
-const Black = Montserrat_900Black;
+const Thin = Montserrat_100Thin
+const ExtraLight = Montserrat_200ExtraLight
+const Light = Montserrat_300Light
+const Regular = Montserrat_400Regular
+const Medium = Montserrat_500Medium
+const SemiBold = Montserrat_600SemiBold
+const Bold = Montserrat_700Bold
+const ExtraBold = Montserrat_800ExtraBold
+const Black = Montserrat_900Black
 
 /**
  * Represents the Montserrat font object.
@@ -37,6 +36,6 @@ const MontserratFont = {
   Bold,
   ExtraBold,
   Black,
-};
+}
 
-export default MontserratFont;
+export default MontserratFont

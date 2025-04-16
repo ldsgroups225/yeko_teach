@@ -25,6 +25,9 @@ import { ClearCacheSection, ProfileHeader, ProfileSection } from '../components'
 
 const PROFILE_UPDATE_DELAY = 300
 
+const $black = '#000'
+const $black50 = '#00000050'
+
 const ProfileScreen: React.FC = () => {
   const themedStyles = useThemedStyles<typeof createStyles>(createStyles)
   const user = useAppSelector(state => state?.AppReducer?.user)
@@ -164,7 +167,7 @@ function createStyles(theme: ITheme) {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      backgroundColor: $black50,
     },
     modalView: {
       margin: 20,
@@ -172,7 +175,7 @@ function createStyles(theme: ITheme) {
       borderRadius: 20,
       padding: 35,
       alignItems: 'center',
-      shadowColor: '#000',
+      shadowColor: $black,
       shadowOffset: {
         width: 0,
         height: 2,

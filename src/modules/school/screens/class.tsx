@@ -1,248 +1,254 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, Alert, FlatList, Pressable, SectionList, StyleSheet, TouchableOpacity, View } from "react-native";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { useTheme } from "@src/hooks";
-import CsText from "@components/CsText";
-import { spacing } from "@styles/spacing";
-import { ITheme } from "@styles/theme";
-import { INoteDTO, IStudentDTO, ISubjectDTO } from "@modules/app/types/ILoginDTO";
-import Routes, { SchoolStackParams } from "@utils/Routes";
-import ClassHeader from "../components/ClassHeader";
-import StudentSearchSortFilter from "@modules/school/components/StudentSearchSortFilter";
-import StudentListItem from "../components/StudentListItem";
-import { navigationRef } from "@helpers/router";
-import { useFilteredAndGroupedStudents } from "@modules/school/hooks/useFilteredAndGroupedStudents";
-import { useStudentData } from "@modules/school/hooks/useStudentData";
-import EmptyListComponent from "@components/EmptyListComponent";
-import { useNote } from "@modules/school/hooks/useNote";
-import { showToast } from "@helpers/toast/showToast";
-import { ToastColorEnum } from "@components/ToastMessage/ToastColorEnum";
-import BottomSheet, { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
-import { Ionicons } from "@expo/vector-icons";
-import { CreateNoteModal } from "../components/CreateNoteModal";
-import { NoteHistoryView } from "../components/NoteHistoryView";
-import { useAppSelector } from "@store/index";
-import { ISemester } from "@modules/app/redux/IAppState";
+import type { ISemester } from '@modules/app/redux/IAppState'
+import type { INoteDTO, IStudentDTO, ISubjectDTO } from '@modules/app/types/ILoginDTO'
+import type { RouteProp } from '@react-navigation/native'
+import type { ITheme } from '@styles/theme'
+import type { SchoolStackParams } from '@utils/Routes'
+import type Routes from '@utils/Routes'
+import CsText from '@components/CsText'
+import EmptyListComponent from '@components/EmptyListComponent'
+import { ToastColorEnum } from '@components/ToastMessage/ToastColorEnum'
+import { Ionicons } from '@expo/vector-icons'
+import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet'
+import { navigationRef } from '@helpers/router'
+import { showToast } from '@helpers/toast/showToast'
+import StudentSearchSortFilter from '@modules/school/components/StudentSearchSortFilter'
+import { useFilteredAndGroupedStudents } from '@modules/school/hooks/useFilteredAndGroupedStudents'
+import { useNote } from '@modules/school/hooks/useNote'
+import { useStudentData } from '@modules/school/hooks/useStudentData'
+import { useRoute } from '@react-navigation/native'
+import { useTheme } from '@src/hooks'
+import { useAppSelector } from '@store/index'
+import { spacing } from '@styles/spacing'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { ActivityIndicator, Alert, FlatList, Pressable, SectionList, StyleSheet, TouchableOpacity, View } from 'react-native'
+import ClassHeader from '../components/ClassHeader'
+import { CreateNoteModal } from '../components/CreateNoteModal'
+import { NoteHistoryView } from '../components/NoteHistoryView'
+import StudentListItem from '../components/StudentListItem'
 
 const SchoolClassDetails: React.FC = () => {
-  const theme = useTheme();
-  const styles = useStyles(theme);
-  const bottomSheetRef = useRef<BottomSheet>(null);
+  const theme = useTheme()
+  const styles = useStyles(theme)
+  const bottomSheetRef = useRef<BottomSheet>(null)
 
-  const route = useRoute<RouteProp<SchoolStackParams, Routes.SchoolClassDetails>>();
-  const { classItem, school } = route.params;
+  const route = useRoute<RouteProp<SchoolStackParams, Routes.SchoolClassDetails>>()
+  const { classItem, school } = route.params
 
-  const user = useAppSelector((s) => s.AppReducer?.user);
-  const semesters = useAppSelector((s) => s.AppReducer?.semesters);
-  const schoolYear = useAppSelector((s) => s.AppReducer?.schoolYear);
+  const user = useAppSelector(s => s.AppReducer?.user)
+  const semesters = useAppSelector(s => s.AppReducer?.semesters)
+  const schoolYear = useAppSelector(s => s.AppReducer?.schoolYear)
 
-  const [totalNotes, setTotalNotes] = useState(0);
-  const [isEditing, setIsEditing] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [savedNotes, setSavedNotes] = useState<INoteDTO[]>([]);
-  const [isAssigningGrade, setIsAssigningGrade] = useState(false);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [selectedSemester, setSelectedSemester] = useState<ISemester>();
-  const [selectedNote, setSelectedNote] = useState<INoteDTO | null>(null);
+  const [totalNotes, setTotalNotes] = useState(0)
+  const [isEditing, setIsEditing] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [savedNotes, setSavedNotes] = useState<INoteDTO[]>([])
+  const [isAssigningGrade, setIsAssigningGrade] = useState(false)
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+  const [selectedSemester, setSelectedSemester] = useState<ISemester>()
+  const [selectedNote, setSelectedNote] = useState<INoteDTO | null>(null)
   const [subjectsTeached, setSubjectsTeached] = useState<ISubjectDTO[]>([])
-  const [currentSubject, setCurrentSubject] = useState(classItem.subjects[0]);
-  const [isCreateNoteModalVisible, setIsCreateNoteModalVisible] = useState(false);
+  const [currentSubject] = useState(classItem.subjects[0])
+  const [isCreateNoteModalVisible, setIsCreateNoteModalVisible] = useState(false)
 
   const {
-  getNotes,
-  saveNote,
-  removeNote,
-  publishNote,
-  teachedSubjects,
-  updateNoteDetails,
-  } = useNote();
+    getNotes,
+    saveNote,
+    removeNote,
+    publishNote,
+    teachedSubjects,
+    updateNoteDetails,
+  } = useNote()
 
   const { students, setStudents, isLoading } = useStudentData(
     classItem.id,
     currentSubject.id,
-    classItem.students
-  );
+    classItem.students,
+  )
 
   const groupedStudents = useFilteredAndGroupedStudents(
     students,
     searchQuery,
     sortOrder,
-  );
+  )
+
+  const fetchSavedNotes = useCallback(async (page: number = 1) => {
+    const result = await getNotes(
+      classItem.id,
+      user?.id ?? '',
+      schoolYear?.id ?? 0,
+      selectedSemester?.id,
+      page,
+    )
+
+    if (result) {
+      if (page === 1) {
+        setSavedNotes(result.notes)
+      }
+      else {
+        setSavedNotes(prev => [...prev, ...result.notes])
+      }
+      setTotalNotes(result.totalCount)
+    }
+  }, [classItem.id, selectedSemester])
 
   useEffect(() => {
     setCurrentPage(1)
-    fetchSavedNotes(1).then(r => r);
-  }, [currentSubject, selectedSemester]);
-
-  const fetchSavedNotes = useCallback(async (page: number = 1) => {
-    console.log('selectedSemester', selectedSemester)
-    const result = await getNotes(
-      classItem.id,
-      user?.id ?? "",
-      schoolYear?.id ?? 0,
-      selectedSemester?.id,
-      page
-    );
-    
-    if (result) {
-      if (page === 1) {
-        setSavedNotes(result.notes);
-      } else {
-        setSavedNotes(prev => [...prev, ...result.notes]);
-      }
-      setTotalNotes(result.totalCount);
-    }
-  }, [classItem.id, selectedSemester]);
+    fetchSavedNotes(1).then(r => r)
+  }, [currentSubject, selectedSemester])
 
   const loadMoreNotes = async () => {
-    if (isLoadingMore || savedNotes.length >= totalNotes) return;
-    
-    setIsLoadingMore(true);
-    const nextPage = currentPage + 1;
-    await fetchSavedNotes(nextPage);
-    setCurrentPage(nextPage);
-    setIsLoadingMore(false);
-  };
+    if (isLoadingMore || savedNotes.length >= totalNotes)
+      return
+
+    setIsLoadingMore(true)
+    const nextPage = currentPage + 1
+    await fetchSavedNotes(nextPage)
+    setCurrentPage(nextPage)
+    setIsLoadingMore(false)
+  }
 
   const handleCreateNote = async (noteData: Partial<INoteDTO>) => {
     try {
-      await saveNote(noteData as INoteDTO);
-      showToast("Évaluation créée avec succès", ToastColorEnum.Success);
-      await fetchSavedNotes();
-      setIsCreateNoteModalVisible(false);
-    } catch (error) {
-      console.error("Failed to create note:", error);
-      showToast("Erreur lors de la création de l'évaluation", ToastColorEnum.Error);
+      await saveNote(noteData as INoteDTO)
+      showToast('Évaluation créée avec succès', ToastColorEnum.Success)
+      await fetchSavedNotes()
+      setIsCreateNoteModalVisible(false)
     }
-  };
+    catch (error) {
+      console.error('Failed to create note:', error)
+      showToast('Erreur lors de la création de l\'évaluation', ToastColorEnum.Error)
+    }
+  }
 
   const handleNotePress = async (note: INoteDTO) => {
-    const updatedStudents = students.map(student => {
-      const existingStudent = students.find(s => s.id === student.id);
-      const noteDetail = note.noteDetails?.find(detail => detail.studentId === student.id);
-      
+    const updatedStudents = students.map((student) => {
+      const existingStudent = students.find(s => s.id === student.id)
+      const noteDetail = note.noteDetails?.find(detail => detail.studentId === student.id)
+
       return {
         ...student,
         ...existingStudent,
-        note: noteDetail?.note ?? existingStudent?.note ?? undefined
-      };
-    });
+        note: noteDetail?.note ?? existingStudent?.note ?? undefined,
+      }
+    })
 
-    setSelectedNote(note);
-    setStudents(updatedStudents);
-    setIsAssigningGrade(true);
-    setIsEditing(true);
-    
-    bottomSheetRef.current?.close();
-  };
+    setSelectedNote(note)
+    setStudents(updatedStudents)
+    setIsAssigningGrade(true)
+    setIsEditing(true)
+
+    bottomSheetRef.current?.close()
+  }
 
   const handleNoteChange = async (studentId: string, note: number | null) => {
     if (selectedNote && selectedNote.isActive) {
-      return;
+      return
     }
-  
-    const updatedStudents = students.map((student) =>
-      student.id === studentId ? { ...student, note: note ?? undefined } : student
-    );
-    setStudents(updatedStudents);
-  
+
+    const updatedStudents = students.map(student =>
+      student.id === studentId ? { ...student, note: note ?? undefined } : student,
+    )
+    setStudents(updatedStudents)
+
     if (selectedNote) {
       try {
-        
         setSelectedNote({
           ...selectedNote,
-          noteDetails: selectedNote.noteDetails?.map((detail) =>
-            detail.studentId === studentId ? { ...detail, note: note ?? 0 } : detail
+          noteDetails: selectedNote.noteDetails?.map(detail =>
+            detail.studentId === studentId ? { ...detail, note: note ?? 0 } : detail,
           ),
-        });
-      } catch (error) {
-        console.error("Failed to update note detail:", error);
-        showToast("Erreur lors de la mise à jour de la note", ToastColorEnum.Error);
+        })
+      }
+      catch (error) {
+        console.error('Failed to update note detail:', error)
+        showToast('Erreur lors de la mise à jour de la note', ToastColorEnum.Error)
       }
     }
-  };
-
-
+  }
 
   const allNotesAssigned = useMemo(() => {
-    return students.every((student) => student.note !== undefined);
-  }, [students]);
+    return students.every(student => student.note !== undefined)
+  }, [students])
 
   const handleActivateNote = async (noteId: string, isActive: boolean) => {
     if (isActive) {
-      return;
+      return
     }
 
     if (!allNotesAssigned) {
-      showToast("Toutes les notes doivent être attribuées pour envoyer les notes à l'administration", ToastColorEnum.Error, 7000);
-      return;
+      showToast('Toutes les notes doivent être attribuées pour envoyer les notes à l\'administration', ToastColorEnum.Error, 7000)
+      return
     }
-  
-    const noteToActivate = savedNotes.find((note) => note.id === noteId);
+
+    const noteToActivate = savedNotes.find(note => note.id === noteId)
     if (!noteToActivate) {
-      showToast("Note introuvable", ToastColorEnum.Error);
-      return;
+      showToast('Note introuvable', ToastColorEnum.Error)
+      return
     }
-  
+
     if (noteToActivate.isActive) {
-      showToast("La note est déjà publiée", ToastColorEnum.Error);
-      return;
+      showToast('La note est déjà publiée', ToastColorEnum.Error)
+      return
     }
-  
+
     try {
-      const isSuccess = await publishNote(user?.id ?? "", classItem.id, noteId);
+      const isSuccess = await publishNote(user?.id ?? '', classItem.id, noteId)
       if (isSuccess) {
-        showToast("Notes activées avec succès", ToastColorEnum.Success);
-        await fetchSavedNotes();
-      } else {
-        showToast("Erreur lors de l'activation des notes", ToastColorEnum.Error);
+        showToast('Notes activées avec succès', ToastColorEnum.Success)
+        await fetchSavedNotes()
       }
-    } catch (error) {
-      console.error("Failed to activate notes:", error);
-      Alert.alert("Error", "Failed to activate notes. Please try again.");
+      else {
+        showToast('Erreur lors de l\'activation des notes', ToastColorEnum.Error)
+      }
     }
-  };
+    catch (error) {
+      console.error('Failed to activate notes:', error)
+      Alert.alert('Error', 'Failed to activate notes. Please try again.')
+    }
+  }
 
   const handleUpdateLocalNoteDetails = async () => {
     try {
-      const updatedNoteDetails = students.map((student) => ({
+      const updatedNoteDetails = students.map(student => ({
         studentId: student.id,
         note: student.note,
-        noteId: selectedNote?.id ?? "",
+        noteId: selectedNote?.id ?? '',
       }))
 
-      await updateNoteDetails(selectedNote!.id!, updatedNoteDetails);
+      await updateNoteDetails(selectedNote!.id!, updatedNoteDetails)
 
-      await fetchSavedNotes();
-      showToast("Note sauvegardée avec succès", ToastColorEnum.Success);
-    } catch (error) {
-      console.error("Failed to save note:", error);
-      showToast("Erreur lors de la sauvegarde de la note", ToastColorEnum.Error);
+      await fetchSavedNotes()
+      showToast('Note sauvegardée avec succès', ToastColorEnum.Success)
+    }
+    catch (error) {
+      console.error('Failed to save note:', error)
+      showToast('Erreur lors de la sauvegarde de la note', ToastColorEnum.Error)
     }
 
-    setIsEditing(false);
-    setIsAssigningGrade(false);
-    setSelectedNote(null);
-  };
+    setIsEditing(false)
+    setIsAssigningGrade(false)
+    setSelectedNote(null)
+  }
 
   const handleDeleteNote = async (noteId: string) => {
     try {
-      await removeNote(user?.id ?? "", classItem.id, noteId);
-      showToast("Note supprimée avec succès", ToastColorEnum.Success);
-      await fetchSavedNotes();
-    } catch (error) {
-      console.error("Failed to delete note:", error);
-      showToast("Erreur lors de la suppression de la note", ToastColorEnum.Error);
+      await removeNote(user?.id ?? '', classItem.id, noteId)
+      showToast('Note supprimée avec succès', ToastColorEnum.Success)
+      await fetchSavedNotes()
+    }
+    catch (error) {
+      console.error('Failed to delete note:', error)
+      showToast('Erreur lors de la suppression de la note', ToastColorEnum.Error)
     }
   }
 
   const handleCancelEdit = () => {
-    setIsEditing(false);
-    setIsAssigningGrade(false);
-    setSelectedNote(null);
-  };
+    setIsEditing(false)
+    setIsAssigningGrade(false)
+    setSelectedNote(null)
+  }
 
   const renderStudentItem = ({ item }: { item: IStudentDTO }) => (
     <StudentListItem
@@ -252,11 +258,11 @@ const SchoolClassDetails: React.FC = () => {
       isReadOnly={selectedNote?.isActive ?? false}
       maxPoints={selectedNote?.totalPoints ?? 0}
     />
-  );
+  )
 
   const openBottomSheet = useCallback(() => {
-    bottomSheetRef.current?.expand();
-  }, []);
+    bottomSheetRef.current?.expand()
+  }, [])
 
   const renderBackdrop = useCallback(
     (props: any) => (
@@ -266,13 +272,13 @@ const SchoolClassDetails: React.FC = () => {
         appearsOnIndex={0}
       />
     ),
-    []
-  );
+    [],
+  )
 
   async function makeNoteCreationModalVisible() {
-    const _subjects = await teachedSubjects(classItem.id, user!.id);
-    setSubjectsTeached(_subjects);
-    setIsCreateNoteModalVisible(true);
+    const _subjects = await teachedSubjects(classItem.id, user!.id)
+    setSubjectsTeached(_subjects)
+    setIsCreateNoteModalVisible(true)
   }
 
   const renderBottomSheetContent = () => (
@@ -288,13 +294,13 @@ const SchoolClassDetails: React.FC = () => {
       </TouchableOpacity>
 
       <View>
-        <CsText variant="caption" style={{ fontSize: 14, paddingHorizontal: 20 }}>Filtrer par trimestre</CsText>
+        <CsText variant="caption" style={styles.filterText}>Filtrer par trimestre</CsText>
         <FlatList
           data={semesters}
           horizontal
           showsHorizontalScrollIndicator={false}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={{ columnGap: 10, paddingVertical: 4, paddingHorizontal: 20 }}
+          keyExtractor={item => item.id.toString()}
+          contentContainerStyle={styles.filterList}
           renderItem={({ item }) => (
             <Pressable
               style={[
@@ -302,16 +308,16 @@ const SchoolClassDetails: React.FC = () => {
                 selectedSemester?.id === item.id && styles.selectedSemesterButton,
               ]}
               onPress={() => {
-                if (selectedSemester?.id === item.id) setSelectedSemester(undefined);
-                else setSelectedSemester(item);
-                console.log('Pressed', selectedSemester?.id)
+                if (selectedSemester?.id === item.id)
+                  setSelectedSemester(undefined)
+                else setSelectedSemester(item)
               }}
             >
               <CsText
                 style={StyleSheet.flatten([
                   styles.semesterButtonText,
-                  selectedSemester?.id === item.id &&
-                    styles.selectedSemesterButtonText,
+                  selectedSemester?.id === item.id
+                  && styles.selectedSemesterButtonText,
                 ])}
               >
                 {item.name}
@@ -331,14 +337,14 @@ const SchoolClassDetails: React.FC = () => {
         hasMore={savedNotes.length < totalNotes}
       />
     </View>
-  );
+  )
 
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={theme.primary} />
       </View>
-    );
+    )
   }
 
   return (
@@ -368,7 +374,7 @@ const SchoolClassDetails: React.FC = () => {
             </CsText>
           </View>
         )}
-        keyExtractor={(item) => item.id}
+        keyExtractor={item => item.id}
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           <EmptyListComponent message="Pas d'élève dans cette classe" />
@@ -376,7 +382,7 @@ const SchoolClassDetails: React.FC = () => {
       />
       <BottomSheet
         ref={bottomSheetRef}
-        snapPoints={["35%", "58%", "80%"]}
+        snapPoints={['35%', '58%', '80%']}
         index={-1}
         enablePanDownToClose={true}
         backdropComponent={renderBackdrop}
@@ -397,19 +403,19 @@ const SchoolClassDetails: React.FC = () => {
         />
       )}
     </View>
-  );
-};
+  )
+}
 
-const useStyles = (theme: ITheme) =>
-  StyleSheet.create({
+function useStyles(theme: ITheme) {
+  return StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: theme.background,
     },
     loadingContainer: {
       flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
+      justifyContent: 'center',
+      alignItems: 'center',
       backgroundColor: theme.background,
     },
     listContent: {
@@ -423,7 +429,7 @@ const useStyles = (theme: ITheme) =>
     },
     sectionHeaderText: {
       color: theme.text,
-      fontWeight: "bold",
+      fontWeight: 'bold',
     },
     bottomSheetContent: {
       flex: 1,
@@ -431,8 +437,8 @@ const useStyles = (theme: ITheme) =>
       padding: spacing.md,
     },
     bottomSheetButton: {
-      flexDirection: "row",
-      alignItems: "center",
+      flexDirection: 'row',
+      alignItems: 'center',
       backgroundColor: theme.primary,
       padding: spacing.md,
       borderRadius: 8,
@@ -441,7 +447,7 @@ const useStyles = (theme: ITheme) =>
     bottomSheetButtonText: {
       color: theme.background,
       marginLeft: spacing.sm,
-      fontWeight: "bold",
+      fontWeight: 'bold',
     },
     subjectPickerContainer: {
       marginBottom: spacing.md,
@@ -460,9 +466,9 @@ const useStyles = (theme: ITheme) =>
       maxHeight: 200,
     },
     savedNoteItem: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
       backgroundColor: theme.card,
       padding: spacing.sm,
       borderRadius: 8,
@@ -475,8 +481,8 @@ const useStyles = (theme: ITheme) =>
       color: theme.textLight,
     },
     publishedContainer: {
-      flexDirection: "row",
-      alignItems: "center",
+      flexDirection: 'row',
+      alignItems: 'center',
     },
     publishedText: {
       color: theme.success,
@@ -502,7 +508,7 @@ const useStyles = (theme: ITheme) =>
     },
     noSavedNotesText: {
       color: theme.textLight,
-      textAlign: "center",
+      textAlign: 'center',
       marginTop: spacing.sm,
     },
     semesterButton: {
@@ -522,8 +528,11 @@ const useStyles = (theme: ITheme) =>
     },
     selectedSemesterButtonText: {
       color: theme.background,
-      fontWeight: "semibold",
+      fontWeight: 'semibold',
     },
-  });
+    filterText: { fontSize: 14, paddingHorizontal: 20 },
+    filterList: { columnGap: 10, paddingVertical: 4, paddingHorizontal: 20 },
+  })
+}
 
-export default SchoolClassDetails;
+export default SchoolClassDetails

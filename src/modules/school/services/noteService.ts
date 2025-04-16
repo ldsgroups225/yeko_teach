@@ -4,7 +4,7 @@ import type { INoteDTO, ISubjectDTO } from '@modules/app/types/ILoginDTO'
 import { FROM_STRING_OPTIONS_MAP } from '@modules/app/constants/noteTypes'
 import { drizzleDb } from '@src/db/config'
 import { noteDetailTable, noteTable } from '@src/db/schema'
-import { NOTE_DETAILS_TABLE_ID, NOTE_TABLE_ID, SCHEDULE_TABLE_ID, supabase } from '@src/lib/supabase'
+import { NOTE_DETAILS_TABLE_ID, NOTE_TABLE_ID, supabase } from '@src/lib/supabase'
 import { and, count, desc, eq, lt } from 'drizzle-orm'
 
 export const notes = {

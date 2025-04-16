@@ -4,20 +4,25 @@ import { useNetInfo } from '@react-native-community/netinfo'
 import React, { useEffect, useState } from 'react'
 import { Button, Modal, StyleSheet, Text, View } from 'react-native'
 
+const $black = '#000'
+const $black80 = '#00000080'
+const $white = '#FFF'
+
 const styles = StyleSheet.create({
+  flex1: { flex: 1 },
   centeredView: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: $black80,
   },
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: $white,
     borderRadius: 20,
     padding: 35,
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: $black,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -47,7 +52,7 @@ function NetworkInfoContainer({ children }: any) {
   }, [isConnected])
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.flex1}>
       <Modal
         animationType="slide"
         transparent

@@ -9,13 +9,17 @@ import { useDrizzleStudio } from 'expo-drizzle-studio-plugin'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 import React, { useCallback } from 'react'
-import { View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 
 SplashScreen.preventAutoHideAsync().then(r => r)
 
 interface Props {
   children: React.ReactNode
 }
+
+const styles = StyleSheet.create({
+  flex1: { flex: 1 },
+})
 
 /**
  * Provides an app loading screen that preloads fonts and hides the splash screen
@@ -42,7 +46,7 @@ function AppLoadingProvider({ children }: Props): ReactElement | null {
   }
 
   return (
-    <View onLayout={onLayoutRootView} style={{ flex: 1 }}>
+    <View onLayout={onLayoutRootView} style={styles.flex1}>
       {children}
     </View>
   )

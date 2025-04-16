@@ -19,6 +19,8 @@ interface SearchSortFilterProps {
   grades: ISelectOptions[]
 }
 
+const $white = '#FFF'
+
 const SearchSortFilter: React.FC<SearchSortFilterProps> = ({
   searchQuery,
   setSearchQuery,
@@ -61,7 +63,7 @@ const SearchSortFilter: React.FC<SearchSortFilterProps> = ({
               variant="caption"
               style={
                 selectedGrade === null
-                  ? { color: 'white' }
+                  ? { color: $white }
                   : styles.gradeButtonText
               }
             >
@@ -82,7 +84,7 @@ const SearchSortFilter: React.FC<SearchSortFilterProps> = ({
                 variant="caption"
                 style={
                   selectedGrade?.toString() === grade.value
-                    ? { color: 'white' }
+                    ? { color: $white }
                     : styles.gradeButtonText
                 }
               >

@@ -1,2 +1,2 @@
-export type SchoolSortOption = "name" | "code";
-export type SchoolSortOrder = "asc" | "desc";
+export type SchoolSortOption = 'name' | 'code'
+export type SchoolSortOrder = 'asc' | 'desc'

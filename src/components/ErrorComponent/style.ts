@@ -3,6 +3,9 @@
 import padding from '@styles/padding'
 import { StyleSheet } from 'react-native'
 
+const $white = '#FFF'
+const $orange = '#F27A1A'
+
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -15,14 +18,14 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
   retryButton: {
-    backgroundColor: '#f27a1a',
+    backgroundColor: $orange,
     paddingVertical: padding.SMALL,
     paddingHorizontal: padding.MEDIUM,
     borderRadius: 5,
     marginTop: padding.MEDIUM,
   },
   buttonText: {
-    color: 'white',
+    color: $white,
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',

@@ -1,16 +1,6 @@
-import { useTheme } from '@hooks/index';
-import React from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
-
-const LoadingScreen: React.FC = () => {
-  const theme = useTheme();
-
-  return (
-    <View style={styles.container}>
-      <ActivityIndicator size="large" color={theme.primary} />
-    </View>
-  );
-};
+import { useTheme } from '@hooks/index'
+import React from 'react'
+import { ActivityIndicator, StyleSheet, View } from 'react-native'
 
 const styles = StyleSheet.create({
   container: {
@@ -18,6 +8,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-});
+})
 
-export default LoadingScreen;
+const LoadingScreen: React.FC = () => {
+  const theme = useTheme()
+
+  return (
+    <View style={styles.container}>
+      <ActivityIndicator size="large" color={theme.primary} />
+    </View>
+  )
+}
+
+export default LoadingScreen

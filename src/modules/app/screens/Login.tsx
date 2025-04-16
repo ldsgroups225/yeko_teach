@@ -1,7 +1,30 @@
+import type { ITheme } from '@styles/theme'
+import type { IUserDTO } from '../types/ILoginDTO'
+// Components
+import CsButton from '@components/CsButton'
+import CsText from '@components/CsText'
+import CsTextField from '@components/CsTextField'
+
+import { Ionicons } from '@expo/vector-icons'
+// Helpers
+import translate from '@helpers/localization'
+
+import { showToast } from '@helpers/toast/showToast'
+// Hooks
+import { useTheme, useThemedStyles } from '@hooks/index'
+import { useAuth } from '@hooks/useAuth'
+
+import { useClearCache } from '@hooks/useClearCache'
+// Utils
+
+// Styles
+import { spacing } from '@styles/spacing'
+
 /**
  * @author Ali Burhan Keskin <alikeskin@milvasoft.com>
  */
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState } from 'react'
+
 import {
   Image,
   KeyboardAvoidingView,
@@ -10,115 +33,96 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
-} from "react-native";
-import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
-import { Ionicons } from "@expo/vector-icons";
-import { useDispatch } from "react-redux";
-
-// Components
-import CsButton from "@components/CsButton";
-import CsText from "@components/CsText";
-import CsTextField from "@components/CsTextField";
-
-// Helpers
-import translate from "@helpers/localization";
-import { navigationRef } from "@helpers/router";
-import { showToast } from "@helpers/toast/showToast";
-
-// Hooks
-import { useTheme, useThemedStyles } from "@hooks/index";
-import { useAuth } from "@hooks/useAuth";
-
+} from 'react-native'
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated'
+import { useDispatch } from 'react-redux'
 // Redux
-import { setUser } from "../redux/appSlice";
-
-// Utils
-import Routes from "@utils/Routes";
-
-// Styles
-import { spacing } from "@styles/spacing";
-import { ITheme } from "@styles/theme";
-import { IUserDTO } from "../types/ILoginDTO";
-import { useClearCache } from "@hooks/useClearCache";
+import { setUser } from '../redux/appSlice'
 
 export default function Login() {
   // Hooks
-  const dispatch = useDispatch();
-  const { login, loading } = useAuth();
-  const { clearCache } = useClearCache({showSuccesToast: false});
-  const theme = useTheme();
-  const themedStyles = useThemedStyles<typeof styles>(styles);
+  const dispatch = useDispatch()
+  const { login, loading } = useAuth()
+  const { clearCache } = useClearCache({ showSuccesToast: false })
+  const theme = useTheme()
+  const themedStyles = useThemedStyles<typeof styles>(styles)
 
   // States
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
   // Navigation Callbacks
   const goHomePage = useCallback(
     (user: IUserDTO) => {
-      showToast(translate("welcome"));
-      dispatch(setUser(user));
-      clearForm();
+      showToast(translate('welcome'))
+      dispatch(setUser(user))
+      clearForm()
     },
-    [login]
-  );
+    [login],
+  )
 
   // Auth Callbacks
   const handleLogin = async () => {
     try {
-      if (email === "" || password === "") return;
+      if (email === '' || password === '')
+        return
 
-      const user = await login(email, password);
-      if (!user) return showToast(translate("invalidCredentials"));
+      const user = await login(email, password)
+      if (!user)
+        return showToast(translate('invalidCredentials'))
 
-      await clearCache();
-      goHomePage(user);
-    } catch (error) {
-      if (error.toString() === "Error: Invalid login credentials")
-        showToast("Email ou mot de passe incorrect");
-      else
-        showToast(
-          "Une erreur est survenue lors de la connexion. Veuillez réessayer."
-        );
+      await clearCache()
+      goHomePage(user)
     }
-  };
+    catch (error) {
+      if (error.toString() === 'Error: Invalid login credentials') {
+        showToast('Email ou mot de passe incorrect')
+      }
+      else {
+        showToast(
+          'Une erreur est survenue lors de la connexion. Veuillez réessayer.',
+        )
+      }
+    }
+  }
 
   const handleGoogleLogin = useCallback(() => {
     // TODO: Implement Google OAuth login
-    showToast(translate("googleLoginNotImplemented"));
-  }, [translate]);
+    showToast(translate('googleLoginNotImplemented'))
+  }, [translate])
 
   const handleForgotPassword = useCallback(() => {
     // TODO: Navigate to forgot password screen
-    showToast(translate("forgotPasswordNotImplemented"));
-  }, [translate]);
+    showToast(translate('forgotPasswordNotImplemented'))
+  }, [translate])
 
   // Helper Methods
   function clearForm() {
-    setEmail("");
-    setPassword("");
-    setShowPassword(false);
+    setEmail('')
+    setPassword('')
+    setShowPassword(false)
   }
 
   return (
     <KeyboardAvoidingView
       style={themedStyles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
     >
       {/* <AnimatedBackground /> */}
       <Image
-        source={require("@assets/images/icon.png")}
+        source={require('@assets/images/icon.png')}
         style={themedStyles.logo}
       />
       <ScrollView contentContainerStyle={themedStyles.scrollContent}>
         <Animated.View entering={FadeInDown.duration(1000).springify()}>
-          <CsText variant="h3" style={{ textAlign: "center" }}>
-            Mon professeur,{" "}
+          <CsText variant="h3" style={themedStyles.textCenter}>
+            Mon professeur,
+            {' '}
           </CsText>
           <CsText variant="h1" style={themedStyles.title}>
-            {translate("welcomeBack")}
+            {translate('welcomeBack')}
           </CsText>
         </Animated.View>
 
@@ -126,7 +130,7 @@ export default function Login() {
           entering={FadeInUp.delay(300).duration(1000).springify()}
         >
           <CsTextField
-            label={translate("email")}
+            label={translate('email')}
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -142,17 +146,17 @@ export default function Login() {
           entering={FadeInUp.delay(400).duration(1000).springify()}
         >
           <CsTextField
-            label={translate("password")}
+            label={translate('password')}
             value={password}
             onChangeText={setPassword}
             secureTextEntry={!showPassword}
-            leftIcon={
+            leftIcon={(
               <Ionicons
                 name="lock-closed-outline"
                 size={24}
                 color={theme.text}
               />
-            }
+            )}
             style={themedStyles.input}
           />
         </Animated.View>
@@ -164,11 +168,11 @@ export default function Login() {
             onPress={handleForgotPassword}
             style={themedStyles.forgotPassword}
           >
-            <CsText variant="caption">{translate("forgotPassword")}</CsText>
+            <CsText variant="caption">{translate('forgotPassword')}</CsText>
           </TouchableOpacity>
 
           <CsButton
-            title={translate("login")}
+            title={translate('login')}
             onPress={handleLogin}
             style={themedStyles.button}
             loading={loading}
@@ -177,13 +181,13 @@ export default function Login() {
           <View style={themedStyles.divider}>
             <View style={themedStyles.dividerLine} />
             <CsText variant="caption" style={themedStyles.dividerText}>
-              {translate("or")}
+              {translate('or')}
             </CsText>
             <View style={themedStyles.dividerLine} />
           </View>
 
           <CsButton
-            title={translate("loginWithGoogle")}
+            title={translate('loginWithGoogle')}
             onPress={handleGoogleLogin}
             variant="secondary"
             icon={
@@ -194,12 +198,12 @@ export default function Login() {
         </Animated.View>
       </ScrollView>
     </KeyboardAvoidingView>
-  );
+  )
 }
 
 // Styles
-const styles = (theme: ITheme) =>
-  StyleSheet.create({
+function styles(theme: ITheme) {
+  return StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: theme.background,
@@ -207,18 +211,18 @@ const styles = (theme: ITheme) =>
     logo: {
       width: 150,
       height: 200,
-      alignSelf: "center",
+      alignSelf: 'center',
       marginTop: 30,
-      objectFit: "contain",
+      objectFit: 'contain',
     },
     scrollContent: {
       flexGrow: 1,
-      justifyContent: "center",
+      justifyContent: 'center',
       paddingHorizontal: spacing.sm,
     },
     title: {
       marginBottom: spacing.xxl,
-      textAlign: "center",
+      textAlign: 'center',
     },
     input: {
       marginBottom: spacing.lg,
@@ -227,12 +231,12 @@ const styles = (theme: ITheme) =>
       marginVertical: spacing.md,
     },
     forgotPassword: {
-      alignSelf: "flex-end",
+      alignSelf: 'flex-end',
       marginBottom: spacing.md,
     },
     divider: {
-      flexDirection: "row",
-      alignItems: "center",
+      flexDirection: 'row',
+      alignItems: 'center',
       marginVertical: spacing.lg,
     },
     dividerLine: {
@@ -244,4 +248,8 @@ const styles = (theme: ITheme) =>
       marginHorizontal: spacing.md,
       color: theme.textLight,
     },
-  });
+    textCenter: {
+      textAlign: 'center',
+    },
+  })
+}

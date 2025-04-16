@@ -1,36 +1,38 @@
 // src/modules/school/components/CreateNoteModal.tsx
 
-import React, { useEffect, useState } from 'react';
-import { Modal, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { format } from 'date-fns';
-import { z } from 'zod';
-import CsText from '@components/CsText';
-import { useTheme } from '@src/hooks';
-import { spacing } from '@styles/spacing';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { INoteDTO, ISubjectDTO, IUserDTO } from '@modules/app/types/ILoginDTO';
-import CsButton from '@components/CsButton';
-import { Picker } from '@react-native-picker/picker';
-import { ITheme } from '@styles/theme';
-import CsTextField from '@components/CsTextField';
-import { useAppSelector } from '@store/index';
-import { ToastColorEnum } from '@components/ToastMessage/ToastColorEnum';
-import { showToast } from '@helpers/toast/showToast';
-import { NOTE_OPTIONS, NOTE_TYPE } from '@modules/app/constants/noteTypes';
+import type { INoteDTO, ISubjectDTO, IUserDTO } from '@modules/app/types/ILoginDTO'
+import type { ITheme } from '@styles/theme'
+import CsButton from '@components/CsButton'
+import CsText from '@components/CsText'
+import CsTextField from '@components/CsTextField'
+import { ToastColorEnum } from '@components/ToastMessage/ToastColorEnum'
+import { showToast } from '@helpers/toast/showToast'
+import { NOTE_OPTIONS, NOTE_TYPE } from '@modules/app/constants/noteTypes'
+import DateTimePicker from '@react-native-community/datetimepicker'
+import { Picker } from '@react-native-picker/picker'
+import { useTheme } from '@src/hooks'
+import { useAppSelector } from '@store/index'
+import { spacing } from '@styles/spacing'
+import { format } from 'date-fns'
+import React, { useEffect, useState } from 'react'
+import { Modal, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { z } from 'zod'
 
 interface CreateNoteModalProps {
-  isVisible: boolean;
-  onClose: () => void;
-  onSubmit: (noteData: Partial<INoteDTO>) => Promise<void>;
-  schoolId: string;
-  classId: string;
-  user?: IUserDTO;
-  subjects: ISubjectDTO[];
+  isVisible: boolean
+  onClose: () => void
+  onSubmit: (noteData: Partial<INoteDTO>) => Promise<void>
+  schoolId: string
+  classId: string
+  user?: IUserDTO
+  subjects: ISubjectDTO[]
   schoolYear?: {
-    id: number;
-    name: string;
-  };
+    id: number
+    name: string
+  }
 }
+
+const $black50 = '#00000050'
 
 export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
   isVisible,
@@ -42,57 +44,57 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
   schoolYear,
   subjects,
 }) => {
-  const theme = useTheme();
-  const styles = useStyles(theme);
+  const theme = useTheme()
+  const styles = useStyles(theme)
 
-  const semesters = useAppSelector((s) => s.AppReducer?.semesters ?? []);
-  
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [totalPoints, setTotalPoints] = useState('20');
-  const [subject, setSubject] = useState('');
-  const [weight, setWeight] = useState('1');
-  const [noteType, setNoteType] = useState(NOTE_OPTIONS[0].value);
-  const [dueDate, setDueDate] = useState<Date>(new Date());
-  const [isGraded, setIsGraded] = useState(true);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [semester, setSemester] = useState(semesters.find(s => s.isCurrent === true)?.id.toString() ?? '0');
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const semesters = useAppSelector(s => s.AppReducer?.semesters ?? [])
+
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [totalPoints, setTotalPoints] = useState('20')
+  const [subject, setSubject] = useState('')
+  const [weight, setWeight] = useState('1')
+  const [noteType, setNoteType] = useState(NOTE_OPTIONS[0].value)
+  const [dueDate, setDueDate] = useState<Date>(new Date())
+  const [isGraded, setIsGraded] = useState(true)
+  const [showDatePicker, setShowDatePicker] = useState(false)
+  const [semester, setSemester] = useState(semesters.find(s => s.isCurrent === true)?.id.toString() ?? '0')
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   const NoteFormSchema = z.object({
-    title: z.string().min(1, "Le titre est requis"),
+    title: z.string().min(1, 'Le titre est requis'),
     description: z.string().optional(),
     totalPoints: z.preprocess(
-      (val) => parseFloat(String(val)),
-      z.number().positive({ message: "Les points totaux doivent être un nombre positif" })
+      val => Number.parseFloat(String(val)),
+      z.number().positive({ message: 'Les points totaux doivent être un nombre positif' }),
     ),
     weight: z.preprocess(
-      (val) => parseFloat(String(val)),
-      z.number().positive({ message: "Le coefficient doit être un nombre positif" })
+      val => Number.parseFloat(String(val)),
+      z.number().positive({ message: 'Le coefficient doit être un nombre positif' }),
     ),
     subject: z.string()
       .min(1, 'La matière est requise')
-      .refine((val) => subjects.some(sub => sub.id === val), {
-        message: "Matière invalide",
+      .refine(val => subjects.some(sub => sub.id === val), {
+        message: 'Matière invalide',
       }),
     noteType: z.nativeEnum(NOTE_TYPE),
     semester: z.preprocess(
-      (val) => parseInt(String(val), 10),
-      z.number().refine((num) => semesters.some(sm => sm.id === num), {
-        message: "Semestre invalide",
-      })
+      val => Number.parseInt(String(val), 10),
+      z.number().refine(num => semesters.some(sm => sm.id === num), {
+        message: 'Semestre invalide',
+      }),
     ),
-    dueDate: z.date().refine((date) => date instanceof Date && !isNaN(date.getTime()), {
-      message: "Date invalide",
+    dueDate: z.date().refine(date => date instanceof Date && !Number.isNaN(date.getTime()), {
+      message: 'Date invalide',
     }),
-  });
+  })
 
   useEffect(() => {
     if (subjects.length === 0) {
-      showToast("Vous n’êtes pas enseignant de cette classe", ToastColorEnum.Warning);
-      return onClose();
+      showToast('Vous n’êtes pas enseignant de cette classe', ToastColorEnum.Warning)
+      return onClose()
     }
-    
+
     setSubject(subjects[0].id)
   }, [])
 
@@ -106,25 +108,23 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
       noteType,
       semester,
       dueDate,
-    };
-
-    console.log(formData);
-
-    const validationResult = NoteFormSchema.safeParse(formData);
-
-    if (!validationResult.success) {
-      const newErrors: Record<string, string> = {};
-      validationResult.error.issues.forEach((issue) => {
-        const path = issue.path[0];
-        if (path) {
-          newErrors[path] = issue.message;
-        }
-      });
-      setErrors(newErrors);
-      return;
     }
 
-    setErrors({});
+    const validationResult = NoteFormSchema.safeParse(formData)
+
+    if (!validationResult.success) {
+      const newErrors: Record<string, string> = {}
+      validationResult.error.issues.forEach((issue) => {
+        const path = issue.path[0]
+        if (path) {
+          newErrors[path] = issue.message
+        }
+      })
+      setErrors(newErrors)
+      return
+    }
+
+    setErrors({})
 
     const noteData: Partial<INoteDTO> = {
       classId,
@@ -140,21 +140,21 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
       semesterId: validationResult.data.semester,
       description: validationResult.data.description,
       totalPoints: validationResult.data.totalPoints,
-    };
+    }
 
-    await onSubmit(noteData);
-  };
+    await onSubmit(noteData)
+  }
 
   const resetForm = () => {
-    setTitle('');
-    setDescription('');
-    setTotalPoints('20');
-    setWeight('1');
-    setNoteType(NOTE_OPTIONS[0].value);
-    setDueDate(new Date());
-    setIsGraded(true);
-    setErrors({});
-  };
+    setTitle('')
+    setDescription('')
+    setTotalPoints('20')
+    setWeight('1')
+    setNoteType(NOTE_OPTIONS[0].value)
+    setDueDate(new Date())
+    setIsGraded(true)
+    setErrors({})
+  }
 
   return (
     <Modal visible={isVisible} animationType="slide" transparent>
@@ -172,12 +172,13 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
               <Picker
                 selectedValue={semester}
                 onValueChange={(value) => {
-                  setSemester(value);
-                  if (errors.semester) setErrors(prev => ({ ...prev, semester: '' }));
+                  setSemester(value)
+                  if (errors.semester)
+                    setErrors(prev => ({ ...prev, semester: '' }))
                 }}
                 style={styles.picker}
               >
-                {semesters.map((sm) => (
+                {semesters.map(sm => (
                   <Picker.Item key={sm.id.toString()} label={sm.name} value={sm.id.toString()} />
                 ))}
               </Picker>
@@ -190,12 +191,13 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
                 <Picker
                   selectedValue={subject}
                   onValueChange={(value) => {
-                    setSubject(value);
-                    if (errors.subject) setErrors(prev => ({ ...prev, subject: '' }));
+                    setSubject(value)
+                    if (errors.subject)
+                      setErrors(prev => ({ ...prev, subject: '' }))
                   }}
                   style={styles.picker}
                 >
-                  {subjects.map((sub) => (
+                  {subjects.map(sub => (
                     <Picker.Item key={sub.id} label={sub.name} value={sub.id} />
                   ))}
                 </Picker>
@@ -208,12 +210,13 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
               <Picker
                 selectedValue={noteType}
                 onValueChange={(value) => {
-                  setNoteType(value);
-                  if (errors.noteType) setErrors(prev => ({ ...prev, noteType: '' }));
+                  setNoteType(value)
+                  if (errors.noteType)
+                    setErrors(prev => ({ ...prev, noteType: '' }))
                 }}
                 style={styles.picker}
               >
-                {NOTE_OPTIONS.map((type) => (
+                {NOTE_OPTIONS.map(type => (
                   <Picker.Item key={type.value} label={type.label} value={type.value} />
                 ))}
               </Picker>
@@ -225,10 +228,11 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
               <CsTextField
                 value={title}
                 onChangeText={(text) => {
-                  setTitle(text);
-                  if (errors.title) setErrors(prev => ({ ...prev, title: '' }));
+                  setTitle(text)
+                  if (errors.title)
+                    setErrors(prev => ({ ...prev, title: '' }))
                 }}
-                label='Titre'
+                label="Titre"
                 placeholder="Titre de l'évaluation"
                 autoCapitalize="words"
                 error={errors.title}
@@ -240,10 +244,11 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
               <CsTextField
                 value={description}
                 onChangeText={(text) => {
-                  setDescription(text);
-                  if (errors.description) setErrors(prev => ({ ...prev, description: '' }));
+                  setDescription(text)
+                  if (errors.description)
+                    setErrors(prev => ({ ...prev, description: '' }))
                 }}
-                label='Description'
+                label="Description"
                 placeholder="Description de l'évaluation"
                 autoCapitalize="words"
                 multiline
@@ -258,11 +263,12 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
                 <CsTextField
                   value={totalPoints}
                   onChangeText={(text) => {
-                    setTotalPoints(text);
-                    if (errors.totalPoints) setErrors(prev => ({ ...prev, totalPoints: '' }));
+                    setTotalPoints(text)
+                    if (errors.totalPoints)
+                      setErrors(prev => ({ ...prev, totalPoints: '' }))
                   }}
                   keyboardType="numeric"
-                  label='Points totaux'
+                  label="Points totaux"
                   placeholder="20"
                   error={errors.totalPoints}
                 />
@@ -272,11 +278,12 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
                 <CsTextField
                   value={weight}
                   onChangeText={(text) => {
-                    setWeight(text);
-                    if (errors.weight) setErrors(prev => ({ ...prev, weight: '' }));
+                    setWeight(text)
+                    if (errors.weight)
+                      setErrors(prev => ({ ...prev, weight: '' }))
                   }}
                   keyboardType="numeric"
-                  label='Coefficient'
+                  label="Coefficient"
                   placeholder="1"
                   error={errors.weight}
                 />
@@ -287,7 +294,10 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
               style={styles.dateButton}
               onPress={() => setShowDatePicker(true)}
             >
-              <CsText variant="body">Date limite: {format(dueDate, 'dd/MM/yyyy')}</CsText>
+              <CsText variant="body">
+                Date limite:
+                {format(dueDate, 'dd/MM/yyyy')}
+              </CsText>
             </TouchableOpacity>
             {errors.dueDate && <CsText variant="error" style={styles.errorText}>{errors.dueDate}</CsText>}
 
@@ -296,10 +306,11 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
                 value={dueDate}
                 mode="date"
                 onChange={(event, selectedDate) => {
-                  setShowDatePicker(false);
+                  setShowDatePicker(false)
                   if (selectedDate) {
-                    setDueDate(selectedDate);
-                    if (errors.dueDate) setErrors(prev => ({ ...prev, dueDate: '' }));
+                    setDueDate(selectedDate)
+                    if (errors.dueDate)
+                      setErrors(prev => ({ ...prev, dueDate: '' }))
                   }
                 }}
               />
@@ -317,8 +328,8 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
               <CsButton
                 title="Annuler"
                 onPress={() => {
-                  resetForm();
-                  onClose();
+                  resetForm()
+                  onClose()
                 }}
                 variant="secondary"
               />
@@ -331,14 +342,14 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
         </View>
       </View>
     </Modal>
-  );
-};
+  )
+}
 
-const useStyles = (theme: ITheme) =>
-  StyleSheet.create({
+function useStyles(theme: ITheme) {
+  return StyleSheet.create({
     modalContainer: {
       flex: 1,
-      backgroundColor: 'rgba(0,0,0,0.5)',
+      backgroundColor: $black50,
       justifyContent: 'center',
       padding: spacing.lg,
     },
@@ -397,6 +408,7 @@ const useStyles = (theme: ITheme) =>
       fontSize: 12,
       marginTop: spacing.xs,
     },
-  });
+  })
+}
 
-export default CreateNoteModal;
+export default CreateNoteModal

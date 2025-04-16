@@ -25,7 +25,7 @@ export function styles(theme: ITheme) {
       borderColor: theme.primary,
     },
     buttontext: {
-      backgroundColor: 'transparent',
+      backgroundColor: theme.transparent,
     },
     buttonsmall: {
       paddingVertical: spacing.sm,

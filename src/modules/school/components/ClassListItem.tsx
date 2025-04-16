@@ -14,6 +14,8 @@ interface ClassListItemProps {
   onPress: () => void
 }
 
+const $black = '#000'
+
 const ClassListItem: React.FC<ClassListItemProps> = ({
   classItem,
   onPress,
@@ -77,7 +79,7 @@ function useStyles(theme: ITheme) {
       backgroundColor: theme.card,
       borderRadius: 12,
       marginBottom: spacing.md,
-      shadowColor: '#000',
+      shadowColor: $black,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
       shadowRadius: 4,

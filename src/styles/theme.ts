@@ -11,6 +11,7 @@ export const LightTheme = {
   border: '#D8D8D8', // Subtle border color
   notification: '#FF0000', // Red for critical notifications
   rippleColor: '#0000001a', // Soft ripple effect
+  transparent: '#00FFFFFF', // transparent
 
   // New colors
   success: '#4CAF50', // Green for success states
@@ -54,6 +55,7 @@ export const DarkTheme: ITheme = {
   border: '#272729', // Subtle border for dark mode
   notification: '#FF0000', // Red for notifications
   rippleColor: '#ffffff1a', // Light ripple effect
+  transparent: '#00000000', // transparent
 
   // New colors
   success: '#66BB6A', // Slightly lighter green for dark mode
