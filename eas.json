@@ -12,7 +12,7 @@
       "android": {
         "buildType": "apk",
         "gradleCommand": ":app:assembleRelease",
-        "node": "18.20.0",
+        "node": "20.10.0",
         "env": {
           "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
           "MAVEN_REPOS": "maven { url 'https://maven.aliyun.com/repository/public' }\\nmaven { url 'https://repo1.maven.org/maven2' }"
