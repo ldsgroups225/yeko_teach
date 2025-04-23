@@ -76,14 +76,7 @@ export default function Login() {
       goHomePage(user)
     }
     catch (error) {
-      if (error.toString() === 'Error: Invalid login credentials') {
-        showToast('Email ou mot de passe incorrect')
-      }
-      else {
-        showToast(
-          'Une erreur est survenue lors de la connexion. Veuillez réessayer.',
-        )
-      }
+      showToast(error.message)
     }
   }
 

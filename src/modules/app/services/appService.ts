@@ -50,7 +50,10 @@ export const auth = {
     })
 
     if (response.error) {
-      console.error('Error creating session:', response.error)
+      if (response.error.message === 'Invalid login credentials')
+        throw new Error('Email ou mot de passe incorrect')
+      else
+        throw new Error('Une erreur est survenue')
     }
 
     return response
