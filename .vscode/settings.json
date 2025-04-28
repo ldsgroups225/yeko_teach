@@ -51,7 +51,9 @@
   "cSpell.language": "en, fr",
   "cSpell.words": [
     "Coeff",
+    "conv",
     "gorhom",
+    "postgres",
     "Postgrest",
     "qrcode",
     "springify",
