@@ -8,14 +8,15 @@ import type Routes from '@utils/Routes'
 import { CsCard, CsText } from '@components/index'
 import { Ionicons } from '@expo/vector-icons'
 import { showToast } from '@helpers/toast/showToast'
-import { useNavigation, useRoute } from '@react-navigation/native'
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
 import { useTheme } from '@src/hooks'
 import { supabase } from '@src/lib/supabase'
 import { useAppSelector } from '@store/index'
 import { shadows, spacing } from '@styles/index'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Alert, Animated, FlatList, KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 import { useChat } from '../hooks/useChat'
+import { chat as chatService } from '../services/chatService'
 
 // Message Interface
 interface Message {
@@ -78,6 +79,34 @@ const ChatDetailScreen: React.FC = () => {
       }).start()
     }
   }, [messages, fadeAnim])
+
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true
+
+      const markRead = async () => {
+        if (user && chatId && isActive) {
+          try {
+            // Call the service function directly (no need for hook state here)
+            await chatService.markMessagesAsRead(chatId, user.id)
+            // Optionally: Trigger a refetch on DiscussionScreen if needed,
+            // though ideally the count calculation handles this.
+          }
+          catch (err) {
+            console.error('Failed to mark messages as read:', err)
+          }
+        }
+      }
+
+      // Mark as read shortly after focusing to allow messages to potentially load
+      const timeoutId = setTimeout(markRead, 500) // Delay slightly
+
+      return () => {
+        isActive = false
+        clearTimeout(timeoutId)
+      }
+    }, [chatId, user?.id]),
+  )
 
   // Callbacks
   const sendMessage = async () => {

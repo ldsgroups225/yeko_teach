@@ -5,87 +5,33 @@ import type { ITheme } from '@styles/theme'
 import type { ChatStackParams } from '@utils/Routes'
 import type { Conversation } from '../types/chat'
 import CsText from '@components/CsText'
-import { CsCard } from '@components/index'
+import EmptyListComponent from '@components/EmptyListComponent'
 import useDataFetching from '@hooks/useDataFetching'
 import { LoadingScreen, SummaryCard } from '@modules/app/components'
-import { formatDate } from '@modules/app/utils'
 import { useNavigation } from '@react-navigation/native'
 import { useTheme } from '@src/hooks'
 import { supabase } from '@src/lib/supabase'
 import { useAppSelector } from '@store/index'
-import { shadows } from '@styles/shadows'
 import { spacing } from '@styles/spacing'
 import Routes from '@utils/Routes'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Animated, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native'
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native'
+import { ConversationItem } from '../components/ConversationItem'
 import { useChat } from '../hooks/useChat'
 
-const $black = '#000'
-
-const ConversationItem: React.FC<{ conversation: Conversation, onPress: () => void }> = ({
-  conversation,
-  onPress,
-}) => {
-  const theme = useTheme()
-  const themedStyles = useStyles(theme)
-  const opacity = useRef(new Animated.Value(0)).current
-
-  useEffect(() => {
-    Animated.timing(opacity, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true,
-    }).start()
-  }, [])
-
-  const animatedStyle = {
-    opacity,
-    transform: [
-      {
-        translateY: opacity.interpolate({
-          inputRange: [0, 1],
-          outputRange: [50, 0],
-        }),
-      },
-    ],
-  }
-
-  return (
-    <Animated.View style={[themedStyles.conversationItem, animatedStyle]}>
-      <CsCard style={themedStyles.conversationCard} onPress={onPress}>
-        <View style={themedStyles.conversationHeader}>
-          <CsText variant="h3" style={themedStyles.conversationTopic}>
-            {conversation.topic}
-          </CsText>
-          {conversation.unreadCount > 0 && (
-            <View style={themedStyles.unreadBadge}>
-              <CsText style={themedStyles.unreadBadgeText}>
-                {conversation.unreadCount}
-              </CsText>
-            </View>
-          )}
-        </View>
-        <CsText
-          variant="body"
-          numberOfLines={2}
-          style={themedStyles.lastMessage}
-        >
-          {conversation.lastMessage}
-        </CsText>
-        <View style={themedStyles.conversationFooter}>
-          <CsText variant="caption" style={themedStyles.participantText}>
-            {conversation.participants[1]}
-          </CsText>
-          <CsText variant="caption" style={themedStyles.dateText}>
-            {formatDate(conversation.lastMessageDate, 'd MMM yyyy')}
-          </CsText>
-        </View>
-      </CsCard>
-    </Animated.View>
-  )
-}
-
 const ChatScreen: React.FC = () => {
+  // Hooks and Navigation
   const theme = useTheme()
   const styles = useStyles(theme)
   const navigation = useNavigation<StackNavigationProp<ChatStackParams>>()
@@ -93,47 +39,100 @@ const ChatScreen: React.FC = () => {
   const user = useAppSelector(s => s?.AppReducer?.user)
   const { getConversations } = useChat()
 
+  // State for filter
   const [selectedFilter, setSelectedFilter] = useState('all')
-  const [conversations, setConversations] = useState<Conversation[]>([])
-  const fetchConversations = useCallback(async () => await getConversations(user!.id).then(r => setConversations(r)), [])
+  const initialFetchDone = useRef(false) // Ref to track initial fetch
 
-  const {
-    loading,
-    refreshing,
-    refetch: refetchData,
-  } = useDataFetching(fetchConversations)
-
-  useEffect(() => {
-    const channel = supabase
-      .channel('chats')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'chats',
-        filter: `parent_id=eq.${user?.id}`,
-      }, () => refetchData())
-      .subscribe()
-
-    // if is insert eve
-
-    return () => {
-      channel.unsubscribe()
+  const fetchConversationsFunction = useCallback(async () => {
+    if (!user?.id) {
+      return [] as Conversation[]
+    }
+    try {
+      const convos = await getConversations(user.id)
+      return convos
+    }
+    catch {
+      return []
     }
   }, [user?.id])
 
+  const {
+    data: conversations,
+    loading,
+    refreshing,
+    refetch: refetchData,
+  } = useDataFetching<Conversation[]>(fetchConversationsFunction, [], { lazy: true })
+
+  useEffect(() => {
+    if (user?.id && !initialFetchDone.current) {
+      refetchData()
+      initialFetchDone.current = true
+    }
+    else if (!user?.id) {
+      // console.log('ChatScreen: User not logged in, skipping initial fetch')
+    }
+  }, [user?.id, refetchData])
+
+  useEffect(() => {
+    if (!user?.id) {
+      return
+    }
+
+    const channel = supabase
+      .channel('chats_listener_teacher')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'chats',
+          filter: `teacher_id=eq.${user.id}`,
+        },
+        () => {
+
+        },
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          // console.log('ChatScreen: Subscribed to chats listener channel') // Removed
+        }
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          // console.error('ChatScreen: Subscription error:', status, err) // Removed
+        }
+        if (status === 'CLOSED') {
+          // console.log('ChatScreen: Supabase channel closed.') // Removed
+        }
+      })
+
+    return () => {
+      if (channel) {
+        supabase.removeChannel(channel)
+
+          .catch(err => console.error('ChatScreen: Error removing channel:', err))
+      }
+    }
+  }, [user?.id])
+
+  const filteredConversations = useMemo(() => {
+    const currentConversations = conversations || []
+    if (selectedFilter === 'unread') {
+      return currentConversations.filter(conv => conv.unreadCount > 0)
+    }
+    return currentConversations
+  }, [conversations, selectedFilter])
+
   const summary = useMemo(() => {
-    if (!conversations)
-      return { totalConversations: 0, unreadMessages: 0 }
+    const currentConversations = conversations || []
     return {
-      totalConversations: conversations.length,
-      unreadMessages: conversations.reduce(
+      totalConversations: currentConversations.length,
+      unreadMessages: currentConversations.reduce(
         (sum, converse) => sum + converse.unreadCount,
         0,
       ),
     }
-  }, [conversations?.length])
+  }, [conversations])
 
-  const summaryItems = [
+  const summaryItems = useMemo(() => [
     {
       label: 'Conversations',
       value: summary.totalConversations,
@@ -146,7 +145,7 @@ const ChatScreen: React.FC = () => {
       icon: 'mail-unread-outline' as const,
       color: styles.warning.color,
     },
-  ]
+  ], [summary, styles.primary.color, styles.warning.color])
 
   const renderHeader = () => (
     <View style={styles.header}>
@@ -160,17 +159,15 @@ const ChatScreen: React.FC = () => {
               selectedFilter === filter && styles.selectedFilterButton,
             ]}
             onPress={() => setSelectedFilter(filter)}
+            disabled={loading || refreshing}
           >
             <CsText
               style={StyleSheet.flatten([
                 styles.filterButtonText,
-                selectedFilter === filter
-                && styles.selectedFilterButtonText,
+                selectedFilter === filter && styles.selectedFilterButtonText,
               ])}
             >
-              {filter === 'unread'
-                ? 'Non lus'
-                : 'Tout'}
+              {filter === 'unread' ? 'Non lus' : 'Tout'}
             </CsText>
           </TouchableOpacity>
         ))}
@@ -182,7 +179,7 @@ const ChatScreen: React.FC = () => {
     navigation.navigate(Routes.ChatDetails, { chatId })
   }
 
-  if (loading) {
+  if (loading && !initialFetchDone.current) {
     return <LoadingScreen />
   }
 
@@ -191,7 +188,7 @@ const ChatScreen: React.FC = () => {
       {renderHeader()}
       <FlatList
         style={styles.conversationList}
-        data={conversations}
+        data={filteredConversations}
         renderItem={({ item }) => (
           <ConversationItem
             conversation={item}
@@ -210,11 +207,22 @@ const ChatScreen: React.FC = () => {
         onRefresh={refetchData}
         refreshing={refreshing}
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          !loading && !refreshing && filteredConversations.length === 0
+            ? (
+                <EmptyListComponent message={selectedFilter === 'unread' ? 'Aucun message non lu' : 'Aucune conversation trouvée'} />
+              )
+            : null
+        }
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={21}
       />
     </View>
   )
 }
 
+// Styles definition (remains the same)
 function useStyles(theme: ITheme) {
   return StyleSheet.create({
     container: {
@@ -234,7 +242,7 @@ function useStyles(theme: ITheme) {
     },
     filterContainer: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      justifyContent: 'space-around',
       backgroundColor: theme.card,
       borderRadius: 8,
       padding: spacing.xs,
@@ -242,7 +250,9 @@ function useStyles(theme: ITheme) {
     filterButton: {
       alignItems: 'center',
       paddingVertical: spacing.xs,
-      paddingHorizontal: spacing.xl,
+      paddingHorizontal: spacing.lg,
+      flex: 1,
+      marginHorizontal: spacing.xs,
     },
     selectedFilterButton: {
       backgroundColor: theme.primary,
@@ -251,56 +261,15 @@ function useStyles(theme: ITheme) {
     filterButtonText: {
       color: theme.text,
       fontSize: 12,
+      fontWeight: '500',
     },
     selectedFilterButtonText: {
       color: theme.background,
+      fontWeight: 'bold',
     },
     conversationList: {
       flex: 1,
       padding: spacing.md,
-    },
-    conversationItem: {
-      marginBottom: spacing.md,
-    },
-    conversationCard: {
-      padding: spacing.md,
-      ...shadows.small,
-    },
-    conversationHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: spacing.xs,
-    },
-    conversationTopic: {
-      flex: 1,
-    },
-    unreadBadge: {
-      backgroundColor: theme.primary,
-      borderRadius: 12,
-      paddingHorizontal: 8,
-      paddingVertical: 4,
-    },
-    unreadBadgeText: {
-      color: theme.background,
-      fontSize: 12,
-      fontWeight: 'bold',
-    },
-    lastMessage: {
-      color: theme.textLight,
-      marginBottom: spacing.xs,
-    },
-    conversationFooter: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'flex-start',
-    },
-    participantText: {
-      color: theme.textLight,
-      width: '80%',
-    },
-    dateText: {
-      color: theme.textLight,
     },
     newConversationButton: {
       flexDirection: 'row',
@@ -315,10 +284,6 @@ function useStyles(theme: ITheme) {
       color: theme.background,
       marginLeft: spacing.xs,
       fontWeight: 'bold',
-    },
-    modalBackground: {
-      ...StyleSheet.absoluteFillObject,
-      backgroundColor: $black,
     },
     primary: {
       color: theme.primary,

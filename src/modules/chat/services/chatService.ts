@@ -5,11 +5,30 @@ import { supabase } from '@src/lib/supabase'
 import { formatFullName } from '@utils/Formatting'
 
 export const chat = {
+  async markMessagesAsRead(chatId: string, userId: string): Promise<void> {
+    try {
+      const { error } = await supabase.rpc('mark_chat_read', {
+        chat_id_param: chatId,
+        user_id_param: userId,
+      })
+
+      if (error) {
+        console.error('Error calling mark_chat_read RPC:', error)
+        // Decide if you want to throw or just log
+        // throw error;
+      }
+    }
+    catch (error) {
+      console.error('Exception marking messages as read:', error)
+      // throw error;
+    }
+  },
+
   async getConversations(userId: string): Promise<Conversation[]> {
     const { data, error } = await supabase
       .from('chats')
       .select(`
-      id,
+      id, last_message, is_last_message_read, updated_at,
       chat_topics(title, default_message),
       student: students!chats_student_id_fkey(first_name, last_name, student_school_class(classroom: classes(name, schools(name)))),
       teacher: users!chats_teacher_id_fkey(first_name, last_name),
@@ -35,43 +54,15 @@ export const chat = {
       }
     })
 
-    // Fetch last message for each conversation
-    const chatIDs = data.map(c => c.id)
-
-    const messages: { chat_id: string, content: string, date: Date, isRead: boolean }[] = []
-
-    for (let i = 0; i < chatIDs.length; i++) {
-      const { data: msg, error } = await supabase
-        .from('messages')
-        .select('chat_id, content, created_at, read_by')
-        .eq('chat_id', chatIDs[i])
-        .order('created_at', { ascending: false })
-        .limit(1)
-
-      if (error)
-        throw error
-
-      if (msg && msg.length > 0) {
-        messages.push({
-          chat_id: chatIDs[i],
-          content: msg[0].content ?? '',
-          date: new Date(msg[0].created_at ?? new Date()),
-          isRead: !!msg[0].read_by?.length,
-        })
-      }
-      else {
-        // Handle case where there are no messages
-        messages.push({
-          chat_id: chatIDs[i],
-          content: '',
-          date: new Date(),
-          isRead: true,
-        })
-      }
-    }
+    const messages: { chatId: string, content: string, date: Date, isRead: boolean }[] = data.map(d => ({
+      chatId: d.id,
+      content: d.last_message ?? '',
+      date: d.updated_at ? new Date(d.updated_at) : new Date(),
+      isRead: d.is_last_message_read ?? false,
+    }))
 
     const chats = data.map((c, i) => {
-      const messageInfo = messages.find(m => m.chat_id === c.id) ?? {
+      const messageInfo = messages.find(m => m.chatId === c.id) ?? {
         content: '',
         date: new Date(),
         isRead: true,
@@ -137,7 +128,7 @@ export const chat = {
   },
 
   async createMessage({ senderId, chatId, content }: { senderId: string, chatId: string, content: string }): Promise<void> {
-    const { error } = await supabase
+    const messageQs = supabase
       .from('messages')
       .insert([{
         chat_id: chatId,
@@ -145,7 +136,16 @@ export const chat = {
         content: content.trim(),
       }])
 
-    if (error)
-      throw error
+    const lastMessageUpdQs = supabase
+      .from('chats')
+      .update({ last_message: content })
+      .eq('id', chatId)
+
+    const [
+      { error: messageError },
+      { error: lastMmessageError },
+    ] = await Promise.all([messageQs, lastMessageUpdQs])
+    if (messageError || lastMmessageError)
+      throw messageError || lastMmessageError
   },
 }
