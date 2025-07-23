@@ -101,14 +101,20 @@ export const schoolYear = {
     data: SchoolYearWithSemesters | null
     error: PostgrestError | null
   }> {
+    // const currentDate = new Date()
+    // const lastSeptemberDate = new Date(currentDate.getFullYear(), 8, 1)
+    // const nextAugustDate = new Date(currentDate.getFullYear(), 7, 31)
+
     try {
       // First, fetch the current school year
       const { data: schoolYearData, error: schoolYearError } = await supabase
         .from('school_years')
         .select('*')
-        .lte('start_date', new Date().toISOString())
-        .gte('end_date', new Date().toISOString())
-        .single()
+        // .lte('start_date', lastSeptemberDate.toISOString())
+        // .gte('end_date', nextAugustDate.toISOString())
+        .order('end_year', { ascending: false })
+        .limit(1)
+        .maybeSingle()
 
       if (schoolYearError) {
         throw schoolYearError

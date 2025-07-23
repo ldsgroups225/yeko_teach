@@ -56,6 +56,7 @@ function RootNavigation() {
       const { data, error } = await schoolYear.getCurrentSchoolYearWithSemesters()
       if (error)
         throw error
+
       if (data && data.schoolYear && data.semesters) {
         dispatch(setSchoolYear({
           id: data.schoolYear.id,
