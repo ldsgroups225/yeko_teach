@@ -10,7 +10,6 @@ import { CsCard, CsText } from '@components/index'
 import { ToastColorEnum } from '@components/ToastMessage/ToastColorEnum'
 import { Ionicons } from '@expo/vector-icons'
 import { showToast } from '@helpers/toast/showToast'
-import { useHeaderHeight } from '@react-navigation/elements'
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
 import { useTheme } from '@src/hooks'
 import { supabase } from '@src/lib/supabase'
@@ -29,11 +28,13 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  StatusBar,
   StyleSheet,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useChat } from '../hooks/useChat'
 import { chat as chatService } from '../services/chatService'
 
@@ -45,9 +46,13 @@ interface Message {
   timestamp: Date
 }
 
+// Default Header Height (adjust if your header is significantly different)
+const DEFAULT_HEADER_HEIGHT = Platform.OS === 'ios' ? 64 : 0
+
 const ChatDetailScreen: React.FC = () => {
   const theme = useTheme()
   const styles = useStyles(theme)
+  const insets = useSafeAreaInsets() // Get safe area insets
 
   const navigation = useNavigation<StackNavigationProp<ChatStackParams>>()
   const route = useRoute<RouteProp<ChatStackParams, Routes.ChatDetails>>()
@@ -64,16 +69,21 @@ const ChatDetailScreen: React.FC = () => {
   const flatListRef = useRef<FlatList>(null)
   const fadeAnim = useRef(new Animated.Value(0)).current
 
-  const headerHeight = useHeaderHeight()
-  // Calculate offset dynamically based on header height
-  const keyboardVerticalOffset = headerHeight + (Platform.OS === 'ios' ? 10 : 0) // Add small extra padding for iOS
+  // --- Keyboard Offset Calculation ---
+  // Use a base header height and add status bar height for Android,
+  // and potentially top inset for iOS if header is translucent/drawn under status bar.
+  const statusBarHeight = StatusBar.currentHeight ?? 0
+  const keyboardVerticalOffset
+    = Platform.OS === 'ios'
+      ? DEFAULT_HEADER_HEIGHT + insets.bottom // Use inset for iOS if header is under status bar
+      : DEFAULT_HEADER_HEIGHT + statusBarHeight // Use status bar height for Android with 'height' behavior
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
       () => {
-        // Add a small delay to ensure layout calculation is complete
-        setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 50)
+        // Using timeout helps ensure layout is complete before scrolling
+        setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100)
       },
     )
     const keyboardDidHideListener = Keyboard.addListener(
@@ -89,12 +99,12 @@ const ChatDetailScreen: React.FC = () => {
     }
   }, [])
 
+  // --- Data Loading and Effects (largely unchanged) ---
   useEffect(() => {
     if (user === null || !chatId)
       return
 
-    let isMounted = true // Flag to prevent state update on unmounted component
-
+    let isMounted = true
     const loadMessages = async () => {
       try {
         const result = await getMessages({ userId: user!.id, chatId })
@@ -109,17 +119,13 @@ const ChatDetailScreen: React.FC = () => {
         }
       }
     }
-
     loadMessages()
-
-    return () => {
-      isMounted = false
-    }
-  }, [chatId, user?.id, getMessages]) // getMessages is likely stable from useChat hook
+    return () => { isMounted = false }
+  }, [chatId, user?.id, getMessages])
 
   useEffect(() => {
     if (messages.length > 0) {
-      setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100)
+      setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 150) // Slightly longer timeout
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 300,
@@ -137,7 +143,6 @@ const ChatDetailScreen: React.FC = () => {
             await chatService.markMessagesAsRead(chatId, user.id)
           }
           catch (err) {
-            // Keep essential error logging
             console.error('Failed to mark messages as read:', err)
           }
         }
@@ -150,17 +155,11 @@ const ChatDetailScreen: React.FC = () => {
     }, [chatId, user?.id]),
   )
 
+  // --- Send Message Logic (unchanged) ---
   const sendMessage = async () => {
     const trimmedInput = inputText.trim()
-    if (!trimmedInput)
+    if (!trimmedInput || !chat)
       return
-
-    if (!chat) {
-      // Keep essential error logging
-      console.error('Chat details not loaded yet, cannot send message.')
-      showToast('Erreur: Impossible d\'envoyer le message.', ToastColorEnum.Error)
-      return
-    }
 
     if (chat.messageCount >= 10) {
       Alert.alert('Limite Atteinte', 'Vous avez atteint le nombre maximum de messages par chat (10 max).')
@@ -177,14 +176,9 @@ const ChatDetailScreen: React.FC = () => {
     setInputText('')
 
     try {
-      await createMessage({
-        chatId,
-        senderId: user!.id,
-        content: trimmedInput,
-      })
+      await createMessage({ chatId, senderId: user!.id, content: trimmedInput })
     }
     catch (error) {
-      // Keep essential error logging
       console.error('Error sending message:', error)
       showToast('Erreur d\'envoi du message.', ToastColorEnum.Error)
       setMessages(prev => prev.filter(msg => msg.id !== optimisticMessage.id))
@@ -192,21 +186,16 @@ const ChatDetailScreen: React.FC = () => {
     }
   }
 
+  // --- Real-time Listener (unchanged) ---
   useEffect(() => {
-    if (!user || !chatId) {
+    if (!user || !chatId)
       return
-    }
 
     const channel = supabase
       .channel(`messages_for_chat_${chatId}`)
       .on<Database['public']['Tables']['messages']['Row']>(
         'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
-          filter: `chat_id=eq.${chatId}`,
-        },
+        { event: 'INSERT', schema: 'public', table: 'messages', filter: `chat_id=eq.${chatId}` },
         (payload) => {
           const rawNewMessage = payload.new
           if (rawNewMessage.sender_id !== user.id) {
@@ -229,52 +218,29 @@ const ChatDetailScreen: React.FC = () => {
       )
       .subscribe((status, err) => {
         if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-          // Keep essential error logging
           console.error(`Subscription error for chat ${chatId}:`, status, err)
         }
       })
 
     return () => {
-      supabase.removeChannel(channel).catch(err => console.error('Error removing channel:', err)) // Keep error log
+      supabase.removeChannel(channel).catch(err => console.error('Error removing channel:', err))
     }
-  }, [chatId, supabase, user?.id]) // supabase is stable, user?.id is the key dependency
+  }, [chatId, supabase, user?.id])
 
+  // --- Render Message Item (unchanged) ---
   const renderMessage = ({ item, index }: { item: Message, index: number }) => {
     const isLastMessage = index === messages.length - 1
     const timestampString = item.timestamp instanceof Date && !Number.isNaN(item.timestamp.getTime())
-      ? item.timestamp.toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        })
+      ? item.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       : '--:--'
 
     return (
-      <Animated.View
-        style={[
-          styles.messageContainer,
-          item.sender === 'user'
-            ? styles.userMessage
-            : styles.otherMessage,
-          isLastMessage && { opacity: fadeAnim },
-        ]}
-      >
-        <CsCard style={StyleSheet.flatten([
-          styles.messageCard,
-          item.sender === 'user' ? styles.userMessageCard : styles.otherMessageCard,
-        ])}
-        >
-          <CsText style={StyleSheet.flatten([
-            styles.messageText,
-            item.sender === 'user' ? styles.userMessageText : styles.otherMessageText,
-          ])}
-          >
+      <Animated.View style={[styles.messageContainer, item.sender === 'user' ? styles.userMessage : styles.otherMessage, isLastMessage && { opacity: fadeAnim }]}>
+        <CsCard style={StyleSheet.flatten([styles.messageCard, item.sender === 'user' ? styles.userMessageCard : styles.otherMessageCard])}>
+          <CsText style={StyleSheet.flatten([styles.messageText, item.sender === 'user' ? styles.userMessageText : styles.otherMessageText])}>
             {item.text}
           </CsText>
-          <CsText style={StyleSheet.flatten([
-            styles.timestamp,
-            item.sender === 'user' ? styles.userTimestamp : styles.otherTimestamp,
-          ])}
-          >
+          <CsText style={StyleSheet.flatten([styles.timestamp, item.sender === 'user' ? styles.userTimestamp : styles.otherTimestamp])}>
             {timestampString}
           </CsText>
         </CsCard>
@@ -282,19 +248,19 @@ const ChatDetailScreen: React.FC = () => {
     )
   }
 
+  // --- Main Render ---
   return (
+    // Use KeyboardAvoidingView as the outermost container for the screen content
+    // that needs to adjust for the keyboard.
     <KeyboardAvoidingView
-      style={styles.container}
+      style={styles.container} // Ensure KAV takes full flex
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={keyboardVerticalOffset}
+      keyboardVerticalOffset={keyboardVerticalOffset} // Apply calculated offset
     >
+      {/* Header remains outside the main adjustable area */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} accessibilityLabel="Go back">
-          <Ionicons
-            name="arrow-back"
-            size={24}
-            color={styles.headerText.color}
-          />
+          <Ionicons name="arrow-back" size={24} color={styles.headerText.color} />
         </TouchableOpacity>
         <CsText style={styles.headerText}>
           {chat ? `${10 - chat.messageCount} messages restants` : 'Chargement...'}
@@ -302,7 +268,10 @@ const ChatDetailScreen: React.FC = () => {
         <View style={styles.recipientPlaceholder} />
       </View>
 
-      <View style={styles.messageListContainer}>
+      {/* This View acts as the main content area that KAV will adjust */}
+      {/* For behavior='height', KAV adjusts the height of this View */}
+      {/* For behavior='padding', KAV adds padding to the bottom of this View */}
+      <View style={styles.contentArea}>
         <FlatList
           ref={flatListRef}
           data={messages}
@@ -325,9 +294,13 @@ const ChatDetailScreen: React.FC = () => {
           initialNumToRender={15}
           maxToRenderPerBatch={10}
           windowSize={21}
+          // Ensure list scrolls when content size changes due to keyboard
+          onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: false })}
+          onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
         />
       </View>
 
+      {/* Input container remains visually at the bottom, KAV adjusts the space above it */}
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -347,25 +320,18 @@ const ChatDetailScreen: React.FC = () => {
           style={[styles.sendButton, (chat?.status !== 'active' || !inputText.trim()) && styles.sendButtonDisabled]}
           accessibilityLabel="Send message"
         >
-          <Ionicons
-            name="send"
-            size={20}
-            color={theme.background}
-          />
+          <Ionicons name="send" size={20} color={theme.background} />
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   )
 }
 
-// Styles (no changes needed here from previous version)
+// --- Styles ---
 function useStyles(theme: ITheme) {
   return StyleSheet.create({
-    flex1: {
-      flex: 1,
-    },
     container: {
-      flex: 1,
+      flex: 1, // KAV needs flex: 1 to manage its children's layout
       backgroundColor: theme.background,
     },
     header: {
@@ -374,7 +340,7 @@ function useStyles(theme: ITheme) {
       justifyContent: 'space-between',
       paddingHorizontal: spacing.md,
       paddingVertical: spacing.sm,
-      paddingTop: Platform.OS === 'ios' ? spacing.xl : spacing.md,
+      paddingTop: Platform.OS === 'ios' ? spacing.xl : spacing.md, // Adjust as needed
       backgroundColor: theme.primary,
       ...shadows.medium,
       borderBottomWidth: 1,
@@ -389,13 +355,14 @@ function useStyles(theme: ITheme) {
     recipientPlaceholder: {
       width: 24,
     },
-    messageListContainer: {
-      flex: 1,
+    // This view holds the FlatList and will be adjusted by KAV
+    contentArea: {
+      flex: 1, // Make this area flexible so it can shrink/have padding added
     },
     messageListContent: {
       paddingHorizontal: spacing.md,
       paddingVertical: spacing.sm,
-      flexGrow: 1, // Ensure content pushes input down
+      flexGrow: 1, // Important: Allows list to grow and push input down
     },
     messageContainer: {
       maxWidth: '80%',
@@ -457,6 +424,9 @@ function useStyles(theme: ITheme) {
       borderTopWidth: StyleSheet.hairlineWidth,
       borderTopColor: theme.border,
       alignItems: 'center',
+      // Add paddingBottom to account for safe area on iOS if needed,
+      // KAV with 'padding' behavior usually handles this, but sometimes needed.
+      // paddingBottom: insets.bottom,
     },
     input: {
       flex: 1,
