@@ -13,6 +13,12 @@ interface UseNoteReturn {
   updateNote: (noteId: string, noteData: Partial<INoteDTO>) => Promise<boolean>
   updateNoteDetails: (noteId: string, details: INoteDTO['noteDetails']) => Promise<boolean>
   teachedSubjects: (classId: string, teacherId: string) => Promise<ISubjectDTO[]>
+  syncNotesWithRemote: (
+    teacherId: string,
+    classId: string,
+    schoolYearId: number,
+    semesterId?: number,
+  ) => Promise<{ synced: number, removed: number, errors: string[] }>
   getNotes: (
     classId: string,
     teacherId: string,
@@ -134,12 +140,22 @@ export function useNote(): UseNoteReturn {
     setLoading(true)
     setError(null)
     try {
+      // First try to delete remotely
+      const remoteDeleted = await notes.deleteNoteRemotely(noteId)
+
+      // Always delete locally, regardless of remote deletion success
       await notes.removeSavedNoteLocally(teacherId, classId, noteId)
+
+      if (!remoteDeleted) {
+        console.warn(`Note ${noteId} deleted locally but remote deletion failed`)
+        // Don't throw error here as local deletion succeeded
+      }
+
       return true
     }
     catch (err) {
-      setError('Failed to remove saved notes locally.')
-      console.error('[E_REMOVE_SAVED_NOTES_LOCALLY]:', err)
+      setError('Failed to remove saved notes.')
+      console.error('[E_REMOVE_SAVED_NOTES]:', err)
       return false
     }
     finally {
@@ -190,6 +206,27 @@ export function useNote(): UseNoteReturn {
     }
   }, [])
 
+  const syncNotesWithRemote = useCallback(async (
+    teacherId: string,
+    classId: string,
+    schoolYearId: number,
+    semesterId?: number,
+  ): Promise<{ synced: number, removed: number, errors: string[] }> => {
+    setLoading(true)
+    setError(null)
+    try {
+      return await notes.syncNotesWithRemote(teacherId, classId, schoolYearId, semesterId)
+    }
+    catch (err) {
+      setError('Failed to sync notes with remote.')
+      console.error('[E_SYNC_NOTES]:', err)
+      return { synced: 0, removed: 0, errors: [`Sync failed: ${err}`] }
+    }
+    finally {
+      setLoading(false)
+    }
+  }, [])
+
   return {
     error,
     loading,
@@ -200,5 +237,6 @@ export function useNote(): UseNoteReturn {
     publishNote,
     teachedSubjects,
     updateNoteDetails,
+    syncNotesWithRemote,
   }
 }

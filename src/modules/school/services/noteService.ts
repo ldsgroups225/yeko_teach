@@ -65,13 +65,27 @@ export const notes = {
 
     // Create a map to store unique notes by ID
     const notesMap = new Map<string, INoteDTO>()
+    const remoteNoteIds = new Set(parsedRemoteData.map(note => note.id))
 
-    // Add local notes to the map
-    localData.forEach((note) => {
-      if (note.id) {
-        notesMap.set(note.id, note)
+    // Add local notes to the map, but remove published ones that don't exist remotely
+    for (const localNote of localData) {
+      if (localNote.id) {
+        // If note is published and doesn't exist remotely, remove it from local DB
+        if (localNote.isPublished && !remoteNoteIds.has(localNote.id)) {
+          try {
+            await this.removeSavedNoteLocally(teacherId, classId, localNote.id)
+            // Note: Removed local published note that no longer exists remotely
+          }
+          catch (error) {
+            console.error(`Failed to remove local note ${localNote.id}:`, error)
+          }
+        }
+        else {
+          // Keep the note in the map
+          notesMap.set(localNote.id, localNote)
+        }
       }
-    })
+    }
 
     // Add remote notes to the map, overwriting local ones if they exist
     parsedRemoteData.forEach((note) => {
@@ -155,6 +169,7 @@ export const notes = {
         isGraded: noteData.isGraded ? 1 : 0,
         dueDate: noteData.dueDate?.toISOString() ?? null,
         createdAt: new Date().toISOString(),
+        isPublished: noteData.isPublished ? 1 : 0,
       }
 
       // Insert note then retrieve its ID with drizzle
@@ -350,7 +365,7 @@ export const notes = {
       return {
         ..._note,
         isActive: false,
-        isPublished: false,
+        isPublished: _note.isPublished === 1,
         id: _note.id.toString(),
         isGraded: _note.isGraded === 1,
         noteType: FROM_STRING_OPTIONS_MAP[_note.noteType],
@@ -419,7 +434,7 @@ export const notes = {
 
           return {
             ...note,
-            isPublished: false,
+            isPublished: note.isPublished === 1,
             isActive: false,
             id: note.id.toString(),
             isGraded: note.isGraded === 1,
@@ -471,6 +486,120 @@ export const notes = {
     catch (error) {
       console.error('Error removing saved notes locally:', error)
       throw new Error(`Failed to remove saved notes locally: ${error.message}`)
+    }
+  },
+
+  async deleteNoteRemotely(noteId: string): Promise<boolean> {
+    if (!noteId) {
+      throw new Error('Note ID is required')
+    }
+
+    try {
+      // First delete note details
+      const { error: detailError } = await supabase
+        .from(NOTE_DETAILS_TABLE_ID)
+        .delete()
+        .eq('note_id', noteId)
+
+      if (detailError) {
+        console.error('Error deleting note details remotely:', detailError)
+        throw new Error(`Failed to delete note details: ${detailError.message}`)
+      }
+
+      // Then delete the main note
+      const { error: noteError } = await supabase
+        .from(NOTE_TABLE_ID)
+        .delete()
+        .eq('id', noteId)
+
+      if (noteError) {
+        console.error('Error deleting note remotely:', noteError)
+        throw new Error(`Failed to delete note: ${noteError.message}`)
+      }
+
+      return true
+    }
+    catch (error) {
+      console.error('Error deleting note remotely:', error)
+      return false
+    }
+  },
+
+  async syncNotesWithRemote(teacherId: string, classId: string, schoolYearId: number, semesterId?: number): Promise<{
+    synced: number
+    removed: number
+    errors: string[]
+  }> {
+    const result = {
+      synced: 0,
+      removed: 0,
+      errors: [] as string[],
+    }
+
+    try {
+      // Get remote notes
+      let query = supabase
+        .from(NOTE_TABLE_ID)
+        .select(`*, note_details: note_details (*)`)
+        .eq('class_id', classId)
+        .eq('teacher_id', teacherId)
+        .eq('school_year_id', schoolYearId)
+
+      if (semesterId) {
+        query = query.eq('semester_id', semesterId)
+      }
+
+      const { data: remoteData, error } = await query
+
+      if (error) {
+        result.errors.push(`Failed to fetch remote notes: ${error.message}`)
+        return result
+      }
+
+      if (!remoteData) {
+        return result
+      }
+
+      const remoteNoteIds = new Set(remoteData.map(note => note.id))
+      const currentTime = new Date().toISOString()
+
+      // Get local notes that need sync
+      const { notes: localNotes } = await this.getAllSavedNotesLocally(teacherId, classId, semesterId)
+
+      // Remove local published notes that don't exist remotely
+      for (const localNote of localNotes) {
+        if (localNote.isPublished && localNote.id && !remoteNoteIds.has(localNote.id)) {
+          try {
+            await this.removeSavedNoteLocally(teacherId, classId, localNote.id)
+            result.removed++
+          }
+          catch (error) {
+            result.errors.push(`Failed to remove local note ${localNote.id}: ${error}`)
+          }
+        }
+      }
+
+      // Update sync timestamps for existing notes
+      for (const localNote of localNotes) {
+        if (localNote.id && remoteNoteIds.has(localNote.id)) {
+          try {
+            await drizzleDb
+              .update(noteTable)
+              .set({ lastSyncAt: currentTime })
+              .where(eq(noteTable.id, Number(localNote.id)))
+            result.synced++
+          }
+          catch (error) {
+            result.errors.push(`Failed to update sync timestamp for note ${localNote.id}: ${error}`)
+          }
+        }
+      }
+
+      return result
+    }
+    catch (error) {
+      result.errors.push(`Sync failed: ${error}`)
+      return result
     }
   },
 

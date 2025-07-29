@@ -59,6 +59,7 @@ const SchoolClassDetails: React.FC = () => {
     publishNote,
     teachedSubjects,
     updateNoteDetails,
+    syncNotesWithRemote,
   } = useNote()
 
   const { students, setStudents, isLoading } = useStudentData(
@@ -74,6 +75,28 @@ const SchoolClassDetails: React.FC = () => {
   )
 
   const fetchSavedNotes = useCallback(async (page: number = 1) => {
+    // First sync with remote to clean up deleted notes
+    if (page === 1 && user?.id && schoolYear?.id) {
+      try {
+        const syncResult = await syncNotesWithRemote(
+          user.id,
+          classItem.id,
+          schoolYear.id,
+          selectedSemester?.id,
+        )
+        
+        if (syncResult.removed > 0) {
+          console.warn(`Removed ${syncResult.removed} local notes that no longer exist remotely`)
+        }
+        
+        if (syncResult.errors.length > 0) {
+          console.error('Sync errors:', syncResult.errors)
+        }
+      } catch (error) {
+        console.error('Failed to sync notes:', error)
+      }
+    }
+
     const result = await getNotes(
       classItem.id,
       user?.id ?? '',
@@ -91,7 +114,7 @@ const SchoolClassDetails: React.FC = () => {
       }
       setTotalNotes(result.totalCount)
     }
-  }, [classItem.id, selectedSemester])
+  }, [classItem.id, selectedSemester, user?.id, schoolYear?.id, syncNotesWithRemote])
 
   useEffect(() => {
     setCurrentPage(1)
