@@ -58,8 +58,40 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
   const [dueDate, setDueDate] = useState<Date>(new Date())
   const [isGraded, setIsGraded] = useState(true)
   const [showDatePicker, setShowDatePicker] = useState(false)
-  const [semester, setSemester] = useState(semesters.find(s => s.isCurrent === true)?.id.toString() ?? '0')
+  const [semester, setSemester] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  // Update semester when semesters data becomes available
+  useEffect(() => {
+    if (semesters.length > 0) {
+      const currentSemester = semesters.find(s => s.isCurrent === true)
+      if (currentSemester) {
+        setSemester(currentSemester.id.toString())
+      }
+      else if (semesters.length > 0) {
+        // Fallback to first semester if no current semester found
+        setSemester(semesters[0].id.toString())
+      }
+    }
+  }, [semesters])
+
+  // Don't show modal if semesters are not loaded yet
+  if (isVisible && semesters.length === 0) {
+    return (
+      <Modal visible={isVisible} animationType="slide" transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <CsText variant="h2" style={styles.modalTitle}>
+              Chargement...
+            </CsText>
+            <CsText variant="body" style={styles.loadingText}>
+              Chargement des données de semestre...
+            </CsText>
+          </View>
+        </View>
+      </Modal>
+    )
+  }
 
   const NoteFormSchema = z.object({
     title: z.string().min(1, 'Le titre est requis'),
@@ -154,6 +186,16 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
     setDueDate(new Date())
     setIsGraded(true)
     setErrors({})
+    // Reset semester to current semester or first available
+    if (semesters.length > 0) {
+      const currentSemester = semesters.find(s => s.isCurrent === true)
+      if (currentSemester) {
+        setSemester(currentSemester.id.toString())
+      }
+      else {
+        setSemester(semesters[0].id.toString())
+      }
+    }
   }
 
   return (
@@ -407,6 +449,11 @@ function useStyles(theme: ITheme) {
       color: theme.error,
       fontSize: 12,
       marginTop: spacing.xs,
+    },
+    loadingText: {
+      textAlign: 'center',
+      color: theme.textLight,
+      marginTop: spacing.md,
     },
   })
 }

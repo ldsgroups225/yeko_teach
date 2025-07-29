@@ -11,12 +11,15 @@ import { useAuthCheck } from '@hooks/useAuthCheck'
 import { useClearCache } from '@hooks/useClearCache'
 import { useSchoolJoin } from '@hooks/useSchoolJoin'
 import { LoadingScreen } from '@modules/app/components'
+import { setSchoolYear, setSemesters } from '@modules/app/redux/appSlice'
+import { schoolYear } from '@modules/app/services/appService'
 import { useSchedule } from '@modules/schedule/hooks/useSchedule'
 import { useTheme } from '@src/hooks'
 import { useAppSelector } from '@src/store'
 import { spacing } from '@styles/spacing'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { BackHandler, FlatList, Image, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { useDispatch } from 'react-redux'
 
 const daysOfWeek = ['LUN', 'MAR', 'MER', 'JEU', 'VEN']
 const fullDaysOfWeek = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi']
@@ -28,9 +31,11 @@ const ITEM_HEIGHT = 100
 const ScheduleScreen: React.FC = () => {
   const theme = useTheme()
   const styles = useStyles(theme)
+  const dispatch = useDispatch()
   const checkAuth = useAuthCheck()
   const { clearCache } = useClearCache()
   const user = useAppSelector(s => s?.AppReducer?.user)
+  const semesters = useAppSelector(s => s?.AppReducer?.semesters ?? [])
   const { getSchedules, loading, error: scheduleError } = useSchedule()
   const { joinSchool, loading: isJoiningSchool, error: joinSchoolError } = useSchoolJoin(user?.id || '')
 
@@ -41,15 +46,48 @@ const ScheduleScreen: React.FC = () => {
   const fetchSchedules = useCallback(async () => {
     if (!user || !user.schools.length)
       return
-    const fetchedSchedules = await getSchedules(user.id)
-    if (fetchedSchedules) {
-      setSchedules(fetchedSchedules)
-      setError(null)
+
+    // Parallelize schedule fetching with semester fetching if semesters are empty
+    const schedulePromise = getSchedules(user.id)
+
+    // If semesters are empty, also fetch them in parallel
+    if (semesters.length === 0) {
+      // Fetch semesters in parallel but don't wait for the result
+      schoolYear.getCurrentSchoolYearWithSemesters().then(({ data, error }) => {
+        if (error) {
+          console.error('Failed to fetch school year data:', error)
+          return
+        }
+
+        if (data && data.schoolYear && data.semesters) {
+          dispatch(setSchoolYear({
+            id: data.schoolYear.id,
+            name: data.schoolYear.name!,
+          }))
+          dispatch(setSemesters(data.semesters))
+        }
+      }).catch((error) => {
+        console.error('Error fetching school year data:', error)
+      })
     }
-    else {
-      setError(scheduleError || 'Impossible de récupérer l\'emploi du temps')
+
+    // Wait only for schedule data
+    const fetchedSchedules = await schedulePromise
+
+    try {
+      if (fetchedSchedules) {
+        setSchedules(fetchedSchedules)
+        setError(null)
+      }
+      else {
+        setError(scheduleError || 'Impossible de récupérer l\'emploi du temps')
+      }
     }
-  }, [user, getSchedules, scheduleError])
+    catch (error) {
+      console.error('Error fetching data:', error)
+      setError('Erreur lors du chargement des données')
+    }
+  }, [user, getSchedules, scheduleError, semesters.length, dispatch])
 
   useEffect(() => {
     fetchSchedules()
