@@ -30,6 +30,7 @@ interface CreateNoteModalProps {
     id: number
     name: string
   }
+  isSubmitting?: boolean
 }
 
 const $black50 = '#00000050'
@@ -43,6 +44,7 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
   user,
   schoolYear,
   subjects,
+  isSubmitting = false,
 }) => {
   const theme = useTheme()
   const styles = useStyles(theme)
@@ -60,6 +62,7 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [semester, setSemester] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [isLoading, setIsLoading] = useState(false)
 
   // Update semester when semesters data becomes available
   useEffect(() => {
@@ -131,6 +134,9 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
   }, [])
 
   const handleSubmit = async () => {
+    if (isLoading || isSubmitting)
+      return
+
     const formData = {
       title: title.trim(),
       description: description.trim(),
@@ -157,24 +163,34 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
     }
 
     setErrors({})
+    setIsLoading(true)
 
-    const noteData: Partial<INoteDTO> = {
-      classId,
-      dueDate: validationResult.data.dueDate,
-      schoolId,
-      noteType: validationResult.data.noteType,
-      isGraded,
-      subjectId: validationResult.data.subject,
-      teacherId: user?.id,
-      title: validationResult.data.title,
-      weight: validationResult.data.weight,
-      schoolYearId: schoolYear?.id,
-      semesterId: validationResult.data.semester,
-      description: validationResult.data.description,
-      totalPoints: validationResult.data.totalPoints,
+    try {
+      const noteData: Partial<INoteDTO> = {
+        classId,
+        dueDate: validationResult.data.dueDate,
+        schoolId,
+        noteType: validationResult.data.noteType,
+        isGraded,
+        subjectId: validationResult.data.subject,
+        teacherId: user?.id,
+        title: validationResult.data.title,
+        weight: validationResult.data.weight,
+        schoolYearId: schoolYear?.id,
+        semesterId: validationResult.data.semester,
+        description: validationResult.data.description,
+        totalPoints: validationResult.data.totalPoints,
+      }
+
+      await onSubmit(noteData)
     }
-
-    await onSubmit(noteData)
+    catch (error) {
+      // Error handling is done by parent component
+      console.error('Error creating note:', error)
+    }
+    finally {
+      setIsLoading(false)
+    }
   }
 
   const resetForm = () => {
@@ -374,10 +390,13 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
                   onClose()
                 }}
                 variant="secondary"
+                disabled={isLoading || isSubmitting}
               />
               <CsButton
-                title="Créer"
+                title={isLoading || isSubmitting ? "Création..." : "Créer"}
                 onPress={handleSubmit}
+                disabled={isLoading || isSubmitting}
+                loading={isLoading || isSubmitting}
               />
             </View>
           </ScrollView>

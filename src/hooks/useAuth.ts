@@ -22,18 +22,12 @@ export function useAuth(): UseAuthReturn {
 
   useEffect(() => {
     withLoading(checkAuth)
-  }, [withLoading, checkAuth])
+  }, [])
 
-  const wrappedLogin = useCallback(
-    (email: string, password: string) =>
-      withLoading(() => login(email, password)),
-    [withLoading, login],
-  )
+  const wrappedLogin = (email: string, password: string) =>
+    withLoading(() => login(email, password))
 
-  const wrappedLogout = useCallback(
-    () => withLoading(logout),
-    [withLoading, logout],
-  )
+  const wrappedLogout = () => withLoading(logout)
 
   return {
     loading,

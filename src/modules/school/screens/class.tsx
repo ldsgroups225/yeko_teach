@@ -51,6 +51,7 @@ const SchoolClassDetails: React.FC = () => {
   const [subjectsTeached, setSubjectsTeached] = useState<ISubjectDTO[]>([])
   const [currentSubject] = useState(classItem.subjects[0])
   const [isCreateNoteModalVisible, setIsCreateNoteModalVisible] = useState(false)
+  const [deletingNoteId, setDeletingNoteId] = useState<string | null>(null)
 
   const {
     getNotes,
@@ -84,15 +85,16 @@ const SchoolClassDetails: React.FC = () => {
           schoolYear.id,
           selectedSemester?.id,
         )
-        
+
         if (syncResult.removed > 0) {
           console.warn(`Removed ${syncResult.removed} local notes that no longer exist remotely`)
         }
-        
+
         if (syncResult.errors.length > 0) {
           console.error('Sync errors:', syncResult.errors)
         }
-      } catch (error) {
+      }
+      catch (error) {
         console.error('Failed to sync notes:', error)
       }
     }
@@ -135,9 +137,9 @@ const SchoolClassDetails: React.FC = () => {
   const handleCreateNote = async (noteData: Partial<INoteDTO>) => {
     try {
       await saveNote(noteData as INoteDTO)
-      showToast('Évaluation créée avec succès', ToastColorEnum.Success)
       await fetchSavedNotes()
       setIsCreateNoteModalVisible(false)
+      showToast('Évaluation créée avec succès', ToastColorEnum.Success)
     }
     catch (error) {
       console.error('Failed to create note:', error)
@@ -256,14 +258,18 @@ const SchoolClassDetails: React.FC = () => {
   }
 
   const handleDeleteNote = async (noteId: string) => {
+    setDeletingNoteId(noteId)
     try {
       await removeNote(user?.id ?? '', classItem.id, noteId)
-      showToast('Note supprimée avec succès', ToastColorEnum.Success)
       await fetchSavedNotes()
+      showToast('Note supprimée avec succès', ToastColorEnum.Success)
     }
     catch (error) {
       console.error('Failed to delete note:', error)
       showToast('Erreur lors de la suppression de la note', ToastColorEnum.Error)
+    }
+    finally {
+      setDeletingNoteId(null)
     }
   }
 
@@ -355,6 +361,7 @@ const SchoolClassDetails: React.FC = () => {
         onPressNote={handleNotePress}
         onPressDelete={handleDeleteNote}
         onPressActivate={handleActivateNote}
+        deletingNoteId={deletingNoteId}
         onEndReached={loadMoreNotes}
         isLoadingMore={isLoadingMore}
         hasMore={savedNotes.length < totalNotes}

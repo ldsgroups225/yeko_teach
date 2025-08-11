@@ -15,11 +15,12 @@ import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View }
 interface NoteHistoryViewProps {
   notes: INoteDTO[]
   onPressNote: (note: INoteDTO) => void
-  onPressDelete: (noteId: string) => void
+  onPressDelete: (noteId: string) => Promise<void>
   onPressActivate: (noteId: string, isActive: boolean) => void
   onEndReached?: () => void
   isLoadingMore?: boolean
   hasMore?: boolean
+  deletingNoteId?: string | null
 }
 
 export const NoteHistoryView: React.FC<NoteHistoryViewProps> = ({
@@ -30,86 +31,102 @@ export const NoteHistoryView: React.FC<NoteHistoryViewProps> = ({
   onEndReached,
   isLoadingMore = false,
   hasMore = false,
+  deletingNoteId = null,
 }) => {
   const theme = useTheme()
   const styles = useStyles(theme)
 
-  const renderNoteItem = ({ item }: { item: INoteDTO }) => (
-    <TouchableOpacity
-      style={[styles.noteItem, item.isActive && styles.disabledNoteItem]}
-      onPress={() => !item.isActive && onPressNote(item)}
-      disabled={item.isActive}
-    >
-      <View style={styles.noteHeader}>
-        <CsText variant="h3">{item.title}</CsText>
-        <CsText variant="caption" style={styles.noteType}>
-          {NOTE_OPTIONS.find(t => t.value === item.noteType)?.label}
-        </CsText>
-      </View>
+  const renderNoteItem = ({ item }: { item: INoteDTO }) => {
+    const isDeleting = deletingNoteId === item.id
 
-      <View style={styles.noteDetails}>
-        <View style={styles.detailRow}>
-          <CsText variant="body">
-            Notée sur:
-            {item.totalPoints}
-          </CsText>
-          <CsText variant="body">
-            Coeff:
-            {item.weight}
+    return (
+      <TouchableOpacity
+        style={[styles.noteItem, item.isActive && styles.disabledNoteItem]}
+        onPress={() => !item.isActive && onPressNote(item)}
+        disabled={item.isActive}
+      >
+        <View style={styles.noteHeader}>
+          <CsText variant="h3">{item.title}</CsText>
+          <CsText variant="caption" style={styles.noteType}>
+            {NOTE_OPTIONS.find(t => t.value === item.noteType)?.label}
           </CsText>
         </View>
 
-        <View style={styles.detailRow}>
-          {item.dueDate && (
-            <CsText variant="caption">
-              Évaluation du
-              {' '}
-              {format(new Date(item.dueDate), 'dd/MM/yyyy')}
+        <View style={styles.noteDetails}>
+          <View style={styles.detailRow}>
+            <CsText variant="body">
+              Notée sur:
+              {item.totalPoints}
             </CsText>
-          )}
+            <CsText variant="body">
+              Coeff:
+              {item.weight}
+            </CsText>
+          </View>
 
-          <View style={styles.noteStatus}>
-            {item.isPublished
-              ? (
+          <View style={styles.detailRow}>
+            {item.dueDate && (
+              <CsText variant="caption">
+                Évaluation du
+                {' '}
+                {format(new Date(item.dueDate), 'dd/MM/yyyy')}
+              </CsText>
+            )}
+
+            <View style={styles.noteStatus}>
+              {item.isPublished
+                ? (
                   <View style={styles.publishedBadge}>
                     <CsText variant="caption" style={styles.publishedBadgeText}>
                       Publié
                     </CsText>
                   </View>
                 )
-              : item.isActive
-                ? (
+                : item.isActive
+                  ? (
                     <View style={styles.activeBadge}>
                       <CsText variant="caption" style={styles.activeBadgeText}>
                         Distribué
                       </CsText>
                     </View>
                   )
-                : (
+                  : (
                     <View style={styles.draftBadge}>
                       <CsText variant="caption" style={styles.draftBadgeText}>
                         Brouillon
                       </CsText>
                     </View>
                   )}
+            </View>
           </View>
+
+          {!item.isActive && (
+            <View style={styles.buttonGroup}>
+              <TouchableOpacity
+                style={[styles.sendButton, isDeleting && styles.disabledButton]}
+                onPress={() => onPressActivate(item.id!, !!item.isActive)}
+                disabled={isDeleting}
+              >
+                <Text style={styles.sendButtonText}>Envoyer</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={[styles.trashButton, deletingNoteId === item.id && styles.disabledButton]}
+                onPress={() => onPressDelete(item.id!)}
+                disabled={!!deletingNoteId}
+              >
+                {deletingNoteId === item.id ? (
+                  <ActivityIndicator size="small" color={theme.background} />
+                ) : (
+                  <Ionicons name="trash" size={24} color={theme.background} />
+                )}
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
-
-        {!item.isActive && (
-          <View style={styles.buttonGroup}>
-            <TouchableOpacity style={styles.sendButton} onPress={() => onPressActivate(item.id!, !!item.isActive)}>
-              <Text style={styles.sendButtonText}>Envoyer</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.trashButton} onPress={() => onPressDelete(item.id!)}>
-              <Ionicons name="trash" size={24} color={theme.background} />
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
-
-    </TouchableOpacity>
-  )
+      </TouchableOpacity>
+    )
+  }
 
   const renderFooter = () => {
     if (!isLoadingMore)
@@ -213,11 +230,23 @@ function useStyles(theme: ITheme) {
       alignItems: 'center',
       flex: 1,
     },
+    disabledButton: {
+      backgroundColor: theme.textLight,
+      opacity: 0.5,
+    },
     trashButton: {
       backgroundColor: theme.error,
       borderRadius: 4,
       paddingVertical: spacing.xs,
       paddingHorizontal: spacing.sm,
+      alignItems: 'center',
+      justifyContent: 'center',
+      minWidth: 44,
+      minHeight: 44,
+    },
+    disabledTrashButton: {
+      backgroundColor: theme.textLight,
+      opacity: 0.7,
     },
     sendButtonText: {
       color: theme.background,

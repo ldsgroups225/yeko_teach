@@ -136,12 +136,48 @@ export function useNote(): UseNoteReturn {
     }
   }, [])
 
+  /**
+   * Removes a note both locally and (if applicable) remotely.
+   *
+   * The function attempts to parse the `noteId` as a number:
+   * - If `noteId` is numeric, the note is assumed to be local-only and is removed locally.
+   * - If `noteId` is not numeric, the function first attempts remote deletion,
+   *   then performs local deletion when remote deletion is successful.
+   *
+   * Any errors during the process are caught, logged, and result in a `false` return value.
+   * Loading and error states are managed via `setLoading` and `setError`.
+   *
+   * @function
+   * @async
+   * @param {string} teacherId - The unique identifier for the teacher who owns the note.
+   * @param {string} classId - The unique identifier for the class the note belongs to.
+   * @param {string} noteId - The identifier of the note to remove. If numeric, treated as local-only.
+   * @returns {Promise<boolean>} Resolves to `true` if the note was removed locally (and remotely if applicable),
+   *                             or `false` if an error occurred during the process.
+   *
+   * @example
+   * const success = await removeNote('t123', 'c456', '789');
+   * if (success) {
+   *   console.log('Note removed successfully');
+   * }
+   */
   const removeNote = useCallback(async (teacherId: string, classId: string, noteId: string): Promise<boolean> => {
     setLoading(true)
     setError(null)
     try {
+      // check if noteId is a number, if true, remove it locally only
+      const id = Number.parseInt(noteId)
+      if (!Number.isNaN(id)) {
+        await notes.removeSavedNoteLocally(teacherId, classId, noteId)
+        return true
+      }
+
       // First try to delete remotely
       const remoteDeleted = await notes.deleteNoteRemotely(noteId)
+
+      if (!remoteDeleted) {
+        return false
+      }
 
       // Always delete locally, regardless of remote deletion success
       await notes.removeSavedNoteLocally(teacherId, classId, noteId)
