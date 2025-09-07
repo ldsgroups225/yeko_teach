@@ -1,7 +1,7 @@
 // src/hooks/useAuth.ts
 
 import type { IUserDTO } from '@modules/app/types/ILoginDTO'
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useAuthCheck } from './useAuthCheck'
 import { useAuthLogin } from './useAuthLogin'
 import { useAuthLogout } from './useAuthLogout'

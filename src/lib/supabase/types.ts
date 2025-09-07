@@ -1,15 +1,15 @@
 // src/lib/supabase/types.ts
 
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json
+  = | string
+    | number
+    | boolean
+    | null
+    | { [key: string]: Json | undefined }
+    | Json[]
 
 export interface Database {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: '12.2.1 (d3f7cba)'
@@ -1080,29 +1080,35 @@ export interface Database {
         Row: {
           created_at: string
           created_by: string | null
+          email: string | null
           expired_at: string
           id: string
           is_used: boolean
           otp: string
           school_id: string
+          use_for: string | null
         }
         Insert: {
           created_at?: string
           created_by?: string | null
+          email?: string | null
           expired_at?: string
           id?: string
           is_used?: boolean
           otp: string
           school_id: string
+          use_for?: string | null
         }
         Update: {
           created_at?: string
           created_by?: string | null
+          email?: string | null
           expired_at?: string
           id?: string
           is_used?: boolean
           otp?: string
           school_id?: string
+          use_for?: string | null
         }
         Relationships: [
           {
@@ -2475,6 +2481,7 @@ export interface Database {
           medical_condition: Json | null
           nationality: string
           parent_id: string
+          parent_phone: string | null
           search_document: unknown | null
           updated_at: string | null
           updated_by: string | null
@@ -2495,6 +2502,7 @@ export interface Database {
           medical_condition?: Json | null
           nationality?: string
           parent_id: string
+          parent_phone?: string | null
           search_document?: unknown | null
           updated_at?: string | null
           updated_by?: string | null
@@ -2515,6 +2523,7 @@ export interface Database {
           medical_condition?: Json | null
           nationality?: string
           parent_id?: string
+          parent_phone?: string | null
           search_document?: unknown | null
           updated_at?: string | null
           updated_by?: string | null
@@ -2783,23 +2792,43 @@ export interface Database {
       }
       user_roles: {
         Row: {
+          grade_id: number | null
           role_id: number
+          school_id: string | null
           user_id: string
         }
         Insert: {
+          grade_id?: number | null
           role_id: number
+          school_id?: string | null
           user_id: string
         }
         Update: {
+          grade_id?: number | null
           role_id?: number
+          school_id?: string | null
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: 'user_roles_grade_id_fkey'
+            columns: ['grade_id']
+            isOneToOne: false
+            referencedRelation: 'grades'
+            referencedColumns: ['id']
+          },
           {
             foreignKeyName: 'user_roles_role_id_fkey'
             columns: ['role_id']
             isOneToOne: false
             referencedRelation: 'roles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'user_roles_school_id_fkey'
+            columns: ['school_id']
+            isOneToOne: false
+            referencedRelation: 'schools'
             referencedColumns: ['id']
           },
           {
@@ -2822,7 +2851,6 @@ export interface Database {
           last_name: string | null
           phone: string | null
           push_token: string | null
-          school_id: string | null
           state_id: number | null
           updated_at: string | null
           updated_by: string | null
@@ -2837,7 +2865,6 @@ export interface Database {
           last_name?: string | null
           phone?: string | null
           push_token?: string | null
-          school_id?: string | null
           state_id?: number | null
           updated_at?: string | null
           updated_by?: string | null
@@ -2852,19 +2879,11 @@ export interface Database {
           last_name?: string | null
           phone?: string | null
           push_token?: string | null
-          school_id?: string | null
           state_id?: number | null
           updated_at?: string | null
           updated_by?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: 'users_school_id_foreign'
-            columns: ['school_id']
-            isOneToOne: false
-            referencedRelation: 'schools'
-            referencedColumns: ['id']
-          },
           {
             foreignKeyName: 'users_state_id_foreign'
             columns: ['state_id']
@@ -3076,6 +3095,7 @@ export interface Database {
           excellence_rate: number | null
           mauvaise_count: number | null
           passable_count: number | null
+          school_id: string | null
           school_year_id: number | null
           semester_id: number | null
           total_students: number | null
@@ -3123,6 +3143,13 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'student_semester_average_view'
             referencedColumns: ['semester_id']
+          },
+          {
+            foreignKeyName: 'fk_school'
+            columns: ['school_id']
+            isOneToOne: false
+            referencedRelation: 'schools'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -3715,25 +3742,25 @@ export interface Database {
       }
       calculate_tuition_fees: {
         Args: {
+          p_additional_params?: Json
           p_grade_id: number
-          p_school_id: string
           p_is_government_affected: boolean
           p_is_orphan: boolean
-          p_is_subscribed_to_transportation: boolean
           p_is_subscribed_to_canteen: boolean
-          p_additional_params?: Json
+          p_is_subscribed_to_transportation: boolean
+          p_school_id: string
         }
         Returns: number
       }
       create_attendance_and_participator_and_homework: {
-        Args: { attendances: Json, participators: Json, homework?: Json }
+        Args: { attendances: Json, homework?: Json, participators: Json }
         Returns: string
       }
       distribute_extra_fee: {
         Args: {
           p_amount: number
-          p_number_of_installment: number
           p_multiplier: number
+          p_number_of_installment: number
         }
         Returns: Database['public']['CompositeTypes']['distribute_installment_extra_fee_result'][]
       }
@@ -3747,23 +3774,23 @@ export interface Database {
       }
       get_class_metrics: {
         Args: {
-          p_school_id: string
           p_class_id: string
+          p_school_id: string
           p_school_year_id?: number
           p_semester_id?: number
         }
         Returns: {
-          total_students: number
-          late_rate: number
           absent_rate: number
           average_grade: number
+          late_rate: number
+          total_students: number
         }[]
       }
       get_classes_by_school: {
         Args: { school_id: string }
         Returns: {
-          grade_name: string
           count: number
+          grade_name: string
           subclasses: Json[]
         }[]
       }
@@ -3774,8 +3801,8 @@ export interface Database {
       get_last_five_inactive_schools: {
         Args: Record<PropertyKey, never>
         Returns: {
-          name: string
           email: string
+          name: string
           phone: string
         }[]
       }
@@ -3785,38 +3812,38 @@ export interface Database {
       }
       get_monthly_attendance_summary: {
         Args: {
-          start_date?: string
           end_date?: string
           grouping_level?: string
           sort_col?: string
+          start_date?: string
         }
         Returns: {
-          month_label: string
           attendance_count: number
+          month_label: string
         }[]
       }
       get_statistics: {
-        Args: { start_date?: string, end_date?: string }
+        Args: { end_date?: string, start_date?: string }
         Returns: {
-          school_count: number
-          student_count: number
           new_account_count: number
           reconnection_rate: number
+          school_count: number
+          student_count: number
         }[]
       }
       get_student_info: {
         Args: { parent_user_id: string }
         Returns: {
-          student_id: string
-          first_name: string
-          last_name: string
-          id_number: string
           avatar_url: string
           class_id: string
           class_name: string
+          first_name: string
+          id_number: string
+          last_name: string
           school_id: string
-          school_name: string
           school_image_url: string
+          school_name: string
+          student_id: string
         }[]
       }
       get_student_main_teacher: {
@@ -3828,10 +3855,10 @@ export interface Database {
         Returns: Json
       }
       get_unique_notes_by_date: {
-        Args: { p_subject_id: string, p_class_id: string }
+        Args: { p_class_id: string, p_subject_id: string }
         Returns: {
-          id: string
           date: string
+          id: string
           is_published: boolean
           publish_date: string
         }[]
@@ -3842,13 +3869,13 @@ export interface Database {
       }
       process_payment: {
         Args:
-          | { _student_id: string, _amount: number, _payment_method: string }
           | {
-            _student_id: string
-            _school_id: string
             _amount: number
             _payment_method: string
+            _school_id: string
+            _student_id: string
           }
+          | { _amount: number, _payment_method: string, _student_id: string }
         Returns: Json
       }
       refresh_average_grades_view: {
@@ -3866,8 +3893,8 @@ export interface Database {
       toggle_student_service: {
         Args: {
           p_enrollment_id: string
-          p_service_type: string
           p_is_subscribing: boolean
+          p_service_type: string
         }
         Returns: string
       }
@@ -3878,9 +3905,9 @@ export interface Database {
       update_lesson_progress: {
         Args: {
           p_class_id: string
-          p_subject_id: string
-          p_sessions_to_add: number
           p_is_force_completed: boolean
+          p_sessions_to_add: number
+          p_subject_id: string
         }
         Returns: Json
       }
@@ -3890,9 +3917,9 @@ export interface Database {
       }
       update_student_conduct_scores: {
         Args: {
-          p_student_id: string
           p_school_year_id: number
           p_semester_id: number
+          p_student_id: string
         }
         Returns: undefined
       }
@@ -3920,22 +3947,22 @@ export type Tables<
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+      & DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-    DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    & DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R
     }
       ? R
       : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] &
-    DefaultSchema['Views'])
-    ? (DefaultSchema['Tables'] &
-      DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables']
+    & DefaultSchema['Views'])
+    ? (DefaultSchema['Tables']
+      & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
         ? R

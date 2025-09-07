@@ -76,27 +76,27 @@ export const NoteHistoryView: React.FC<NoteHistoryViewProps> = ({
             <View style={styles.noteStatus}>
               {item.isPublished
                 ? (
-                  <View style={styles.publishedBadge}>
-                    <CsText variant="caption" style={styles.publishedBadgeText}>
-                      Publié
-                    </CsText>
-                  </View>
-                )
-                : item.isActive
-                  ? (
-                    <View style={styles.activeBadge}>
-                      <CsText variant="caption" style={styles.activeBadgeText}>
-                        Distribué
+                    <View style={styles.publishedBadge}>
+                      <CsText variant="caption" style={styles.publishedBadgeText}>
+                        Publié
                       </CsText>
                     </View>
                   )
+                : item.isActive
+                  ? (
+                      <View style={styles.activeBadge}>
+                        <CsText variant="caption" style={styles.activeBadgeText}>
+                          Distribué
+                        </CsText>
+                      </View>
+                    )
                   : (
-                    <View style={styles.draftBadge}>
-                      <CsText variant="caption" style={styles.draftBadgeText}>
-                        Brouillon
-                      </CsText>
-                    </View>
-                  )}
+                      <View style={styles.draftBadge}>
+                        <CsText variant="caption" style={styles.draftBadgeText}>
+                          Brouillon
+                        </CsText>
+                      </View>
+                    )}
             </View>
           </View>
 
@@ -110,16 +110,18 @@ export const NoteHistoryView: React.FC<NoteHistoryViewProps> = ({
                 <Text style={styles.sendButtonText}>Envoyer</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={[styles.trashButton, deletingNoteId === item.id && styles.disabledButton]}
                 onPress={() => onPressDelete(item.id!)}
                 disabled={!!deletingNoteId}
               >
-                {deletingNoteId === item.id ? (
-                  <ActivityIndicator size="small" color={theme.background} />
-                ) : (
-                  <Ionicons name="trash" size={24} color={theme.background} />
-                )}
+                {deletingNoteId === item.id
+                  ? (
+                      <ActivityIndicator size="small" color={theme.background} />
+                    )
+                  : (
+                      <Ionicons name="trash" size={24} color={theme.background} />
+                    )}
               </TouchableOpacity>
             </View>
           )}

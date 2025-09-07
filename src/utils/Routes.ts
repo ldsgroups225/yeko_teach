@@ -9,6 +9,7 @@ import type { ParamListBase } from '@react-navigation/native'
 export enum Routes {
   Core = 'Core',
   Login = 'Login',
+  EmailConfirmation = 'EmailConfirmation',
   User = 'User',
   School = 'School',
   SchoolDetails = 'SchoolDetails',
@@ -25,6 +26,7 @@ export enum Routes {
 export interface RootStackParams extends ParamListBase {
   [Routes.Core]: undefined
   [Routes.Login]: undefined
+  [Routes.EmailConfirmation]: { email: string }
 }
 
 /**

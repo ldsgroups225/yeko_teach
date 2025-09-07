@@ -14,15 +14,11 @@ import { useCallback } from 'react'
 export function useAuthLogin(checkAuth: () => Promise<IUserDTO | null>) {
   return useCallback(
     async (email: string, password: string): Promise<IUserDTO | null> => {
-      console.log('Start auth')
-
       // Step 1: Log in the user first
       const { error, data: session } = await auth.loginWithEmailAndPassword(
         email,
         password,
       )
-
-      console.log({ session, error })
 
       if (error) {
         throw error

@@ -393,7 +393,7 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
                 disabled={isLoading || isSubmitting}
               />
               <CsButton
-                title={isLoading || isSubmitting ? "Création..." : "Créer"}
+                title={isLoading || isSubmitting ? 'Création...' : 'Créer'}
                 onPress={handleSubmit}
                 disabled={isLoading || isSubmitting}
                 loading={isLoading || isSubmitting}

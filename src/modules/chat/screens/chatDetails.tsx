@@ -120,7 +120,9 @@ const ChatDetailScreen: React.FC = () => {
       }
     }
     loadMessages()
-    return () => { isMounted = false }
+    return () => {
+      isMounted = false
+    }
   }, [chatId, user?.id, getMessages])
 
   useEffect(() => {
