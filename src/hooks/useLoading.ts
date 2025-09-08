@@ -10,12 +10,11 @@ export function useLoading(initialState: boolean = false) {
       setLoading(true)
       try {
         return await asyncFn()
-      }
-      finally {
+      } finally {
         setLoading(false)
       }
     },
-    [],
+    []
   )
 
   return { loading, withLoading }

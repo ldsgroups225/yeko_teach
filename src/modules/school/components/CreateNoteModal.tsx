@@ -1,21 +1,32 @@
 // src/modules/school/components/CreateNoteModal.tsx
 
-import type { INoteDTO, ISubjectDTO, IUserDTO } from '@modules/app/types/ILoginDTO'
-import type { ITheme } from '@styles/theme'
 import CsButton from '@components/CsButton'
 import CsText from '@components/CsText'
 import CsTextField from '@components/CsTextField'
 import { ToastColorEnum } from '@components/ToastMessage/ToastColorEnum'
 import { showToast } from '@helpers/toast/showToast'
 import { NOTE_OPTIONS, NOTE_TYPE } from '@modules/app/constants/noteTypes'
+import type {
+  INoteDTO,
+  ISubjectDTO,
+  IUserDTO
+} from '@modules/app/types/ILoginDTO'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { Picker } from '@react-native-picker/picker'
 import { useTheme } from '@src/hooks'
 import { useAppSelector } from '@store/index'
 import { spacing } from '@styles/spacing'
+import type { ITheme } from '@styles/theme'
 import { format } from 'date-fns'
-import React, { useEffect, useState } from 'react'
-import { Modal, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
+import type React from 'react'
+import { useEffect, useState } from 'react'
+import {
+  Modal,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View
+} from 'react-native'
 import { z } from 'zod'
 
 interface CreateNoteModalProps {
@@ -44,7 +55,7 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
   user,
   schoolYear,
   subjects,
-  isSubmitting = false,
+  isSubmitting = false
 }) => {
   const theme = useTheme()
   const styles = useStyles(theme)
@@ -70,8 +81,7 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
       const currentSemester = semesters.find(s => s.isCurrent === true)
       if (currentSemester) {
         setSemester(currentSemester.id.toString())
-      }
-      else if (semesters.length > 0) {
+      } else if (semesters.length > 0) {
         // Fallback to first semester if no current semester found
         setSemester(semesters[0].id.toString())
       }
@@ -81,13 +91,13 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
   // Don't show modal if semesters are not loaded yet
   if (isVisible && semesters.length === 0) {
     return (
-      <Modal visible={isVisible} animationType="slide" transparent>
+      <Modal visible={isVisible} animationType='slide' transparent>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <CsText variant="h2" style={styles.modalTitle}>
+            <CsText variant='h2' style={styles.modalTitle}>
               Chargement...
             </CsText>
-            <CsText variant="body" style={styles.loadingText}>
+            <CsText variant='body' style={styles.loadingText}>
               Chargement des données de semestre...
             </CsText>
           </View>
@@ -101,32 +111,44 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
     description: z.string().optional(),
     totalPoints: z.preprocess(
       val => Number.parseFloat(String(val)),
-      z.number().positive({ message: 'Les points totaux doivent être un nombre positif' }),
+      z
+        .number()
+        .positive({
+          message: 'Les points totaux doivent être un nombre positif'
+        })
     ),
     weight: z.preprocess(
       val => Number.parseFloat(String(val)),
-      z.number().positive({ message: 'Le coefficient doit être un nombre positif' }),
+      z
+        .number()
+        .positive({ message: 'Le coefficient doit être un nombre positif' })
     ),
-    subject: z.string()
+    subject: z
+      .string()
       .min(1, 'La matière est requise')
       .refine(val => subjects.some(sub => sub.id === val), {
-        message: 'Matière invalide',
+        message: 'Matière invalide'
       }),
     noteType: z.nativeEnum(NOTE_TYPE),
     semester: z.preprocess(
       val => Number.parseInt(String(val), 10),
       z.number().refine(num => semesters.some(sm => sm.id === num), {
-        message: 'Semestre invalide',
-      }),
+        message: 'Semestre invalide'
+      })
     ),
-    dueDate: z.date().refine(date => date instanceof Date && !Number.isNaN(date.getTime()), {
-      message: 'Date invalide',
-    }),
+    dueDate: z
+      .date()
+      .refine(date => date instanceof Date && !Number.isNaN(date.getTime()), {
+        message: 'Date invalide'
+      })
   })
 
   useEffect(() => {
     if (subjects.length === 0) {
-      showToast('Vous n’êtes pas enseignant de cette classe', ToastColorEnum.Warning)
+      showToast(
+        'Vous n’êtes pas enseignant de cette classe',
+        ToastColorEnum.Warning
+      )
       return onClose()
     }
 
@@ -134,8 +156,7 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
   }, [])
 
   const handleSubmit = async () => {
-    if (isLoading || isSubmitting)
-      return
+    if (isLoading || isSubmitting) return
 
     const formData = {
       title: title.trim(),
@@ -145,16 +166,16 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
       subject,
       noteType,
       semester,
-      dueDate,
+      dueDate
     }
 
     const validationResult = NoteFormSchema.safeParse(formData)
 
     if (!validationResult.success) {
       const newErrors: Record<string, string> = {}
-      validationResult.error.issues.forEach((issue) => {
+      validationResult.error.issues.forEach(issue => {
         const path = issue.path[0]
-        if (path) {
+        if (path && typeof path === 'string') {
           newErrors[path] = issue.message
         }
       })
@@ -179,16 +200,14 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
         schoolYearId: schoolYear?.id,
         semesterId: validationResult.data.semester,
         description: validationResult.data.description,
-        totalPoints: validationResult.data.totalPoints,
+        totalPoints: validationResult.data.totalPoints
       }
 
       await onSubmit(noteData)
-    }
-    catch (error) {
+    } catch (error) {
       // Error handling is done by parent component
       console.error('Error creating note:', error)
-    }
-    finally {
+    } finally {
       setIsLoading(false)
     }
   }
@@ -207,29 +226,32 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
       const currentSemester = semesters.find(s => s.isCurrent === true)
       if (currentSemester) {
         setSemester(currentSemester.id.toString())
-      }
-      else {
+      } else {
         setSemester(semesters[0].id.toString())
       }
     }
   }
 
   return (
-    <Modal visible={isVisible} animationType="slide" transparent>
+    <Modal visible={isVisible} animationType='slide' transparent>
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <ScrollView>
-            <CsText variant="h2" style={styles.modalTitle}>
+            <CsText variant='h2' style={styles.modalTitle}>
               Nouvelle Évaluation
             </CsText>
 
             <View style={styles.inputContainer}>
-              <CsText variant="body">
-                {semesters?.length === 2 ? 'Semestre' : semesters?.length === 3 ? 'Trimestre' : ''}
+              <CsText variant='body'>
+                {semesters?.length === 2
+                  ? 'Semestre'
+                  : semesters?.length === 3
+                    ? 'Trimestre'
+                    : ''}
               </CsText>
               <Picker
                 selectedValue={semester}
-                onValueChange={(value) => {
+                onValueChange={value => {
                   setSemester(value)
                   if (errors.semester)
                     setErrors(prev => ({ ...prev, semester: '' }))
@@ -237,18 +259,26 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
                 style={styles.picker}
               >
                 {semesters.map(sm => (
-                  <Picker.Item key={sm.id.toString()} label={sm.name} value={sm.id.toString()} />
+                  <Picker.Item
+                    key={sm.id.toString()}
+                    label={sm.name}
+                    value={sm.id.toString()}
+                  />
                 ))}
               </Picker>
-              {errors.semester && <CsText variant="error" style={styles.errorText}>{errors.semester}</CsText>}
+              {errors.semester && (
+                <CsText variant='error' style={styles.errorText}>
+                  {errors.semester}
+                </CsText>
+              )}
             </View>
 
             {subjects.length > 1 && (
               <View style={styles.inputContainer}>
-                <CsText variant="body">Matière</CsText>
+                <CsText variant='body'>Matière</CsText>
                 <Picker
                   selectedValue={subject}
-                  onValueChange={(value) => {
+                  onValueChange={value => {
                     setSubject(value)
                     if (errors.subject)
                       setErrors(prev => ({ ...prev, subject: '' }))
@@ -259,15 +289,19 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
                     <Picker.Item key={sub.id} label={sub.name} value={sub.id} />
                   ))}
                 </Picker>
-                {errors.subject && <CsText variant="error" style={styles.errorText}>{errors.subject}</CsText>}
+                {errors.subject && (
+                  <CsText variant='error' style={styles.errorText}>
+                    {errors.subject}
+                  </CsText>
+                )}
               </View>
             )}
 
             <View style={styles.inputContainer}>
-              <CsText variant="body">Type d'évaluation</CsText>
+              <CsText variant='body'>Type d'évaluation</CsText>
               <Picker
                 selectedValue={noteType}
-                onValueChange={(value) => {
+                onValueChange={value => {
                   setNoteType(value)
                   if (errors.noteType)
                     setErrors(prev => ({ ...prev, noteType: '' }))
@@ -275,40 +309,47 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
                 style={styles.picker}
               >
                 {NOTE_OPTIONS.map(type => (
-                  <Picker.Item key={type.value} label={type.label} value={type.value} />
+                  <Picker.Item
+                    key={type.value}
+                    label={type.label}
+                    value={type.value}
+                  />
                 ))}
               </Picker>
-              {errors.noteType && <CsText variant="error" style={styles.errorText}>{errors.noteType}</CsText>}
+              {errors.noteType && (
+                <CsText variant='error' style={styles.errorText}>
+                  {errors.noteType}
+                </CsText>
+              )}
             </View>
 
             <View style={styles.inputContainer}>
-              <CsText variant="body">Titre</CsText>
+              <CsText variant='body'>Titre</CsText>
               <CsTextField
                 value={title}
-                onChangeText={(text) => {
+                onChangeText={text => {
                   setTitle(text)
-                  if (errors.title)
-                    setErrors(prev => ({ ...prev, title: '' }))
+                  if (errors.title) setErrors(prev => ({ ...prev, title: '' }))
                 }}
-                label="Titre"
+                label='Titre'
                 placeholder="Titre de l'évaluation"
-                autoCapitalize="words"
+                autoCapitalize='words'
                 error={errors.title}
               />
             </View>
 
             <View style={styles.inputContainer}>
-              <CsText variant="body">Description</CsText>
+              <CsText variant='body'>Description</CsText>
               <CsTextField
                 value={description}
-                onChangeText={(text) => {
+                onChangeText={text => {
                   setDescription(text)
                   if (errors.description)
                     setErrors(prev => ({ ...prev, description: '' }))
                 }}
-                label="Description"
+                label='Description'
                 placeholder="Description de l'évaluation"
-                autoCapitalize="words"
+                autoCapitalize='words'
                 multiline
                 numberOfLines={3}
                 error={errors.description}
@@ -317,32 +358,32 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
 
             <View style={styles.inputRow}>
               <View style={styles.inputHalf}>
-                <CsText variant="body">Points totaux</CsText>
+                <CsText variant='body'>Points totaux</CsText>
                 <CsTextField
                   value={totalPoints}
-                  onChangeText={(text) => {
+                  onChangeText={text => {
                     setTotalPoints(text)
                     if (errors.totalPoints)
                       setErrors(prev => ({ ...prev, totalPoints: '' }))
                   }}
-                  keyboardType="numeric"
-                  label="Points totaux"
-                  placeholder="20"
+                  keyboardType='numeric'
+                  label='Points totaux'
+                  placeholder='20'
                   error={errors.totalPoints}
                 />
               </View>
               <View style={styles.inputHalf}>
-                <CsText variant="body">Coefficient</CsText>
+                <CsText variant='body'>Coefficient</CsText>
                 <CsTextField
                   value={weight}
-                  onChangeText={(text) => {
+                  onChangeText={text => {
                     setWeight(text)
                     if (errors.weight)
                       setErrors(prev => ({ ...prev, weight: '' }))
                   }}
-                  keyboardType="numeric"
-                  label="Coefficient"
-                  placeholder="1"
+                  keyboardType='numeric'
+                  label='Coefficient'
+                  placeholder='1'
                   error={errors.weight}
                 />
               </View>
@@ -352,17 +393,21 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
               style={styles.dateButton}
               onPress={() => setShowDatePicker(true)}
             >
-              <CsText variant="body">
+              <CsText variant='body'>
                 Date limite:
                 {format(dueDate, 'dd/MM/yyyy')}
               </CsText>
             </TouchableOpacity>
-            {errors.dueDate && <CsText variant="error" style={styles.errorText}>{errors.dueDate}</CsText>}
+            {errors.dueDate && (
+              <CsText variant='error' style={styles.errorText}>
+                {errors.dueDate}
+              </CsText>
+            )}
 
             {showDatePicker && (
               <DateTimePicker
                 value={dueDate}
-                mode="date"
+                mode='date'
                 onChange={(event, selectedDate) => {
                   setShowDatePicker(false)
                   if (selectedDate) {
@@ -378,18 +423,20 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
               style={styles.gradedToggle}
               onPress={() => setIsGraded(!isGraded)}
             >
-              <View style={[styles.checkbox, isGraded && styles.checkboxChecked]} />
-              <CsText variant="body">Noter l'évaluation</CsText>
+              <View
+                style={[styles.checkbox, isGraded && styles.checkboxChecked]}
+              />
+              <CsText variant='body'>Noter l'évaluation</CsText>
             </TouchableOpacity>
 
             <View style={styles.buttonContainer}>
               <CsButton
-                title="Annuler"
+                title='Annuler'
                 onPress={() => {
                   resetForm()
                   onClose()
                 }}
-                variant="secondary"
+                variant='secondary'
                 disabled={isLoading || isSubmitting}
               />
               <CsButton
@@ -412,42 +459,42 @@ function useStyles(theme: ITheme) {
       flex: 1,
       backgroundColor: $black50,
       justifyContent: 'center',
-      padding: spacing.lg,
+      padding: spacing.lg
     },
     modalContent: {
       backgroundColor: theme.background,
       borderRadius: 12,
       padding: spacing.lg,
-      maxHeight: '80%',
+      maxHeight: '80%'
     },
     modalTitle: {
       marginBottom: spacing.lg,
-      textAlign: 'center',
+      textAlign: 'center'
     },
     inputContainer: {
-      marginBottom: spacing.md,
+      marginBottom: spacing.md
     },
     picker: {
       backgroundColor: theme.card,
-      borderRadius: 8,
+      borderRadius: 8
     },
     inputRow: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      justifyContent: 'space-between'
     },
     inputHalf: {
-      width: '48%',
+      width: '48%'
     },
     dateButton: {
       backgroundColor: theme.card,
       padding: spacing.sm,
       borderRadius: 8,
-      marginBottom: spacing.md,
+      marginBottom: spacing.md
     },
     gradedToggle: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: spacing.md,
+      marginBottom: spacing.md
     },
     checkbox: {
       width: 20,
@@ -455,25 +502,25 @@ function useStyles(theme: ITheme) {
       borderRadius: 4,
       borderWidth: 1,
       borderColor: theme.text,
-      marginRight: spacing.sm,
+      marginRight: spacing.sm
     },
     checkboxChecked: {
-      backgroundColor: theme.primary,
+      backgroundColor: theme.primary
     },
     buttonContainer: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      justifyContent: 'space-between'
     },
     errorText: {
       color: theme.error,
       fontSize: 12,
-      marginTop: spacing.xs,
+      marginTop: spacing.xs
     },
     loadingText: {
       textAlign: 'center',
       color: theme.textLight,
-      marginTop: spacing.md,
-    },
+      marginTop: spacing.md
+    }
   })
 }
 

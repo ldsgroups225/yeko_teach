@@ -1,8 +1,8 @@
 // src/modules/school/hooks/useClass.ts
 
-import type { IClassDTO } from '@modules/app/types/ILoginDTO'
 import { addStoreDataAsync, getStoreDataAsync } from '@helpers/storage'
 import { StoreEnum } from '@helpers/storage/storeEnum'
+import type { IClassDTO } from '@modules/app/types/ILoginDTO'
 import { classes } from '@modules/school/services/classService'
 import { useCallback, useState } from 'react'
 
@@ -26,37 +26,34 @@ export function useClass(): UseClassReturn {
   const getClasses = useCallback(
     async (
       teacherId: string,
-      schoolId: string,
+      schoolId: string
     ): Promise<IClassDTO[] | null> => {
       setLoading(true)
       setError(null)
       try {
         const cachedClassesData = await getStoreDataAsync<IClassDTO[]>(
-          StoreEnum.Classes,
+          StoreEnum.Classes
         )
-        if (cachedClassesData)
-          return cachedClassesData
+        if (cachedClassesData) return cachedClassesData
 
         const classesData = await classes.getClasses(teacherId, schoolId)
         await addStoreDataAsync(StoreEnum.Classes, classesData)
 
         return classesData
-      }
-      catch (err) {
+      } catch (err) {
         setError('Failed to get classes records.')
         console.error('[E_GET_CLASSES]:', err)
         return null
-      }
-      finally {
+      } finally {
         setLoading(false)
       }
     },
-    [],
+    []
   )
 
   return {
     getClasses,
     loading,
-    error,
+    error
   }
 }

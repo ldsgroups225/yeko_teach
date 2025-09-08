@@ -10,7 +10,7 @@ describe('csTextField', () => {
   const defaultProps = {
     label: 'Test Label',
     value: '',
-    onChangeText: jest.fn(),
+    onChangeText: jest.fn()
   }
 
   it('renders correctly with label', () => {
@@ -26,7 +26,9 @@ describe('csTextField', () => {
   })
 
   it('displays error message when provided', () => {
-    const { getByText } = render(<CsTextField {...defaultProps} error="Error message" />)
+    const { getByText } = render(
+      <CsTextField {...defaultProps} error='Error message' />
+    )
     expect(getByText('Error message')).toBeTruthy()
   })
 
@@ -37,7 +39,9 @@ describe('csTextField', () => {
   })
 
   it('toggles password visibility when secureTextEntry is true', () => {
-    const { getByTestId } = render(<CsTextField {...defaultProps} secureTextEntry />)
+    const { getByTestId } = render(
+      <CsTextField {...defaultProps} secureTextEntry />
+    )
     const toggleButton = getByTestId(`${testID}-toggle-password`)
     const input = getByTestId(`${testID}-input`)
 

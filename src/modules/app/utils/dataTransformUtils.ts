@@ -2,7 +2,7 @@ import type {
   ISchoolDTO,
   ISubjectDTO,
   ITeacherDataRawDTO,
-  IUserDTO,
+  IUserDTO
 } from '@modules/app/types/ILoginDTO'
 
 export function transformUserData(data: ITeacherDataRawDTO): IUserDTO {
@@ -21,10 +21,10 @@ export function transformUserData(data: ITeacherDataRawDTO): IUserDTO {
         subjectsTeach: school.subjectsTeach.map(
           (subject): ISubjectDTO => ({
             id: subject.id,
-            name: subject.name,
-          }),
-        ),
-      }),
-    ),
+            name: subject.name
+          })
+        )
+      })
+    )
   }
 }

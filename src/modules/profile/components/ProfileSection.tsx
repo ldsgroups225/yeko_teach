@@ -1,11 +1,11 @@
 // src/modules/profile/components/ProfileSection.tsx
 
-import type { ITheme } from '@styles/theme'
 import CsButton from '@components/CsButton'
 import CsText from '@components/CsText'
 import { useThemedStyles } from '@hooks/index'
 import { spacing } from '@styles/index'
-import React from 'react'
+import type { ITheme } from '@styles/theme'
+import type React from 'react'
 import { StyleSheet, View } from 'react-native'
 
 interface ProfileSectionProps {
@@ -26,7 +26,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
   onPress,
   disabled = false,
   loading = false,
-  infoText,
+  infoText
 }) => {
   const themedStyles = useThemedStyles<typeof styles>(styles)
 
@@ -39,7 +39,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
         loading={loading}
         style={themedStyles.button}
       />
-      <CsText variant="caption" style={themedStyles.infoText}>
+      <CsText variant='caption' style={themedStyles.infoText}>
         {infoText}
       </CsText>
     </View>
@@ -51,15 +51,15 @@ function styles(theme: ITheme) {
     section: {
       padding: spacing.lg,
       borderBottomWidth: 1,
-      borderBottomColor: theme.border,
+      borderBottomColor: theme.border
     },
     button: {
-      marginBottom: spacing.sm,
+      marginBottom: spacing.sm
     },
     infoText: {
       color: theme.textLight,
       textAlign: 'center',
-      marginTop: spacing.xs,
-    },
+      marginTop: spacing.xs
+    }
   })
 }

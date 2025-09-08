@@ -50,7 +50,7 @@ const defaultConverters: Record<CaseType, (str: string) => string> = {
       .replace(/([A-Z])/g, '.$1')
       .toLowerCase()
       .replace(/^\./, '')
-      .replace(/[-_]/, '.'),
+      .replace(/[-_]/, '.')
 }
 
 function isObject(val: unknown): val is Record<string, unknown> {
@@ -71,12 +71,12 @@ class CaseConverter {
    */
   constructor(
     private toCaseType: CaseType,
-    options: ConvertCaseOptions = {},
+    options: ConvertCaseOptions = {}
   ) {
     this.options = {
       preserveConsecutiveUppercase: false,
       preserveSpecificKeys: [],
-      ...options,
+      ...options
     }
   }
 
@@ -109,8 +109,8 @@ class CaseConverter {
         this.options.preserveSpecificKeys.includes(key)
           ? key
           : this.convert(key),
-        isObject(value) ? this.convertObject(value) : value,
-      ]),
+        isObject(value) ? this.convertObject(value) : value
+      ])
     )
   }
 
@@ -141,7 +141,7 @@ class CaseConverter {
 export function convertCase(
   data: object,
   toCaseType: CaseType,
-  options: ConvertCaseOptions = {},
+  options: ConvertCaseOptions = {}
 ): Record<string, unknown> {
   const converter = new CaseConverter(toCaseType, options)
   return converter.execute(data)
@@ -160,8 +160,8 @@ export function benchmark(
   data: object,
   toCaseType: CaseType,
   options: ConvertCaseOptions = {},
-  iterations: number = 1000,
-): { averageTime: number, totalTime: number } {
+  iterations: number = 1000
+): { averageTime: number; totalTime: number } {
   const start = Date.now()
   for (let i = 0; i < iterations; i++) {
     convertCase(data, toCaseType, options)
@@ -170,6 +170,6 @@ export function benchmark(
   const totalTime = end - start
   return {
     averageTime: totalTime / iterations,
-    totalTime,
+    totalTime
   }
 }

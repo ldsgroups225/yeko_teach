@@ -9,7 +9,7 @@ import GeneralActivityIndicator from './index'
 // Mock the hooks and translation function
 jest.mock('@src/hooks', () => ({
   useTheme: jest.fn(),
-  useThemedStyles: jest.fn(),
+  useThemedStyles: jest.fn()
 }))
 jest.mock('@helpers/localization', () => jest.fn())
 
@@ -17,23 +17,27 @@ const testID = 'generalActivityIndicator'
 
 describe('generalActivityIndicator', () => {
   beforeEach(() => {
-    (useTheme as jest.Mock).mockReturnValue({ primary: '#f27a1a' });
-    (useThemedStyles as jest.Mock).mockReturnValue({
+    ;(useTheme as jest.Mock).mockReturnValue({ primary: '#f27a1a' })
+    ;(useThemedStyles as jest.Mock).mockReturnValue({
       activityIndicator: { backgroundColor: 'rgba(0, 0, 0, 0.85)' },
-      activityIndicatorText: { color: '#f27a1a', fontSize: 4 },
-    });
-    (translate as jest.Mock).mockReturnValue('Loading...')
+      activityIndicatorText: { color: '#f27a1a', fontSize: 4 }
+    })
+    ;(translate as jest.Mock).mockReturnValue('Loading...')
   })
 
   it('renders activity indicator with correct color', () => {
     const { getByTestId } = render(<GeneralActivityIndicator />)
-    const activityIndicator = getByTestId(`${testID}-container-activityIndicator`)
+    const activityIndicator = getByTestId(
+      `${testID}-container-activityIndicator`
+    )
     expect(activityIndicator.props.color).toBe('#f27a1a')
   })
 
   it('renders activity indicator with correct size', () => {
     const { getByTestId } = render(<GeneralActivityIndicator />)
-    const activityIndicator = getByTestId(`${testID}-container-activityIndicator`)
+    const activityIndicator = getByTestId(
+      `${testID}-container-activityIndicator`
+    )
     expect(activityIndicator.props.size).toBe('large')
   })
 
@@ -56,8 +60,8 @@ describe('generalActivityIndicator', () => {
     const container = getByTestId(`${testID}-container-view`)
     expect(container.props.style).toEqual(
       expect.objectContaining({
-        backgroundColor: 'rgba(0, 0, 0, 0.85)',
-      }),
+        backgroundColor: 'rgba(0, 0, 0, 0.85)'
+      })
     )
   })
 
@@ -67,13 +71,13 @@ describe('generalActivityIndicator', () => {
     expect(textElement.props.style).toEqual(
       expect.objectContaining({
         color: '#f27a1a',
-        fontSize: 4,
-      }),
+        fontSize: 4
+      })
     )
   })
 
   it('uses translated text when no custom text is provided', () => {
-    (translate as jest.Mock).mockReturnValue('Translated loading text')
+    ;(translate as jest.Mock).mockReturnValue('Translated loading text')
     const { getByText } = render(<GeneralActivityIndicator />)
     const textElement = getByText('Translated loading text')
     expect(textElement).toBeTruthy()
@@ -81,7 +85,9 @@ describe('generalActivityIndicator', () => {
 
   it('renders ActivityIndicator with animating prop set to true', () => {
     const { getByTestId } = render(<GeneralActivityIndicator />)
-    const activityIndicator = getByTestId(`${testID}-container-activityIndicator`)
+    const activityIndicator = getByTestId(
+      `${testID}-container-activityIndicator`
+    )
     expect(activityIndicator.props.animating).toBe(true)
   })
 })

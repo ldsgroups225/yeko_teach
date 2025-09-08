@@ -1,10 +1,11 @@
+import { supabase } from '@src/lib/supabase'
 import type {
   AuthError,
+  AuthTokenResponse,
   AuthTokenResponsePassword,
-  Session,
+  Session
 } from '@supabase/auth-js'
 import type { PostgrestError } from '@supabase/supabase-js'
-import { supabase } from '@src/lib/supabase'
 
 interface IGetSession {
   data: {
@@ -42,18 +43,17 @@ export const auth = {
    */
   async loginWithEmailAndPassword(
     email: string,
-    password: string,
+    password: string
   ): Promise<AuthTokenResponsePassword> {
     const response = await supabase.auth.signInWithPassword({
       email,
-      password,
+      password
     })
 
     if (response.error) {
       if (response.error.message === 'Invalid login credentials')
         throw new Error('Email ou mot de passe incorrect')
-      else
-        throw new Error('Une erreur est survenue')
+      else throw new Error('Une erreur est survenue')
     }
 
     return response
@@ -88,6 +88,167 @@ export const auth = {
 
     return response
   },
+
+  /**
+   * Signs up a new user with email and password.
+   *
+   * @param {string} email - The user's email address.
+   * @param {string} password - The user's password.
+   * @returns {Promise<AuthTokenResponse>} - The response containing the session data.
+   */
+  async signUp(email: string, password: string): Promise<AuthTokenResponse> {
+    const response = await supabase.auth.signUp({
+      email,
+      password
+    })
+
+    if (response.error) {
+      throw response.error
+    }
+
+    // Type assertion to handle the case where user might be null
+    return response as AuthTokenResponse
+  },
+
+  /**
+   * Updates user profile information.
+   *
+   * @param {string} userId - The user's ID.
+   * @param {object} profileData - The profile data to update.
+   * @param {string} profileData.firstName - The user's first name.
+   * @param {string} profileData.lastName - The user's last name.
+   * @param {string} profileData.phone - The user's phone number.
+   * @param {string} [profileData.schoolId] - The optional school ID.
+   * @returns {Promise<{ error: PostgrestError | null }>} - The result of the update operation.
+   */
+  async updateUserProfile(
+    userId: string,
+    profileData: {
+      firstName?: string
+      lastName?: string
+      phone?: string
+      schoolId?: string
+    }
+  ): Promise<{ error: PostgrestError | null }> {
+    try {
+      // Update user profile in users table
+      const { error: userError } = await supabase
+        .from('users')
+        .update({
+          first_name: profileData.firstName,
+          last_name: profileData.lastName,
+          phone: profileData.phone
+        })
+        .eq('id', userId)
+
+      if (userError) {
+        console.error('Error updating user profile:', userError)
+        return { error: userError }
+      }
+
+      // If schoolId is provided, create or update teacher-school relationship
+      if (profileData.schoolId) {
+        const { error: schoolError } = await supabase
+          .from('schools_teachers')
+          .upsert({
+            teacher_id: userId,
+            school_id: profileData.schoolId,
+            status: 'accepted',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+
+        if (schoolError) {
+          console.error('Error linking teacher to school:', schoolError)
+          return { error: schoolError }
+        }
+      }
+
+      return { error: null }
+    } catch (error) {
+      console.error('Error in updateUserProfile:', error)
+      return { error: error as PostgrestError }
+    }
+  },
+
+  /**
+   * Checks if user profile is complete.
+   *
+   * @param {string} userId - The user's ID.
+   * @returns {Promise<boolean>} - True if profile is complete, false otherwise.
+   */
+  async isProfileComplete(userId: string): Promise<boolean> {
+    try {
+      const { data: userProfile, error } = await supabase
+        .from('users')
+        .select('first_name, last_name, phone')
+        .eq('id', userId)
+        .single()
+
+      if (error || !userProfile) {
+        return false
+      }
+
+      // Check if all required fields are present and not empty
+      return !!(
+        userProfile.first_name &&
+        userProfile.last_name &&
+        userProfile.phone
+      )
+    } catch (error) {
+      console.error('Error checking profile completion:', error)
+      return false
+    }
+  },
+
+  /**
+   * Gets user profile information.
+   *
+   * @param {string} userId - The user's ID.
+   * @returns {Promise<{ data: any | null; error: PostgrestError | null }>} - User profile data.
+   */
+  async getUserProfile(userId: string): Promise<{
+    data: any | null
+    error: PostgrestError | null
+  }> {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .single()
+
+      return { data, error }
+    } catch (error) {
+      console.error('Error getting user profile:', error)
+      return { data: null, error: error as PostgrestError }
+    }
+  },
+
+  /**
+   * Sends a password reset email to the user.
+   *
+   * @param {string} email - The user's email address.
+   * @returns {Promise<{ error: AuthError | null }>} - The result of the password reset request.
+   */
+  async sendPasswordResetEmail(
+    email: string
+  ): Promise<{ error: AuthError | null }> {
+    try {
+      const response = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'yeko-teach://reset-password' // Deep link for mobile app
+      })
+
+      if (response.error) {
+        throw response.error
+      }
+
+      return { error: null }
+    } catch (error) {
+      console.error('Error sending password reset email:', error)
+      return { error: error as AuthError }
+    }
+  }
 }
 
 export const schoolYear = {
@@ -123,7 +284,7 @@ export const schoolYear = {
       if (!schoolYearData) {
         return {
           data: null,
-          error: null,
+          error: null
         }
       }
 
@@ -142,22 +303,21 @@ export const schoolYear = {
         data: {
           schoolYear: {
             id: schoolYearData.id,
-            name: schoolYearData.academic_year_name,
+            name: schoolYearData.academic_year_name
           },
           semesters: semestersData.map(semester => ({
             id: semester.id,
             name: semester.semester_name,
-            isCurrent: semester.is_current,
-          })),
+            isCurrent: semester.is_current
+          }))
         },
-        error: null,
+        error: null
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error fetching current school year:', error)
       return {
         data: null,
-        error: error as PostgrestError,
+        error: error as PostgrestError
       }
     }
   },
@@ -187,17 +347,16 @@ export const schoolYear = {
         data: {
           id: semesterData.id,
           name: semesterData.semester_name,
-          isCurrent: semesterData.is_current,
+          isCurrent: semesterData.is_current
         },
-        error: null,
+        error: null
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error fetching current semester:', error)
       return {
         data: null,
-        error: error as PostgrestError,
+        error: error as PostgrestError
       }
     }
-  },
+  }
 }

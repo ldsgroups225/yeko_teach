@@ -1,14 +1,18 @@
 // src/modules/school/components/StudentListItem.tsx
 
-import type { IStudentDTO } from '@modules/app/types/ILoginDTO'
-import type { ITheme } from '@styles/theme'
 import CsText from '@components/CsText'
 import { Ionicons } from '@expo/vector-icons'
+import type { IStudentDTO } from '@modules/app/types/ILoginDTO'
 import { useTheme } from '@src/hooks'
 import { spacing } from '@styles/spacing'
+import type { ITheme } from '@styles/theme'
 import React from 'react'
 import { StyleSheet, TextInput, View } from 'react-native'
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming
+} from 'react-native-reanimated'
 
 interface StudentListItemProps {
   student: IStudentDTO
@@ -23,7 +27,7 @@ const StudentListItem: React.FC<StudentListItemProps> = ({
   isAssigningGrade,
   onNoteChange,
   isReadOnly,
-  maxPoints,
+  maxPoints
 }) => {
   const theme = useTheme()
   const styles = useStyles(theme)
@@ -33,7 +37,7 @@ const StudentListItem: React.FC<StudentListItemProps> = ({
 
   // Create an animated style that drives the opacity.
   const fadeStyle = useAnimatedStyle(() => ({
-    opacity: fade.value,
+    opacity: fade.value
   }))
 
   React.useEffect(() => {
@@ -41,8 +45,10 @@ const StudentListItem: React.FC<StudentListItemProps> = ({
   }, [fade])
 
   const handleNoteChange = (text: string) => {
-    const note
-      = text === '' ? null : Math.min(Math.max(Number.parseInt(text) || 0, 0), maxPoints)
+    const note =
+      text === ''
+        ? null
+        : Math.min(Math.max(Number.parseInt(text) || 0, 0), maxPoints)
     onNoteChange(student.id, note)
   }
 
@@ -54,48 +60,46 @@ const StudentListItem: React.FC<StudentListItemProps> = ({
     <Animated.View style={[styles.container, fadeStyle]}>
       <View style={styles.avatarContainer}>
         <View style={styles.avatar}>
-          <CsText variant="h3" style={styles.avatarText}>
+          <CsText variant='h3' style={styles.avatarText}>
             {getInitials(student.firstName, student.lastName)}
           </CsText>
         </View>
       </View>
       <View style={styles.infoContainer}>
-        <CsText variant="h3" style={styles.name}>
+        <CsText variant='h3' style={styles.name}>
           {`${student.lastName} ${student.firstName}`}
         </CsText>
         <View style={styles.idNumberContainer}>
-          <Ionicons name="id-card-outline" size={14} color={theme.textLight} />
-          <CsText variant="caption" style={styles.idNumber}>
+          <Ionicons name='id-card-outline' size={14} color={theme.textLight} />
+          <CsText variant='caption' style={styles.idNumber}>
             {student.idNumber}
           </CsText>
         </View>
       </View>
       <View style={styles.noteContainer}>
-        {isAssigningGrade
-          ? (
-              <TextInput
-                style={[styles.noteInput, isReadOnly && styles.readOnlyInput]}
-                keyboardType="numeric"
-                value={student.note?.toString() || ''}
-                onChangeText={handleNoteChange}
-                maxLength={2}
-                placeholder={`/${maxPoints}`}
-                placeholderTextColor={theme.textLight}
-                editable={!isReadOnly}
-              />
-            )
-          : (
-              <View
-                style={[
-                  styles.noteDisplay,
-                  student.note !== undefined && styles.noteDisplayFilled,
-                ]}
-              >
-                <CsText variant="body" style={styles.noteText}>
-                  {student.note !== undefined ? student.note : '-'}
-                </CsText>
-              </View>
-            )}
+        {isAssigningGrade ? (
+          <TextInput
+            style={[styles.noteInput, isReadOnly && styles.readOnlyInput]}
+            keyboardType='numeric'
+            value={student.note?.toString() || ''}
+            onChangeText={handleNoteChange}
+            maxLength={2}
+            placeholder={`/${maxPoints}`}
+            placeholderTextColor={theme.textLight}
+            editable={!isReadOnly}
+          />
+        ) : (
+          <View
+            style={[
+              styles.noteDisplay,
+              student.note !== undefined && styles.noteDisplayFilled
+            ]}
+          >
+            <CsText variant='body' style={styles.noteText}>
+              {student.note !== undefined ? student.note : '-'}
+            </CsText>
+          </View>
+        )}
       </View>
     </Animated.View>
   )
@@ -109,10 +113,10 @@ function useStyles(theme: ITheme) {
       padding: spacing.md,
       borderBottomWidth: 1,
       borderBottomColor: theme.border,
-      backgroundColor: theme.card,
+      backgroundColor: theme.card
     },
     avatarContainer: {
-      marginRight: spacing.md,
+      marginRight: spacing.md
     },
     avatar: {
       width: 40,
@@ -120,34 +124,34 @@ function useStyles(theme: ITheme) {
       borderRadius: 20,
       backgroundColor: theme.primary,
       justifyContent: 'center',
-      alignItems: 'center',
+      alignItems: 'center'
     },
     avatarText: {
       color: theme.background,
       fontSize: 16,
-      fontWeight: 'bold',
+      fontWeight: 'bold'
     },
     infoContainer: {
-      flex: 1,
+      flex: 1
     },
     name: {
       color: theme.text,
-      fontWeight: 'bold',
+      fontWeight: 'bold'
     },
     idNumberContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginTop: spacing.xs,
+      marginTop: spacing.xs
     },
     idNumber: {
       color: theme.textLight,
-      marginLeft: spacing.xs,
+      marginLeft: spacing.xs
     },
     noteContainer: {
       width: 60,
       height: 40,
       justifyContent: 'center',
-      alignItems: 'center',
+      alignItems: 'center'
     },
     noteInput: {
       width: '100%',
@@ -158,7 +162,7 @@ function useStyles(theme: ITheme) {
       textAlign: 'center',
       color: theme.text,
       fontSize: 16,
-      backgroundColor: theme.background,
+      backgroundColor: theme.background
     },
     noteDisplay: {
       width: '100%',
@@ -166,20 +170,20 @@ function useStyles(theme: ITheme) {
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: theme.background,
-      borderRadius: 8,
+      borderRadius: 8
     },
     noteDisplayFilled: {
-      backgroundColor: `${theme.success}20`,
+      backgroundColor: `${theme.success}20`
     },
     noteText: {
       color: theme.text,
       fontWeight: 'bold',
-      fontSize: 16,
+      fontSize: 16
     },
     readOnlyInput: {
       backgroundColor: `${theme.background}40`,
-      borderColor: theme.border,
-    },
+      borderColor: theme.border
+    }
   })
 }
 

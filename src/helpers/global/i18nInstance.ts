@@ -16,13 +16,13 @@ const i18n = new I18n(
   {
     en: EnResource,
     fr: FrResource,
-    tr: TrResource,
+    tr: TrResource
   } as LocalizationResources,
   {
     locale: DEFAULT_LOCALE,
     enableFallback: true,
-    defaultLocale: DEFAULT_LOCALE,
-  },
+    defaultLocale: DEFAULT_LOCALE
+  }
 )
 
 export default i18n

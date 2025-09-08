@@ -77,11 +77,11 @@ export interface ILoginDTO {
 }
 
 export enum ERole {
-  TEACHER = 2,
+  TEACHER = 2
 }
 
 export enum EState {
-  ACTIVE = 1,
+  ACTIVE = 1
 }
 
 export interface ITeacherDataRawDTO {

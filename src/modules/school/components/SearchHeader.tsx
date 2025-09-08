@@ -1,9 +1,9 @@
 // src/modules/school/components/SearchHeader.tsx
 
-import type { ITheme } from '@styles/theme'
 import { Ionicons } from '@expo/vector-icons'
 import { spacing } from '@styles/spacing'
-import React from 'react'
+import type { ITheme } from '@styles/theme'
+import type React from 'react'
 import { StyleSheet, TextInput, View } from 'react-native'
 
 interface SearchHeaderProps {
@@ -15,18 +15,18 @@ interface SearchHeaderProps {
 export const SearchHeader: React.FC<SearchHeaderProps> = ({
   searchQuery,
   setSearchQuery,
-  theme,
+  theme
 }) => (
   <View style={styles(theme).searchContainer}>
     <Ionicons
-      name="search"
+      name='search'
       size={20}
       color={theme.text}
       style={styles(theme).searchIcon}
     />
     <TextInput
       style={styles(theme).searchInput}
-      placeholder="Rechercher des écoles..."
+      placeholder='Rechercher des écoles...'
       placeholderTextColor={theme.textLight}
       value={searchQuery}
       onChangeText={setSearchQuery}
@@ -42,15 +42,15 @@ function styles(theme: ITheme) {
       backgroundColor: theme.card,
       borderRadius: 12,
       padding: spacing.sm,
-      marginBottom: spacing.sm,
+      marginBottom: spacing.sm
     },
     searchIcon: {
-      marginRight: spacing.sm,
+      marginRight: spacing.sm
     },
     searchInput: {
       flex: 1,
       color: theme.text,
-      fontSize: 16,
-    },
+      fontSize: 16
+    }
   })
 }

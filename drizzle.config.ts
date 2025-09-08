@@ -5,5 +5,5 @@ export default defineConfig({
   schema: './src/db/schema.ts',
   out: './src/drizzle',
   dialect: 'sqlite',
-  driver: 'expo',
+  driver: 'expo'
 }) satisfies Config

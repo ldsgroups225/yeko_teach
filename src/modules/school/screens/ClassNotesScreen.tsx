@@ -1,16 +1,18 @@
-import type { IUserDTO } from '@modules/app/types/ILoginDTO'
-import type { RouteProp } from '@react-navigation/native'
-import type { StackScreenProps } from '@react-navigation/stack'
-import type { Routes, SchoolClassNotesStackParams } from '@utils/Routes'
-
 import CsPicker from '@components/CsPicker'
 import CsText from '@components/CsText'
 import ErrorComponent from '@components/ErrorComponent'
 import LoadingSpinner from '@components/LoadingSpinner'
 import { useAuth } from '@hooks/useAuth'
 import { useTeacherData } from '@hooks/useTeacherData'
-import { FROM_STRING_OPTIONS_MAP, NOTE_TYPE } from '@modules/app/constants/noteTypes'
+import {
+  FROM_STRING_OPTIONS_MAP,
+  NOTE_TYPE
+} from '@modules/app/constants/noteTypes'
+import type { IUserDTO } from '@modules/app/types/ILoginDTO'
+import type { RouteProp } from '@react-navigation/native'
 import { useRoute } from '@react-navigation/native'
+import type { StackScreenProps } from '@react-navigation/stack'
+import type { Routes, SchoolClassNotesStackParams } from '@utils/Routes'
 import { useCallback, useEffect, useState } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { notes } from '../services/noteService'
@@ -18,7 +20,10 @@ import { students } from '../services/studentService'
 import { subjects as remoteSubjects } from '../services/teachSubjectsInClassService'
 
 // Define specific types for state data
-interface Subject { id: string, name: string }
+interface Subject {
+  id: string
+  name: string
+}
 
 // Define interfaces for database types
 interface ClassStudent {
@@ -47,10 +52,16 @@ interface StudentNotes {
 }
 
 // Screen Props
-type Props = StackScreenProps<SchoolClassNotesStackParams, Routes.SchoolClassNotes>
+type Props = StackScreenProps<
+  SchoolClassNotesStackParams,
+  Routes.SchoolClassNotes
+>
 
 // Route Prop Type
-type ClassNotesRouteProp = RouteProp<SchoolClassNotesStackParams, Routes.SchoolClassNotes>
+type ClassNotesRouteProp = RouteProp<
+  SchoolClassNotesStackParams,
+  Routes.SchoolClassNotes
+>
 
 const $black = '#000'
 const $white = '#FFF'
@@ -67,7 +78,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 15,
-    backgroundColor: $gray1,
+    backgroundColor: $gray1
   },
   pickerContainer: {
     marginBottom: 15,
@@ -78,7 +89,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 3
   },
   tableContainer: {
     flex: 1,
@@ -89,20 +100,20 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-    overflow: 'hidden',
+    overflow: 'hidden'
   },
   tableWrapper: {
-    flexDirection: 'row',
+    flexDirection: 'row'
   },
   fixedColumn: {
     width: 150,
     backgroundColor: $white,
     borderRightWidth: 1,
     borderRightColor: $gray3,
-    zIndex: 1,
+    zIndex: 1
   },
   scrollableArea: {
-    flex: 1,
+    flex: 1
   },
   headerRow: {
     height: 48,
@@ -110,46 +121,46 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: $gray3,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   headerStudent: {
     width: 150,
     paddingHorizontal: 15,
     fontWeight: '600',
     fontSize: 15,
-    color: $gray6,
+    color: $gray6
   },
   headerNote: {
     width: 80,
     textAlign: 'center',
     fontWeight: '600',
     fontSize: 15,
-    color: $gray6,
+    color: $gray6
   },
   row: {
     height: 48,
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: $gray1,
+    borderBottomColor: $gray1
   },
   rowAlternate: {
-    backgroundColor: $gray2,
+    backgroundColor: $gray2
   },
   studentName: {
     width: 150,
     paddingHorizontal: 15,
     fontSize: 14,
-    color: $gray5,
+    color: $gray5
   },
   noteCell: {
     width: 80,
     textAlign: 'center',
     fontSize: 14,
-    color: $gray6,
+    color: $gray6
   },
   listContainer: {
-    paddingBottom: 20,
+    paddingBottom: 20
   },
   loadingContainer: {
     flex: 1,
@@ -158,12 +169,12 @@ const styles = StyleSheet.create({
     backgroundColor: $white,
     borderRadius: 8,
     margin: 15,
-    padding: 20,
+    padding: 20
   },
   loadingText: {
     marginTop: 10,
     fontSize: 14,
-    color: $gray4,
+    color: $gray4
   },
   errorContainer: {
     flex: 1,
@@ -172,25 +183,25 @@ const styles = StyleSheet.create({
     backgroundColor: $white,
     borderRadius: 8,
     margin: 15,
-    padding: 20,
+    padding: 20
   },
   errorText: {
     fontSize: 15,
     color: $red,
-    textAlign: 'center',
+    textAlign: 'center'
   },
   emptyContainer: {
     padding: 20,
-    alignItems: 'center',
+    alignItems: 'center'
   },
   emptyText: {
     fontSize: 15,
     color: $gray4,
-    textAlign: 'center',
+    textAlign: 'center'
   },
   subjectPickerContainer: {
-    marginBottom: 8,
-  },
+    marginBottom: 8
+  }
 })
 
 /**
@@ -205,7 +216,9 @@ const ClassNotesScreen: React.FC<Props> = () => {
   const [teacherData, setTeacherData] = useState<IUserDTO | null>(null)
   const [subjects, setSubjects] = useState<Subject[]>([])
   const [structuredNotes, setStructuredNotes] = useState<StudentNotes[]>([])
-  const [selectedSubjectId, setSelectedSubjectId] = useState<string | undefined>(undefined)
+  const [selectedSubjectId, setSelectedSubjectId] = useState<
+    string | undefined
+  >(undefined)
   const [classStudents, setClassStudents] = useState<ClassStudent[]>([])
 
   // Loading States
@@ -230,15 +243,11 @@ const ClassNotesScreen: React.FC<Props> = () => {
         // Check auth first as we need the user ID
         const currentUser = await checkAuth()
         if (!currentUser?.id) {
-          throw new Error('Vous n\'êtes pas authentifié.')
+          throw new Error("Vous n'êtes pas authentifié.")
         }
 
         // Fetch teacher data, students and subjects in parallel
-        const [
-          teacherData,
-          studentsData,
-          subjectsData,
-        ] = await Promise.all([
+        const [teacherData, studentsData, subjectsData] = await Promise.all([
           // 1. Fetch teacher data
           fetchTeacherData(currentUser.id),
 
@@ -246,7 +255,7 @@ const ClassNotesScreen: React.FC<Props> = () => {
           students.getClassStudents(classId),
 
           // 3. Fetch subjects (will be filtered once we have teacher data)
-          remoteSubjects.getTeachSubjectsInClass(classId),
+          remoteSubjects.getTeachSubjectsInClass(classId)
         ])
 
         // Handle teacher data
@@ -258,12 +267,10 @@ const ClassNotesScreen: React.FC<Props> = () => {
         if (!selectedSubjectId && subjectsData.length > 0) {
           setSelectedSubjectId(subjectsData[0].id)
         }
-      }
-      catch (err: any) {
+      } catch (err: any) {
         console.error('Error loading initial data:', err)
         setError(err.message || 'Échec du chargement des données')
-      }
-      finally {
+      } finally {
         setIsLoading(false)
       }
     }
@@ -274,7 +281,12 @@ const ClassNotesScreen: React.FC<Props> = () => {
   // Fetch notes when subject is selected
   useEffect(() => {
     const teacherId = teacherData?.id
-    if (!teacherId || !classId || !selectedSubjectId || classStudents.length === 0) {
+    if (
+      !teacherId ||
+      !classId ||
+      !selectedSubjectId ||
+      classStudents.length === 0
+    ) {
       setStructuredNotes([])
       return
     }
@@ -282,37 +294,44 @@ const ClassNotesScreen: React.FC<Props> = () => {
     const fetchNoteDetails = async () => {
       setIsLoading(true)
       try {
-        const data = await notes.getClassesNotesForRevision(teacherId, classId, selectedSubjectId)
+        const data = await notes.getClassesNotesForRevision(
+          teacherId,
+          classId,
+          selectedSubjectId
+        )
 
         // Process notes to create sequence numbers for each type
         const typeSequences: { [key: string]: number } = {}
         const studentNotesMap: { [key: string]: StudentNotes } = {}
 
         // Initialize studentNotesMap with all class students
-        classStudents.forEach((student) => {
+        classStudents.forEach(student => {
           studentNotesMap[student.id] = {
             studentId: student.id,
             firstName: student.firstName,
             lastName: student.lastName,
-            notes: {},
+            notes: {}
           }
         })
 
         // Process each note and its details
-        data?.forEach((note) => {
+        data?.forEach(note => {
           const noteType = FROM_STRING_OPTIONS_MAP[note.noteType]
-          const prefix = noteType === NOTE_TYPE.WRITING_QUESTION
-            ? 'I'
-            : noteType === NOTE_TYPE.CLASS_TEST
-              ? 'D'
-              : noteType === NOTE_TYPE.LEVEL_TEST ? 'DN' : null
+          const prefix =
+            noteType === NOTE_TYPE.WRITING_QUESTION
+              ? 'I'
+              : noteType === NOTE_TYPE.CLASS_TEST
+                ? 'D'
+                : noteType === NOTE_TYPE.LEVEL_TEST
+                  ? 'DN'
+                  : null
 
           if (prefix) {
             typeSequences[noteType] = (typeSequences[noteType] || 0) + 1
             const sequence = typeSequences[noteType]
             const columnKey = `${prefix}${sequence}`
 
-            note.noteDetails?.forEach((detail) => {
+            note.noteDetails?.forEach(detail => {
               if (detail.studentId && studentNotesMap[detail.studentId]) {
                 studentNotesMap[detail.studentId].notes[columnKey] = {
                   id: note.id,
@@ -320,7 +339,7 @@ const ClassNotesScreen: React.FC<Props> = () => {
                   sequence,
                   note: detail.note,
                   createdAt: note.createdAt,
-                  title: note.title,
+                  title: note.title
                 }
               }
             })
@@ -330,16 +349,16 @@ const ClassNotesScreen: React.FC<Props> = () => {
         // Convert to array and sort by last name, then first name
         const sortedNotes = Object.values(studentNotesMap).sort((a, b) => {
           const lastNameCompare = a.lastName.localeCompare(b.lastName)
-          return lastNameCompare !== 0 ? lastNameCompare : a.firstName.localeCompare(b.firstName)
+          return lastNameCompare !== 0
+            ? lastNameCompare
+            : a.firstName.localeCompare(b.firstName)
         })
 
         setStructuredNotes(sortedNotes)
-      }
-      catch (err: any) {
+      } catch (err: any) {
         console.error('Error fetching note details:', err)
         setError(err.message || 'Échec du chargement des notes')
-      }
-      finally {
+      } finally {
         setIsLoading(false)
       }
     }
@@ -349,11 +368,10 @@ const ClassNotesScreen: React.FC<Props> = () => {
 
   // --- Helper Functions ---
   const getColumnHeaders = useCallback(() => {
-    if (structuredNotes.length === 0)
-      return []
+    if (structuredNotes.length === 0) return []
 
     const allKeys = new Set<string>()
-    structuredNotes.forEach((student) => {
+    structuredNotes.forEach(student => {
       Object.keys(student.notes).forEach(key => allKeys.add(key))
     })
 
@@ -363,15 +381,11 @@ const ClassNotesScreen: React.FC<Props> = () => {
       const aNum = Number.parseInt(a.slice(aType.length))
       const bNum = Number.parseInt(b.slice(bType.length))
 
-      if (aType === bType)
-        return aNum - bNum
+      if (aType === bType) return aNum - bNum
       // Order: I -> D -> DN
-      if (aType === 'I')
-        return -1
-      if (bType === 'I')
-        return 1
-      if (aType === 'D')
-        return -1
+      if (aType === 'I') return -1
+      if (bType === 'I') return 1
+      if (aType === 'D') return -1
       return 1
     })
   }, [structuredNotes])
@@ -380,7 +394,7 @@ const ClassNotesScreen: React.FC<Props> = () => {
   if (loadingAuth || isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <LoadingSpinner size="large" color="#007bff" />
+        <LoadingSpinner size='large' color='#007bff' />
         <CsText style={styles.loadingText}>Chargement des notes...</CsText>
       </View>
     )
@@ -395,11 +409,15 @@ const ClassNotesScreen: React.FC<Props> = () => {
   }
 
   if (!teacherData) {
-    return <ErrorComponent errorMessage="Données de l'enseignant non disponibles." />
+    return (
+      <ErrorComponent errorMessage="Données de l'enseignant non disponibles." />
+    )
   }
 
   if (classStudents.length === 0) {
-    return <ErrorComponent errorMessage="Aucun élève n'est inscrit dans cette classe." />
+    return (
+      <ErrorComponent errorMessage="Aucun élève n'est inscrit dans cette classe." />
+    )
   }
 
   return (
@@ -407,10 +425,10 @@ const ClassNotesScreen: React.FC<Props> = () => {
       <View style={styles.pickerContainer}>
         <View style={styles.subjectPickerContainer}>
           <CsPicker
-            label="Sélectionner une matière:"
+            label='Sélectionner une matière:'
             items={subjects.map(subject => ({
               label: subject.name,
-              value: subject.id,
+              value: subject.id
             }))}
             selectedValue={selectedSubjectId || ''}
             onValueChange={value => setSelectedSubjectId(value as string)}
@@ -426,11 +444,12 @@ const ClassNotesScreen: React.FC<Props> = () => {
               <CsText style={styles.headerStudent}>Élève</CsText>
             </View>
             {structuredNotes.map((student, index) => (
-              <View key={student.studentId} style={[styles.row, index % 2 !== 0 && styles.rowAlternate]}>
+              <View
+                key={student.studentId}
+                style={[styles.row, index % 2 !== 0 && styles.rowAlternate]}
+              >
                 <CsText style={styles.studentName}>
-                  {student.firstName}
-                  {' '}
-                  {student.lastName}
+                  {student.firstName} {student.lastName}
                 </CsText>
               </View>
             ))}
@@ -447,7 +466,10 @@ const ClassNotesScreen: React.FC<Props> = () => {
                 ))}
               </View>
               {structuredNotes.map((student, index) => (
-                <View key={student.studentId} style={[styles.row, index % 2 !== 0 && styles.rowAlternate]}>
+                <View
+                  key={student.studentId}
+                  style={[styles.row, index % 2 !== 0 && styles.rowAlternate]}
+                >
                   {getColumnHeaders().map(column => (
                     <CsText key={column} style={styles.noteCell}>
                       {student.notes[column]?.note ?? '-'}

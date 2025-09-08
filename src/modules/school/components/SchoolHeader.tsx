@@ -1,12 +1,12 @@
 // src/modules/school/components/SchoolHeader.tsx
 
-import type { ISchoolDTO } from '@modules/app/types/ILoginDTO'
-import type { ITheme } from '@styles/theme'
 import CsText from '@components/CsText'
 import { Ionicons } from '@expo/vector-icons'
+import type { ISchoolDTO } from '@modules/app/types/ILoginDTO'
 import { useTheme } from '@src/hooks'
 import { spacing } from '@styles/spacing'
-import React from 'react'
+import type { ITheme } from '@styles/theme'
+import type React from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 
 interface SchoolHeaderProps {
@@ -18,7 +18,7 @@ interface SchoolHeaderProps {
 const SchoolHeader: React.FC<SchoolHeaderProps> = ({
   school,
   onGenerateQRCode,
-  onBackPress,
+  onBackPress
 }) => {
   const theme = useTheme()
   const styles = useStyles(theme)
@@ -27,24 +27,24 @@ const SchoolHeader: React.FC<SchoolHeaderProps> = ({
     <View style={styles.container}>
       <View style={styles.topRow}>
         <TouchableOpacity style={styles.backButton} onPress={onBackPress}>
-          <Ionicons name="arrow-back" size={24} color={theme.background} />
+          <Ionicons name='arrow-back' size={24} color={theme.background} />
         </TouchableOpacity>
         <CsText
-          variant="h2"
+          variant='h2'
           style={styles.schoolName}
           numberOfLines={1}
-          ellipsizeMode="tail"
+          ellipsizeMode='tail'
         >
           {school.name}
         </CsText>
       </View>
       <View style={styles.bottomRow}>
-        <CsText variant="body" style={styles.schoolCode}>
+        <CsText variant='body' style={styles.schoolCode}>
           {school.code}
         </CsText>
         <TouchableOpacity style={styles.qrButton} onPress={onGenerateQRCode}>
-          <Ionicons name="qr-code" size={20} color={theme.text} />
-          <CsText variant="caption" style={styles.qrButtonText}>
+          <Ionicons name='qr-code' size={20} color={theme.text} />
+          <CsText variant='caption' style={styles.qrButtonText}>
             Générer QR
           </CsText>
         </TouchableOpacity>
@@ -57,29 +57,29 @@ function useStyles(theme: ITheme) {
   return StyleSheet.create({
     container: {
       backgroundColor: theme.primary,
-      padding: spacing.md,
+      padding: spacing.md
     },
     topRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: spacing.sm,
+      marginBottom: spacing.sm
     },
     backButton: {
-      marginRight: spacing.sm,
+      marginRight: spacing.sm
     },
     schoolName: {
       flex: 1,
       color: theme.background,
       fontSize: 20,
-      fontWeight: 'bold',
+      fontWeight: 'bold'
     },
     bottomRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      alignItems: 'center',
+      alignItems: 'center'
     },
     schoolCode: {
-      color: theme.background + 80,
+      color: theme.background + 80
     },
     qrButton: {
       flexDirection: 'row',
@@ -87,12 +87,12 @@ function useStyles(theme: ITheme) {
       backgroundColor: theme.secondary,
       paddingVertical: spacing.xs,
       paddingHorizontal: spacing.sm,
-      borderRadius: 8,
+      borderRadius: 8
     },
     qrButtonText: {
       color: theme.text,
-      marginLeft: spacing.xs,
-    },
+      marginLeft: spacing.xs
+    }
   })
 }
 

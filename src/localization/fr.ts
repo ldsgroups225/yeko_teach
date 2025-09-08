@@ -25,10 +25,10 @@ const resource = {
   retry: 'Réessayer',
 
   navigation: {
-    home: 'Page d\'accueil',
+    home: "Page d'accueil",
     profile: 'Profil',
     settings: 'Paramètres',
-    post: 'Publication',
+    post: 'Publication'
   },
   welcome: 'Bienvenue !',
   welcomeBack: 'Content de vous revoir !',
@@ -38,25 +38,28 @@ const resource = {
   login: 'Connexion',
   or: 'ou',
   loginWithGoogle: 'Continuer avec Google',
-  dontHaveAccount: 'Vous n\'avez pas de compte ?',
+  dontHaveAccount: "Vous n'avez pas de compte ?",
   googleLoginNotImplemented:
-    'La connexion avec Google n\'est pas encore implémentée.',
+    "La connexion avec Google n'est pas encore implémentée.",
   forgotPasswordNotImplemented:
-    'La fonctionnalité de mot de passe oublié n\'est pas encore implémentée.',
+    "La fonctionnalité de mot de passe oublié n'est pas encore implémentée.",
+  emailRequired: "L'adresse email est requise",
+  resetEmailError: "Erreur lors de l'envoi de l'email de réinitialisation",
+  resetEmailSent: 'Email de réinitialisation envoyé avec succès',
   invalidCredentials: 'Email ou mot de passe invalide',
   createAccount: 'Créer un compte',
   fullName: 'Nom complet',
   firstName: 'Prénom',
   lastName: 'Nom de famille',
   phone: 'Numéro de téléphone',
-  invalidPhoneNumber: 'Ce n\'est pas un numéro ivoirien valide',
+  invalidPhoneNumber: "Ce n'est pas un numéro ivoirien valide",
   invalidEmail: 'Email invalide',
   confirmPassword: 'Confirmer le mot de passe',
   passwordsDoNotMatch: 'Les mots de passe ne correspondent pas',
-  acceptTerms: 'J\'accepte les',
-  termsAndConditions: 'Conditions générales d\'utilisation',
+  acceptTerms: "J'accepte les",
+  termsAndConditions: "Conditions générales d'utilisation",
   termsAndConditionsNotImplemented:
-    'Les conditions générales d\'utilisation ne sont pas encore implémentées.',
+    "Les conditions générales d'utilisation ne sont pas encore implémentées.",
   registrationSuccessful: 'Inscription réussie !',
   back: 'Retour',
   passwordStrength: {
@@ -64,7 +67,7 @@ const resource = {
     fair: 'Moyen',
     good: 'Bon',
     strong: 'Fort',
-    veryStrong: 'Très Fort',
+    veryStrong: 'Très Fort'
   },
   title: 'Profil',
   theme: 'Thème',
@@ -83,6 +86,260 @@ const resource = {
   exercises: 'Exercices',
   discussion: 'Discussion',
   infoAndSchooling: 'Info et scolarité',
+
+  // Authentication & Profile
+  googleLoginSuccess: 'Connexion Google réussie !',
+  googleLoginFailed: 'Échec de la connexion Google',
+  signUp: "S'inscrire",
+  signIn: 'Se connecter',
+  signInWithGoogle: 'Se connecter avec Google',
+  signUpWithGoogle: "S'inscrire avec Google",
+  alreadyHaveAccount: 'Vous avez déjà un compte ?',
+  completeProfile: 'Compléter votre profil',
+  completeProfileSubtitle:
+    'Veuillez fournir quelques informations supplémentaires.',
+  profileIncomplete: 'Profil incomplet',
+  completeProfileToContinue: 'Veuillez compléter votre profil pour continuer.',
+  fillAllRequiredFields: 'Veuillez remplir tous les champs obligatoires.',
+  noUserLoggedIn: 'Aucun utilisateur connecté.',
+  profileUpdateError:
+    'Une erreur est survenue lors de la mise à jour du profil.',
+  profileCompletedSuccessfully: 'Profil complété avec succès !',
+  finish: 'Terminer',
+  selectYourSchool: 'Sélectionnez votre école',
+  phoneNumber: 'Numéro de téléphone',
+  emailAddress: 'Adresse e-mail',
+
+  joinYekoCommunity:
+    'Rejoignez la communauté Yeko et commencez à gérer vos cours.',
+  googleSignUpSuccess: 'Inscription avec Google réussie !',
+  googleSignUpFailed: "Échec de l'inscription avec Google",
+  verifyYourEmail: 'Vérifiez votre e-mail',
+  confirmationEmailSent: 'Un e-mail de confirmation a été envoyé à',
+  clickLinkToActivate:
+    "Veuillez cliquer sur le lien dans l'e-mail pour activer votre compte.",
+  backToLogin: 'Retour à la connexion',
+
+  // Navigation & Tabs
+  programs: 'Programmes',
+  schools: 'Écoles',
+  chats: 'Chats',
+  profile: 'Profil',
+  classNotes: 'Notes de la classe',
+
+  // Schedule
+  yourSchedule: 'Votre emploi du temps',
+  noClassScheduled: 'Aucun cours prévu pour ce jour',
+  youAreStillWithoutSchool: 'Vous êtes encore sans établissement scolaire !',
+  joinSchoolToStart:
+    'Pour commencer, veuillez rejoindre au moins un établissement scolaire.',
+  monday: 'Lundi',
+  tuesday: 'Mardi',
+  wednesday: 'Mercredi',
+  thursday: 'Jeudi',
+  friday: 'Vendredi',
+  mon: 'LUN',
+  tue: 'MAR',
+  wed: 'MER',
+  thu: 'JEU',
+  fri: 'VEN',
+
+  // Chat
+  discussions: 'Discussions',
+  conversations: 'Conversations',
+  unreadMessages: 'Messages non lus',
+  all: 'Tout',
+  unread: 'Non lus',
+  noUnreadMessages: 'Aucun message non lu',
+  noConversationsFound: 'Aucune conversation trouvée',
+  messageLimitReached: 'Limite Atteinte',
+  maxMessagesPerChat:
+    'Vous avez atteint le nombre maximum de messages par chat (10 max).',
+  goBack: 'Retour',
+  sendMessage: 'Envoyer le message',
+  noClass: 'Pas de classe',
+  noSchool: "Pas d'école",
+
+  // Profile & Settings
+  updateProfile: 'Mettre à jour le profil',
+  modifyNameAndPhoto: 'Modifier votre nom et photo',
+  joinNewSchool: 'Joindre une nouvelle école',
+  enterOtpToLink:
+    'Entrez le code OTP pour lier votre profil à une nouvelle école',
+  problemDuringLogout:
+    'Un problème rencontré lors de la déconnexion, réessayer',
+  willBeAvailableSoon: 'Sera disponible très bientôt',
+
+  // Notes & Evaluation
+  newEvaluation: 'Nouvelle Évaluation',
+  loading: 'Chargement...',
+  loadingSemesterData: 'Chargement des données de semestre...',
+  semester: 'Semestre',
+  trimester: 'Trimestre',
+  subject: 'Matière',
+  evaluationType: "Type d'évaluation",
+  evaluationTitle: "Titre de l'évaluation",
+  evaluationDescription: "Description de l'évaluation",
+  totalPoints: 'Points totaux',
+  coefficient: 'Coefficient',
+  dueDate: 'Date limite',
+  gradeEvaluation: "Noter l'évaluation",
+  create: 'Créer',
+  creating: 'Création...',
+  titleRequired: 'Le titre est requis',
+  totalPointsMustBePositive: 'Les points totaux doivent être un nombre positif',
+  coefficientMustBePositive: 'Le coefficient doit être un nombre positif',
+  subjectRequired: 'La matière est requise',
+  invalidSubject: 'Matière invalide',
+  invalidSemester: 'Semestre invalide',
+  invalidDate: 'Date invalide',
+  notTeacherOfThisClass: "Vous n'êtes pas enseignant de cette classe",
+  noteNotFound: 'Note introuvable',
+  errorSavingNote: 'Erreur lors de la sauvegarde de la note',
+  errorDeletingNote: 'Erreur lors de la suppression de la note',
+  errorActivatingNotes: "Échec de l'activation des notes. Veuillez réessayer.",
+  errorLoadingStudents:
+    'Échec du chargement des données des étudiants. Veuillez réessayer.',
+  errorSavingStudents:
+    'Échec de la sauvegarde des données des étudiants. Veuillez réessayer.',
+
+  // School & Classes
+  loadingClasses: 'Chargement des classes',
+  failedToFetchClasses: 'Impossible de récupérer les classes',
+  noClassAssigned: 'Aucune classe assignée',
+
+  // Common Actions
+  save: 'Sauvegarder',
+  delete: 'Supprimer',
+  edit: 'Modifier',
+  close: 'Fermer',
+  open: 'Ouvrir',
+  loadingData: 'Chargement des données...',
+  errorOccurred: 'Une erreur est survenue',
+  tryAgain: 'Veuillez réessayer',
+  success: 'Succès',
+  error: 'Erreur',
+  warning: 'Avertissement',
+  info: 'Information',
+
+  // Form Validation
+  required: 'Requis',
+  invalid: 'Invalide',
+  tooShort: 'Trop court',
+  tooLong: 'Trop long',
+  invalidFormat: 'Format invalide',
+
+  // Time & Date
+  today: "Aujourd'hui",
+  yesterday: 'Hier',
+  tomorrow: 'Demain',
+  thisWeek: 'Cette semaine',
+  thisMonth: 'Ce mois',
+  thisYear: 'Cette année',
+
+  // Status
+  active: 'Actif',
+  inactive: 'Inactif',
+  pending: 'En attente',
+  completed: 'Terminé',
+  cancelled: 'Annulé',
+  draft: 'Brouillon',
+
+  // School Management
+  schoolName: "Nom de l'école",
+  schoolCode: "Code de l'école",
+  schoolAddress: "Adresse de l'école",
+  schoolPhone: "Téléphone de l'école",
+  schoolEmail: "Email de l'école",
+  joinSchool: "Rejoindre l'école",
+  leaveSchool: "Quitter l'école",
+  schoolJoined: 'École rejointe avec succès',
+  schoolLeft: 'École quittée avec succès',
+
+  // Student Management
+  students: 'Étudiants',
+  studentName: "Nom de l'étudiant",
+  studentId: "ID de l'étudiant",
+  studentClass: "Classe de l'étudiant",
+  addStudent: 'Ajouter un étudiant',
+  removeStudent: "Supprimer l'étudiant",
+  studentAdded: 'Étudiant ajouté avec succès',
+  studentRemoved: 'Étudiant supprimé avec succès',
+
+  // Grade Management
+  grades: 'Notes',
+  grade: 'Note',
+  average: 'Moyenne',
+  highest: 'Plus élevé',
+  lowest: 'Plus bas',
+  pass: 'Réussi',
+  fail: 'Échoué',
+  excellent: 'Excellent',
+  veryGood: 'Très bien',
+  good: 'Bien',
+  satisfactory: 'Satisfaisant',
+  needsImprovement: 'À améliorer',
+
+  // Attendance
+  present: 'Présent',
+  absent: 'Absent',
+  late: 'En retard',
+  excused: 'Excusé',
+  attendanceRate: 'Taux de présence',
+  totalDays: 'Jours totaux',
+  presentDays: 'Jours présents',
+  absentDays: 'Jours absents',
+
+  // Communication
+  message: 'Message',
+  messages: 'Messages',
+  received: 'Reçu',
+  sent: 'Envoyé',
+  reply: 'Répondre',
+  forward: 'Transférer',
+  markAsRead: 'Marquer comme lu',
+  markAsUnread: 'Marquer comme non lu',
+  deleteMessage: 'Supprimer le message',
+  messageSent: 'Message envoyé avec succès',
+  messageDeleted: 'Message supprimé avec succès',
+
+  // Settings
+  settings: 'Paramètres',
+  preferences: 'Préférences',
+  account: 'Compte',
+  privacy: 'Confidentialité',
+  security: 'Sécurité',
+  about: 'À propos',
+  help: 'Aide',
+  support: 'Support',
+  feedback: 'Commentaires',
+  version: 'Version',
+  build: 'Build',
+
+  // Error Messages
+  networkError: 'Erreur réseau. Veuillez vérifier votre connexion.',
+  serverError: 'Erreur serveur. Veuillez réessayer plus tard.',
+  unauthorized: 'Accès non autorisé.',
+  forbidden: 'Accès interdit.',
+  notFound: 'Ressource non trouvée.',
+  conflict: 'Conflit survenu.',
+  timeout: "Délai d'attente dépassé.",
+  unknownError: 'Une erreur inconnue est survenue.',
+
+  // Success Messages
+  operationSuccessful: 'Opération terminée avec succès.',
+  dataSaved: 'Données sauvegardées avec succès.',
+  dataUpdated: 'Données mises à jour avec succès.',
+  dataDeleted: 'Données supprimées avec succès.',
+  changesSaved: 'Modifications sauvegardées avec succès.',
+
+  // Confirmation Messages
+  confirmAction: "Confirmer l'action",
+  areYouSure: 'Êtes-vous sûr ?',
+  thisActionCannotBeUndone: 'Cette action ne peut pas être annulée.',
+  confirmDelete: 'Confirmer la suppression',
+  confirmSave: 'Confirmer la sauvegarde',
+  confirmCancel: "Confirmer l'annulation"
 }
 
 export default resource

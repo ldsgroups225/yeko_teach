@@ -1,15 +1,28 @@
 // src/modules/school/services/noteService.ts
 
-import type { INoteDTO, ISubjectDTO } from '@modules/app/types/ILoginDTO'
 import { FROM_STRING_OPTIONS_MAP } from '@modules/app/constants/noteTypes'
+import type { INoteDTO, ISubjectDTO } from '@modules/app/types/ILoginDTO'
 import { drizzleDb } from '@src/db/config'
 import { noteDetailTable, noteTable } from '@src/db/schema'
-import { NOTE_DETAILS_TABLE_ID, NOTE_TABLE_ID, supabase } from '@src/lib/supabase'
+import {
+  NOTE_DETAILS_TABLE_ID,
+  NOTE_TABLE_ID,
+  supabase
+} from '@src/lib/supabase'
 import { and, count, desc, eq, lt } from 'drizzle-orm'
 
 export const notes = {
-  async getNotes(teacherId: string, classId: string, schoolYearId: number, semesterId?: number): Promise<INoteDTO[]> {
-    const { notes: localData } = await this.getAllSavedNotesLocally(teacherId, classId, semesterId)
+  async getNotes(
+    teacherId: string,
+    classId: string,
+    schoolYearId: number,
+    semesterId?: number
+  ): Promise<INoteDTO[]> {
+    const { notes: localData } = await this.getAllSavedNotesLocally(
+      teacherId,
+      classId,
+      semesterId
+    )
 
     let query = supabase
       .from(NOTE_TABLE_ID)
@@ -59,8 +72,8 @@ export const notes = {
         ...detail,
         gradedAt: detail.graded_at ? new Date(detail.graded_at) : undefined,
         createdAt: detail.created_at ? new Date(detail.created_at) : undefined,
-        updatedAt: detail.updated_at ? new Date(detail.updated_at) : undefined,
-      })),
+        updatedAt: detail.updated_at ? new Date(detail.updated_at) : undefined
+      }))
     }))
 
     // Create a map to store unique notes by ID
@@ -75,12 +88,10 @@ export const notes = {
           try {
             await this.removeSavedNoteLocally(teacherId, classId, localNote.id)
             // Note: Removed local published note that no longer exists remotely
-          }
-          catch (error) {
+          } catch (error) {
             console.error(`Failed to remove local note ${localNote.id}:`, error)
           }
-        }
-        else {
+        } else {
           // Keep the note in the map
           notesMap.set(localNote.id, localNote)
         }
@@ -88,7 +99,7 @@ export const notes = {
     }
 
     // Add remote notes to the map, overwriting local ones if they exist
-    parsedRemoteData.forEach((note) => {
+    parsedRemoteData.forEach(note => {
       if (note.id) {
         notesMap.set(note.id, note)
       }
@@ -96,7 +107,7 @@ export const notes = {
 
     // Convert map values back to array and sort by createdAt
     return Array.from(notesMap.values()).sort(
-      (a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0),
+      (a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0)
     )
   },
 
@@ -116,7 +127,7 @@ export const notes = {
         is_graded: noteData.isGraded,
         due_date: noteData.dueDate?.toISOString(),
         teacher_id: noteData.teacherId,
-        class_id: noteData.classId,
+        class_id: noteData.classId
       })
       .select()
       .single()
@@ -133,8 +144,8 @@ export const notes = {
           noteData.noteDetails.map(detail => ({
             note_id: note.id,
             student_id: detail.studentId,
-            note: detail.note,
-          })),
+            note: detail.note
+          }))
         )
 
       if (detailError) {
@@ -147,7 +158,15 @@ export const notes = {
   async saveNoteLocally(noteData: INoteDTO): Promise<void> {
     try {
       // Validate data structure
-      const requiredFields = ['title', 'description', 'noteType', 'schoolId', 'subjectId', 'teacherId', 'classId']
+      const requiredFields = [
+        'title',
+        'description',
+        'noteType',
+        'schoolId',
+        'subjectId',
+        'teacherId',
+        'classId'
+      ]
       for (const field of requiredFields) {
         if (!noteData[field as keyof INoteDTO]) {
           throw new Error(`Missing required field: ${field}`)
@@ -169,11 +188,14 @@ export const notes = {
         isGraded: noteData.isGraded ? 1 : 0,
         dueDate: noteData.dueDate?.toISOString() ?? null,
         createdAt: new Date().toISOString(),
-        isPublished: noteData.isPublished ? 1 : 0,
+        isPublished: noteData.isPublished ? 1 : 0
       }
 
       // Insert note then retrieve its ID with drizzle
-      const note = await drizzleDb.insert(noteTable).values(noteParent).returning({ insertedId: noteTable.id })
+      const note = await drizzleDb
+        .insert(noteTable)
+        .values(noteParent)
+        .returning({ insertedId: noteTable.id })
 
       if (note.length === 0) {
         throw new Error('Failed to save note')
@@ -181,25 +203,28 @@ export const notes = {
 
       // Only insert note details if there are any
       if (noteData.noteDetails && noteData.noteDetails.length > 0) {
-        const noteDetails: typeof noteDetailTable.$inferInsert[] = noteData.noteDetails.map(detail => ({
-          noteId: note[0].insertedId,
-          studentId: detail.studentId,
-          note: detail.note ?? 0,
-          gradedAt: null,
-          createdAt: new Date().toISOString(),
-        }))
+        const noteDetails: (typeof noteDetailTable.$inferInsert)[] =
+          noteData.noteDetails.map(detail => ({
+            noteId: note[0].insertedId,
+            studentId: detail.studentId,
+            note: detail.note ?? 0,
+            gradedAt: null,
+            createdAt: new Date().toISOString()
+          }))
 
         // Insert note details
         await drizzleDb.insert(noteDetailTable).values(noteDetails)
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error saving notes locally:', error)
       throw new Error(`Failed to save notes locally: ${error.message}`)
     }
   },
 
-  async updateNoteLocally(noteId: number, noteData: Partial<INoteDTO>): Promise<void> {
+  async updateNoteLocally(
+    noteId: number,
+    noteData: Partial<INoteDTO>
+  ): Promise<void> {
     try {
       // Validate existing note
       const existingNote = await drizzleDb
@@ -237,11 +262,16 @@ export const notes = {
         totalPoints: noteData.totalPoints ?? existingNote[0].totalPoints,
         weight: noteData.weight ?? existingNote[0].weight,
         dueDate: noteData.dueDate?.toISOString() ?? existingNote[0].dueDate,
-        isGraded: noteData.isGraded !== undefined ? (noteData.isGraded ? 1 : 0) : existingNote[0].isGraded,
+        isGraded:
+          noteData.isGraded !== undefined
+            ? noteData.isGraded
+              ? 1
+              : 0
+            : existingNote[0].isGraded
       }
 
       // Start transaction
-      await drizzleDb.transaction(async (tx) => {
+      await drizzleDb.transaction(async tx => {
         // Update main note
         const updatedNote = await tx
           .update(noteTable)
@@ -261,33 +291,33 @@ export const notes = {
             .where(eq(noteDetailTable.noteId, noteId))
 
           // Insert new details
-          const noteDetails: typeof noteDetailTable.$inferInsert[]
-            = noteData.noteDetails.map(detail => ({
+          const noteDetails: (typeof noteDetailTable.$inferInsert)[] =
+            noteData.noteDetails.map(detail => ({
               noteId,
               studentId: detail.studentId,
               note: detail.note ?? 0,
-              gradedAt: detail.gradedAt?.toISOString() || null,
+              gradedAt: detail.gradedAt?.toISOString() || null
             }))
 
-          await tx
-            .insert(noteDetailTable)
-            .values(noteDetails)
+          await tx.insert(noteDetailTable).values(noteDetails)
         }
       })
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error updating note locally:', error)
       throw new Error(`Failed to update note locally: ${error.message}`)
     }
   },
 
-  async updateNoteDetailsLocally(noteId: number, noteDetails: INoteDTO['noteDetails']): Promise<void> {
+  async updateNoteDetailsLocally(
+    noteId: number,
+    noteDetails: INoteDTO['noteDetails']
+  ): Promise<void> {
     try {
       if (!noteDetails || noteDetails.length === 0) {
         throw new Error('No note details provided')
       }
 
-      await drizzleDb.transaction(async (tx) => {
+      await drizzleDb.transaction(async tx => {
         // Validate note exists
         const existingNote = await tx
           .select()
@@ -305,46 +335,60 @@ export const notes = {
           .where(eq(noteDetailTable.noteId, noteId))
 
         // Insert updated details
-        const formattedDetails: typeof noteDetailTable.$inferInsert[] = noteDetails.map(detail => ({
-          noteId,
-          studentId: detail.studentId,
-          note: detail.note ?? 0,
-          gradedAt: detail.gradedAt?.toISOString() || null,
-        }))
+        const formattedDetails: (typeof noteDetailTable.$inferInsert)[] =
+          noteDetails.map(detail => ({
+            noteId,
+            studentId: detail.studentId,
+            note: detail.note ?? 0,
+            gradedAt: detail.gradedAt?.toISOString() || null
+          }))
 
-        await tx
-          .insert(noteDetailTable)
-          .values(formattedDetails)
+        await tx.insert(noteDetailTable).values(formattedDetails)
       })
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error updating note details:', error)
       throw new Error(`Failed to update note details: ${error.message}`)
     }
   },
 
-  async getSavedNoteLocally(teacherId: string, classId: string, noteId: number, semesterId?: number): Promise<INoteDTO> {
+  async getSavedNoteLocally(
+    teacherId: string,
+    classId: string,
+    noteId: number,
+    semesterId?: number
+  ): Promise<INoteDTO> {
     if (!noteId) {
       throw new Error('Note ID is required')
     }
 
-    let note: typeof noteTable.$inferSelect[]
+    let note: (typeof noteTable.$inferSelect)[]
 
     try {
       if (semesterId) {
-        note = await drizzleDb.select().from(noteTable).where(and(
-          eq(noteTable.id, noteId),
-          eq(noteTable.classId, classId),
-          eq(noteTable.teacherId, teacherId),
-          eq(noteTable.semesterId, semesterId),
-        )).limit(1)
-      }
-      else {
-        note = await drizzleDb.select().from(noteTable).where(and(
-          eq(noteTable.id, noteId),
-          eq(noteTable.classId, classId),
-          eq(noteTable.teacherId, teacherId),
-        )).limit(1)
+        note = await drizzleDb
+          .select()
+          .from(noteTable)
+          .where(
+            and(
+              eq(noteTable.id, noteId),
+              eq(noteTable.classId, classId),
+              eq(noteTable.teacherId, teacherId),
+              eq(noteTable.semesterId, semesterId)
+            )
+          )
+          .limit(1)
+      } else {
+        note = await drizzleDb
+          .select()
+          .from(noteTable)
+          .where(
+            and(
+              eq(noteTable.id, noteId),
+              eq(noteTable.classId, classId),
+              eq(noteTable.teacherId, teacherId)
+            )
+          )
+          .limit(1)
       }
 
       if (!note.length) {
@@ -353,13 +397,16 @@ export const notes = {
 
       const _note = note[0]
 
-      const noteDetails = await drizzleDb.select().from(noteDetailTable).where(eq(noteDetailTable.noteId, _note.id))
+      const noteDetails = await drizzleDb
+        .select()
+        .from(noteDetailTable)
+        .where(eq(noteDetailTable.noteId, _note.id))
 
       const _noteDetails = noteDetails.map(detail => ({
         ...detail,
         id: detail.id.toString(),
         noteId: detail.noteId.toString(),
-        gradedAt: detail.gradedAt ? new Date(detail.gradedAt) : undefined,
+        gradedAt: detail.gradedAt ? new Date(detail.gradedAt) : undefined
       }))
 
       return {
@@ -373,16 +420,21 @@ export const notes = {
         createdAt: _note.createdAt ? new Date(_note.createdAt) : undefined,
 
         // Add note details
-        noteDetails: _noteDetails,
+        noteDetails: _noteDetails
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error getting saved notes locally:', error)
       throw new Error(`Failed to get saved notes locally: ${error.message}`)
     }
   },
 
-  async getAllSavedNotesLocally(teacherId: string, classId: string, semesterId?: number, page: number = 1, limit: number = 10): Promise<{ notes: INoteDTO[], totalCount: number }> {
+  async getAllSavedNotesLocally(
+    teacherId: string,
+    classId: string,
+    semesterId?: number,
+    page: number = 1,
+    limit: number = 10
+  ): Promise<{ notes: INoteDTO[]; totalCount: number }> {
     try {
       // Clean up old notes (older than 30 days)
       const thirtyDaysAgo = new Date()
@@ -390,7 +442,7 @@ export const notes = {
 
       const conditions = [
         eq(noteTable.classId, classId),
-        eq(noteTable.teacherId, teacherId),
+        eq(noteTable.teacherId, teacherId)
       ]
 
       if (semesterId !== undefined) {
@@ -402,8 +454,8 @@ export const notes = {
         .where(
           and(
             ...conditions,
-            lt(noteTable.createdAt, thirtyDaysAgo.toISOString()),
-          ),
+            lt(noteTable.createdAt, thirtyDaysAgo.toISOString())
+          )
         )
 
       // Calculate pagination
@@ -426,7 +478,7 @@ export const notes = {
 
       // Get note details for all fetched notes
       const notesWithDetails = await Promise.all(
-        notesResult.map(async (note) => {
+        notesResult.map(async note => {
           const noteDetails = await drizzleDb
             .select()
             .from(noteDetailTable)
@@ -445,24 +497,27 @@ export const notes = {
               ...detail,
               id: detail.id.toString(),
               noteId: detail.noteId.toString(),
-              gradedAt: detail.gradedAt ? new Date(detail.gradedAt) : undefined,
-            })),
+              gradedAt: detail.gradedAt ? new Date(detail.gradedAt) : undefined
+            }))
           }
-        }),
+        })
       )
 
       return {
         notes: notesWithDetails,
-        totalCount: totalCountResult[0]?.count || 0,
+        totalCount: totalCountResult[0]?.count || 0
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error getting saved notes locally:', error)
       throw new Error(`Failed to get saved notes locally: ${error.message}`)
     }
   },
 
-  async removeSavedNoteLocally(teacherId: string, classId: string, noteId: string): Promise<void> {
+  async removeSavedNoteLocally(
+    teacherId: string,
+    classId: string,
+    noteId: string
+  ): Promise<void> {
     if (!noteId) {
       throw new Error('Note ID is required')
     }
@@ -479,11 +534,10 @@ export const notes = {
           and(
             eq(noteTable.id, id),
             eq(noteTable.classId, classId),
-            eq(noteTable.teacherId, teacherId),
-          ),
+            eq(noteTable.teacherId, teacherId)
+          )
         )
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error removing saved notes locally:', error)
       throw new Error(`Failed to remove saved notes locally: ${error.message}`)
     }
@@ -518,14 +572,18 @@ export const notes = {
       }
 
       return true
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error deleting note remotely:', error)
       return false
     }
   },
 
-  async syncNotesWithRemote(teacherId: string, classId: string, schoolYearId: number, semesterId?: number): Promise<{
+  async syncNotesWithRemote(
+    teacherId: string,
+    classId: string,
+    schoolYearId: number,
+    semesterId?: number
+  ): Promise<{
     synced: number
     removed: number
     errors: string[]
@@ -533,7 +591,7 @@ export const notes = {
     const result = {
       synced: 0,
       removed: 0,
-      errors: [] as string[],
+      errors: [] as string[]
     }
 
     try {
@@ -564,17 +622,26 @@ export const notes = {
       const currentTime = new Date().toISOString()
 
       // Get local notes that need sync
-      const { notes: localNotes } = await this.getAllSavedNotesLocally(teacherId, classId, semesterId)
+      const { notes: localNotes } = await this.getAllSavedNotesLocally(
+        teacherId,
+        classId,
+        semesterId
+      )
 
       // Remove local published notes that don't exist remotely
       for (const localNote of localNotes) {
-        if (localNote.isPublished && localNote.id && !remoteNoteIds.has(localNote.id)) {
+        if (
+          localNote.isPublished &&
+          localNote.id &&
+          !remoteNoteIds.has(localNote.id)
+        ) {
           try {
             await this.removeSavedNoteLocally(teacherId, classId, localNote.id)
             result.removed++
-          }
-          catch (error) {
-            result.errors.push(`Failed to remove local note ${localNote.id}: ${error}`)
+          } catch (error) {
+            result.errors.push(
+              `Failed to remove local note ${localNote.id}: ${error}`
+            )
           }
         }
       }
@@ -588,22 +655,25 @@ export const notes = {
               .set({ lastSyncAt: currentTime })
               .where(eq(noteTable.id, Number(localNote.id)))
             result.synced++
-          }
-          catch (error) {
-            result.errors.push(`Failed to update sync timestamp for note ${localNote.id}: ${error}`)
+          } catch (error) {
+            result.errors.push(
+              `Failed to update sync timestamp for note ${localNote.id}: ${error}`
+            )
           }
         }
       }
 
       return result
-    }
-    catch (error) {
+    } catch (error) {
       result.errors.push(`Sync failed: ${error}`)
       return result
     }
   },
 
-  async teachedSubjects(classId: string, teacherId: string): Promise<ISubjectDTO[]> {
+  async teachedSubjects(
+    classId: string,
+    teacherId: string
+  ): Promise<ISubjectDTO[]> {
     const { data, error } = await supabase
       .from('teacher_class_assignments')
       .select('subjects(id, name)')
@@ -622,7 +692,11 @@ export const notes = {
     return data.map(item => item.subjects)
   },
 
-  async getClassesNotesForRevision(teacherId: string, classId: string, subjectId: string) {
+  async getClassesNotesForRevision(
+    teacherId: string,
+    classId: string,
+    subjectId: string
+  ) {
     const { data, error } = await supabase
       .from('notes')
       .select(`
@@ -649,7 +723,9 @@ export const notes = {
 
     if (error) {
       console.error('Error fetching notes:', error)
-      throw new Error('Oups, nous n\'avons pas pu récupérer les notes pour cette matière')
+      throw new Error(
+        "Oups, nous n'avons pas pu récupérer les notes pour cette matière"
+      )
     }
 
     return data.map(note => ({
@@ -662,8 +738,8 @@ export const notes = {
         note: detail.note,
         studentId: detail.student.id,
         firstName: detail.student.first_name,
-        lastName: detail.student.last_name,
-      })),
+        lastName: detail.student.last_name
+      }))
     }))
-  },
+  }
 }

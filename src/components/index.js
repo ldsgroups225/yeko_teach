@@ -19,5 +19,5 @@ export {
   CsText,
   CsTextField,
   GeneralActivityIndicator,
-  ToastMessage,
+  ToastMessage
 }

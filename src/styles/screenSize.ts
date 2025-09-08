@@ -7,5 +7,5 @@ const { width, height } = Dimensions.get('window')
 export const screenSize = {
   width,
   height,
-  isSmallDevice: width < 375,
+  isSmallDevice: width < 375
 }

@@ -13,7 +13,8 @@ export const SUPABASE_URL = 'https://pjpxprmqrbcvoujtiguw.supabase.co'
  * The unique ID of the Supabase project.
  * This identifies the specific project within the Supabase instance.
  */
-export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqcHhwcm1xcmJjdm91anRpZ3V3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjEwOTExODQsImV4cCI6MjAzNjY2NzE4NH0.VggYwmdIW9trlaoQ-mVEGLxn12a6hnYrGDg0TrrX89s'
+export const SUPABASE_ANON_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqcHhwcm1xcmJjdm91anRpZ3V3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjEwOTExODQsImV4cCI6MjAzNjY2NzE4NH0.VggYwmdIW9trlaoQ-mVEGLxn12a6hnYrGDg0TrrX89s'
 // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0" // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqcHhwcm1xcmJjdm91anRpZ3V3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjEwOTExODQsImV4cCI6MjAzNjY2NzE4NH0.VggYwmdIW9trlaoQ-mVEGLxn12a6hnYrGDg0TrrX89s";
 
 /**

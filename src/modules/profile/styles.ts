@@ -1,45 +1,45 @@
 // src/modules/profile/styles.ts
 
-import type { ITheme } from '@styles/theme'
 import { borderRadius, spacing } from '@styles/index'
+import type { ITheme } from '@styles/theme'
 import { StyleSheet } from 'react-native'
 
 export function styles(theme: ITheme) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: theme.background,
+      backgroundColor: theme.background
     },
     header: {
       alignItems: 'center',
       padding: spacing.xl,
       borderBottomWidth: 1,
-      borderBottomColor: theme.border,
+      borderBottomColor: theme.border
     },
     avatar: {
-      color: theme.primary,
+      color: theme.primary
     },
     userName: {
       color: theme.text,
       fontWeight: 'bold',
-      marginTop: spacing.md,
+      marginTop: spacing.md
     },
     userEmail: {
       color: theme.textLight,
-      marginTop: spacing.xs,
+      marginTop: spacing.xs
     },
     section: {
       padding: spacing.lg,
       borderBottomWidth: 1,
-      borderBottomColor: theme.border,
+      borderBottomColor: theme.border
     },
     button: {
-      marginBottom: spacing.sm,
+      marginBottom: spacing.sm
     },
     infoText: {
       color: theme.textLight,
       textAlign: 'center',
-      marginTop: spacing.xs,
+      marginTop: spacing.xs
     },
     clearCacheButton: {
       flexDirection: 'row',
@@ -48,20 +48,20 @@ export function styles(theme: ITheme) {
       padding: spacing.md,
       backgroundColor: theme.card,
       borderRadius: borderRadius.medium,
-      color: theme.text,
+      color: theme.text
     },
     clearCacheButtonText: {
       marginLeft: spacing.sm,
-      color: theme.text,
+      color: theme.text
     },
     logoutButton: {
       margin: spacing.lg,
-      backgroundColor: theme.error,
+      backgroundColor: theme.error
     },
     otpFormContainer: {
       padding: spacing.lg,
       borderBottomWidth: 1,
-      borderBottomColor: theme.border,
-    },
+      borderBottomColor: theme.border
+    }
   })
 }

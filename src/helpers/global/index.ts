@@ -4,8 +4,7 @@ export function isValidJSON(str: any) {
   try {
     JSON.parse(str)
     return true
-  }
-  catch {
+  } catch {
     return false
   }
 }

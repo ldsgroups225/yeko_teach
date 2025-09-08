@@ -18,7 +18,7 @@ export function useTeacherData() {
       }
 
       if (!userData) {
-        throw new Error('Données de l\'enseignant non disponibles.')
+        throw new Error("Données de l'enseignant non disponibles.")
       }
 
       if (userData && typeof userData === 'object' && 'id' in userData) {
@@ -32,10 +32,10 @@ export function useTeacherData() {
         firstName: '',
         lastName: '',
         phone: '',
-        schools: [],
+        schools: []
       }
     },
-    [],
+    []
   )
 
   return { fetchTeacherData }

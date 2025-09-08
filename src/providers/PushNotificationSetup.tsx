@@ -1,10 +1,10 @@
 // src/providers/PushNotificationSetup.tsx
 
-import type React from 'react'
 import { setExpoToken } from '@modules/app/redux/appSlice'
 import * as Constants from 'expo-constants'
 import * as Device from 'expo-device'
 import * as Notifications from 'expo-notifications'
+import type React from 'react'
 import { useEffect } from 'react'
 import { Platform } from 'react-native'
 import { useDispatch } from 'react-redux'
@@ -15,7 +15,7 @@ const ANDROID_CHANNEL_CONFIG = {
   name: ANDROID_CHANNEL_NAME,
   importance: Notifications.AndroidImportance.MAX,
   vibrationPattern: [0, 250, 250, 250],
-  lightColor: '#FF231F7C',
+  lightColor: '#FF231F7C'
 }
 
 // Types
@@ -28,7 +28,9 @@ function setupNotificationHandler() {
       shouldShowAlert: true,
       shouldPlaySound: false,
       shouldSetBadge: false,
-    }),
+      shouldShowBanner: true,
+      shouldShowList: true
+    })
   })
 }
 
@@ -40,7 +42,7 @@ async function setupAndroidNotificationChannel(): Promise<void> {
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync(
       ANDROID_CHANNEL_NAME,
-      ANDROID_CHANNEL_CONFIG,
+      ANDROID_CHANNEL_CONFIG
     )
   }
 }
@@ -59,8 +61,7 @@ function isPhysicalDevice(): boolean {
  * @returns {Promise<NotificationPermissionStatus>} The final permission status.
  */
 async function requestNotificationPermissions(): Promise<NotificationPermissionStatus> {
-  const { status: existingStatus }
-      = await Notifications.getPermissionsAsync()
+  const { status: existingStatus } = await Notifications.getPermissionsAsync()
 
   if (existingStatus !== 'granted') {
     const { status } = await Notifications.requestPermissionsAsync()
@@ -79,11 +80,10 @@ async function getExpoPushToken(): Promise<string | undefined> {
   try {
     const projectId = Constants.default.easConfig?.projectId
     const { data: token } = await Notifications.getExpoPushTokenAsync({
-      projectId,
+      projectId
     })
     return token
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Error getting Expo push token:', error)
     return undefined
   }
@@ -113,8 +113,7 @@ export async function registerForPushNotificationsAsync(): Promise<
   const token = await getExpoPushToken()
   if (token) {
     console.warn('[NOTIFICATION_TOKEN_SET]')
-  }
-  else {
+  } else {
     console.warn('[NOTIFICATION_TOKEN_NOT_SET]')
   }
 
@@ -136,8 +135,7 @@ const PushNotificationSetup: React.FC = () => {
         if (token) {
           dispatch(setExpoToken(token))
         }
-      }
-      catch (error) {
+      } catch (error) {
         console.error('Error setting up push notifications:', error)
       }
     }

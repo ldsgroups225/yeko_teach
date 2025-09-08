@@ -1,14 +1,14 @@
 // src/modules/school/components/SortControls.tsx
 
-import type {
-  SchoolSortOption,
-  SchoolSortOrder,
-} from '@modules/app/constants/sortAndFilter'
-import type { ITheme } from '@styles/theme'
 import CsText from '@components/CsText'
 import { MaterialIcons } from '@expo/vector-icons'
+import type {
+  SchoolSortOption,
+  SchoolSortOrder
+} from '@modules/app/constants/sortAndFilter'
 import { spacing } from '@styles/spacing'
-import React from 'react'
+import type { ITheme } from '@styles/theme'
+import type React from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 
 interface SortControlsProps {
@@ -24,17 +24,15 @@ export const SortControls: React.FC<SortControlsProps> = ({
   setSortOption,
   sortOrder,
   setSortOrder,
-  theme,
+  theme
 }) => (
   <View style={styles(theme).sortContainer}>
     <TouchableOpacity
       style={styles(theme).sortButton}
       onPress={() => setSortOption(sortOption === 'name' ? 'code' : 'name')}
     >
-      <CsText variant="caption" style={styles(theme).sortButtonText}>
-        Classer par:
-        {' '}
-        {sortOption === 'name' ? 'Nom' : 'Code'}
+      <CsText variant='caption' style={styles(theme).sortButtonText}>
+        Classer par: {sortOption === 'name' ? 'Nom' : 'Code'}
       </CsText>
     </TouchableOpacity>
     <TouchableOpacity
@@ -56,19 +54,19 @@ function styles(theme: ITheme) {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: spacing.md,
+      marginBottom: spacing.md
     },
     sortButton: {
       backgroundColor: theme.card,
       borderRadius: 12,
-      padding: spacing.sm,
+      padding: spacing.sm
     },
     sortButtonText: {
       color: theme.text,
-      fontWeight: 'bold',
+      fontWeight: 'bold'
     },
     sortOrderButton: {
-      padding: spacing.sm,
-    },
+      padding: spacing.sm
+    }
   })
 }

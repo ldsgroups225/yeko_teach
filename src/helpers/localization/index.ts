@@ -1,7 +1,7 @@
 // src/helpers/localization/index.ts
 
-import type { Scope, TranslateOptions } from 'i18n-js'
 import i18n from '@helpers/global/i18nInstance'
+import type { Scope, TranslateOptions } from 'i18n-js'
 
 /**
  * Translates the given key into the current language.

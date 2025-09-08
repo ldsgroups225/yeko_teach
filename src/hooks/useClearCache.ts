@@ -15,7 +15,10 @@ interface ClearCacheProps {
  * A custom hook for clearing the app's cache.
  * @returns {object} An object containing the clearing function and loading state.
  */
-export function useClearCache({ showSuccesToast = true, showErrorToast = true }: ClearCacheProps = {}) {
+export function useClearCache({
+  showSuccesToast = true,
+  showErrorToast = true
+}: ClearCacheProps = {}) {
   const [isClearing, setIsClearing] = useState(false)
 
   const clearCache = useCallback(async () => {
@@ -25,25 +28,23 @@ export function useClearCache({ showSuccesToast = true, showErrorToast = true }:
         removeStoreDataAsync(StoreEnum.User),
         removeStoreDataAsync(StoreEnum.CacheDuration),
         removeStoreDataAsync(StoreEnum.Classes),
-        removeStoreDataAsync(StoreEnum.Notes),
+        removeStoreDataAsync(StoreEnum.Notes)
       ])
       if (showSuccesToast) {
         showToast(
           'Les nouvelles données vous seront transmises.',
-          ToastColorEnum.Success,
+          ToastColorEnum.Success
         )
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error clearing cache:', error)
       if (showErrorToast) {
         showToast(
-          'Une erreur s\'est produite lors du nettoyage du cache.',
-          ToastColorEnum.Error,
+          "Une erreur s'est produite lors du nettoyage du cache.",
+          ToastColorEnum.Error
         )
       }
-    }
-    finally {
+    } finally {
       setIsClearing(false)
     }
   }, [])

@@ -8,31 +8,33 @@ import CsListTile from './index'
 
 jest.mock('@src/hooks', () => ({
   useTheme: jest.fn(),
-  useThemedStyles: jest.fn(),
+  useThemedStyles: jest.fn()
 }))
 
 const testID = 'csListTile'
 
 describe('csListTile', () => {
   beforeEach(() => {
-    (useTheme as jest.Mock).mockReturnValue({
+    ;(useTheme as jest.Mock).mockReturnValue({
       card: '#FFFFFF',
       text: '#000000',
-      textLight: '#666666',
-    });
-    (useThemedStyles as jest.Mock).mockReturnValue({
+      textLight: '#666666'
+    })
+    ;(useThemedStyles as jest.Mock).mockReturnValue({
       container: { backgroundColor: '#FFFFFF', borderRadius: 8 },
       contentContainer: { marginLeft: 16 },
       title: { color: '#000000', marginBottom: 4 },
       subtitle: { color: '#666666' },
       trailing: { marginLeft: 16 },
       dense: { paddingVertical: 8 },
-      pressable: { opacity: 0.7 },
+      pressable: { opacity: 0.7 }
     })
   })
 
   it('renders with title and subtitle', () => {
-    const { getByText } = render(<CsListTile title="Test Title" subtitle="Test Subtitle" />)
+    const { getByText } = render(
+      <CsListTile title='Test Title' subtitle='Test Subtitle' />
+    )
     expect(getByText('Test Title')).toBeTruthy()
     expect(getByText('Test Subtitle')).toBeTruthy()
   })
@@ -40,10 +42,10 @@ describe('csListTile', () => {
   it('renders leading and trailing components', () => {
     const { getByTestId } = render(
       <CsListTile
-        title="Test"
-        leading={<View testID="leading-component" />}
-        trailing={<View testID="trailing-component" />}
-      />,
+        title='Test'
+        leading={<View testID='leading-component' />}
+        trailing={<View testID='trailing-component' />}
+      />
     )
     expect(getByTestId('leading-component')).toBeTruthy()
     expect(getByTestId('trailing-component')).toBeTruthy()
@@ -51,20 +53,24 @@ describe('csListTile', () => {
 
   it('calls onPress when pressed', () => {
     const onPressMock = jest.fn()
-    const { getByTestId } = render(<CsListTile title="Test" onPress={onPressMock} />)
+    const { getByTestId } = render(
+      <CsListTile title='Test' onPress={onPressMock} />
+    )
     fireEvent.press(getByTestId(`${testID}-pressable`))
     expect(onPressMock).toHaveBeenCalledTimes(1)
   })
 
   it('applies dense style when dense prop is true', () => {
-    const { getByTestId } = render(<CsListTile title="Test" dense />)
+    const { getByTestId } = render(<CsListTile title='Test' dense />)
     const container = getByTestId(`${testID}-container`)
     expect(container.props.style).toContainEqual({ paddingVertical: 8 })
   })
 
   it('applies custom styles', () => {
     const customStyle = { backgroundColor: 'red' }
-    const { getByTestId } = render(<CsListTile title="Test" style={customStyle} />)
+    const { getByTestId } = render(
+      <CsListTile title='Test' style={customStyle} />
+    )
     const container = getByTestId(`${testID}-container`)
     expect(container.props.style).toContainEqual(customStyle)
   })
@@ -74,11 +80,11 @@ describe('csListTile', () => {
     const customSubtitleStyle = { fontSize: 14 }
     const { getByText } = render(
       <CsListTile
-        title="Test Title"
-        subtitle="Test Subtitle"
+        title='Test Title'
+        subtitle='Test Subtitle'
         titleStyle={customTitleStyle}
         subtitleStyle={customSubtitleStyle}
-      />,
+      />
     )
     const title = getByText('Test Title')
     const subtitle = getByText('Test Subtitle')
@@ -87,12 +93,14 @@ describe('csListTile', () => {
   })
 
   it('does not render Pressable when onPress is not provided', () => {
-    const { queryByTestId } = render(<CsListTile title="Test" />)
+    const { queryByTestId } = render(<CsListTile title='Test' />)
     expect(queryByTestId(`${testID}-pressable`)).toBeNull()
   })
 
   it('renders Pressable when onPress is provided', () => {
-    const { getByTestId } = render(<CsListTile title="Test" onPress={() => {}} />)
+    const { getByTestId } = render(
+      <CsListTile title='Test' onPress={() => {}} />
+    )
     expect(getByTestId(`${testID}-pressable`)).toBeTruthy()
   })
 

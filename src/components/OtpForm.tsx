@@ -1,13 +1,14 @@
 // src/components/OtpForm.tsx
 
-import type { ITheme } from '@styles/theme'
 import CsButton from '@components/CsButton'
 import CsText from '@components/CsText'
 import { ToastColorEnum } from '@components/ToastMessage/ToastColorEnum'
 import { showToast } from '@helpers/toast/showToast'
 import { useThemedStyles } from '@hooks/index'
 import { borderRadius, spacing } from '@styles/index'
-import React, { useCallback, useState } from 'react'
+import type { ITheme } from '@styles/theme'
+import type React from 'react'
+import { useCallback, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { OtpInput } from 'react-native-otp-entry'
 
@@ -27,32 +28,35 @@ interface OtpFormProps {
  * @param {OtpFormProps} props - The props for the OtpForm component
  * @returns {React.ReactElement} The rendered OtpForm component
  */
-export const OtpForm: React.FC<OtpFormProps> = ({ onComplete, onCancel, loading = false }) => {
+export const OtpForm: React.FC<OtpFormProps> = ({
+  onComplete,
+  onCancel,
+  loading = false
+}) => {
   const themedStyles = useThemedStyles<typeof styles>(styles)
   const [otpValue, setOtpValue] = useState('')
 
   /**
    * Handles the submission of the OTP code
    */
-  const handleOtpSubmit = useCallback((otp?: string) => {
-    if (otp) {
-      if (otp.length === 6) {
-        onComplete(otp)
+  const handleOtpSubmit = useCallback(
+    (otp?: string) => {
+      if (otp) {
+        if (otp.length === 6) {
+          onComplete(otp)
+        } else {
+          showToast('Veillez entrer un OTP valide à 6 chiffres')
+        }
+      } else {
+        if (otpValue.length === 6) {
+          onComplete(otpValue)
+        } else {
+          showToast('Veillez entrer un OTP valide', ToastColorEnum.Warning)
+        }
       }
-      else {
-        showToast('Veillez entrer un OTP valide à 6 chiffres')
-      }
-    }
-
-    else {
-      if (otpValue.length === 6) {
-        onComplete(otpValue)
-      }
-      else {
-        showToast('Veillez entrer un OTP valide', ToastColorEnum.Warning)
-      }
-    }
-  }, [otpValue, onComplete])
+    },
+    [otpValue, onComplete]
+  )
 
   return (
     <View style={themedStyles.container}>
@@ -66,7 +70,7 @@ export const OtpForm: React.FC<OtpFormProps> = ({ onComplete, onCancel, loading 
           pinCodeContainerStyle: themedStyles.otpInputField,
           pinCodeTextStyle: themedStyles.otpInputText,
           focusStickStyle: themedStyles.otpFocusStick,
-          focusedPinCodeContainerStyle: themedStyles.otpInputFieldFocused,
+          focusedPinCodeContainerStyle: themedStyles.otpInputFieldFocused
         }}
         disabled={loading}
       />
@@ -77,12 +81,12 @@ export const OtpForm: React.FC<OtpFormProps> = ({ onComplete, onCancel, loading 
         disabled={loading || otpValue.length !== 6}
         loading={loading}
       />
-      <CsText variant="caption" style={themedStyles.otpInfo}>
+      <CsText variant='caption' style={themedStyles.otpInfo}>
         Ce code vous a été fourni par l'administrateur de l'école.
       </CsText>
       {onCancel && (
         <CsButton
-          title="Cancel"
+          title='Cancel'
           onPress={onCancel}
           style={themedStyles.cancelButton}
           disabled={loading}
@@ -96,19 +100,19 @@ function styles(theme: ITheme) {
   return StyleSheet.create({
     container: {
       width: '100%',
-      alignItems: 'center',
+      alignItems: 'center'
     },
     otpTitle: {
       fontSize: 18,
       fontWeight: 'bold',
       marginBottom: spacing.md,
-      color: theme.text,
+      color: theme.text
     },
     otpInputContainer: {
       width: '100%',
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: spacing.md,
+      marginBottom: spacing.md
     },
     otpInputField: {
       width: 45,
@@ -117,32 +121,32 @@ function styles(theme: ITheme) {
       borderColor: theme.border,
       borderRadius: borderRadius.small,
       justifyContent: 'center',
-      alignItems: 'center',
+      alignItems: 'center'
     },
     otpInputFieldFocused: {
-      borderColor: theme.primary,
+      borderColor: theme.primary
     },
     otpInputText: {
       fontSize: 24,
-      color: theme.text,
+      color: theme.text
     },
     otpFocusStick: {
       backgroundColor: theme.primary,
-      height: 2,
+      height: 2
     },
     otpSubmitButton: {
       marginTop: spacing.md,
-      width: '100%',
+      width: '100%'
     },
     cancelButton: {
       marginTop: spacing.md,
       width: '100%',
-      backgroundColor: theme.error,
+      backgroundColor: theme.error
     },
     otpInfo: {
       marginTop: spacing.md,
       textAlign: 'center',
-      color: theme.textLight,
-    },
+      color: theme.textLight
+    }
   })
 }

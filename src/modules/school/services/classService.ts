@@ -1,8 +1,8 @@
 // src/modules/school/services/classService.ts
 
 import type { IClassDTO, IStudentDTO } from '@modules/app/types/ILoginDTO'
-import type { Database } from '@src/lib/supabase/types'
 import { CLASS_TABLE_ID, supabase } from '@src/lib/supabase'
+import type { Database } from '@src/lib/supabase/types'
 
 type ClassRecord = Database['public']['Tables']['classes']['Row']
 type Student = Database['public']['Tables']['students']['Row']
@@ -66,7 +66,7 @@ export const classes = {
           id_number
         )
       )
-    `,
+    `
       )
       .eq('teacher_class_assignments.teacher_id', teacherId)
       .eq('school_id', schoolId)
@@ -84,17 +84,19 @@ export const classes = {
 
     const classMap = new Map<string, IClassDTO>()
 
-    ;(data as ClassQueryResult[]).forEach((classData) => {
+    ;(data as ClassQueryResult[]).forEach(classData => {
       const classId = classData.id
       if (!classMap.has(classId)) {
         // Get unique students from student_school_class
         const students = classData.student_school_class
-          .filter((enrollment): enrollment is { student: Student } =>
-            enrollment.student !== null,
+          .filter(
+            (enrollment): enrollment is { student: Student } =>
+              enrollment.student !== null
           )
           .map(enrollment => enrollment.student)
-          .filter((student, index, self) =>
-            index === self.findIndex(s => s.id === student.id),
+          .filter(
+            (student, index, self) =>
+              index === self.findIndex(s => s.id === student.id)
           )
 
         classMap.set(classId, {
@@ -108,24 +110,24 @@ export const classes = {
               id: student.id,
               firstName: student.first_name,
               lastName: student.last_name,
-              idNumber: student.id_number,
-            }),
-          ),
+              idNumber: student.id_number
+            })
+          )
         })
       }
 
       const classDTO = classMap.get(classId)!
-      classData.teacher_class_assignments.forEach((assignment) => {
+      classData.teacher_class_assignments.forEach(assignment => {
         const subject = assignment.subjects
         if (subject && !classDTO.subjects.some(s => s.id === subject.id)) {
           classDTO.subjects.push({
             id: subject.id,
-            name: subject.name,
+            name: subject.name
           })
         }
       })
     })
 
     return Array.from(classMap.values())
-  },
+  }
 }

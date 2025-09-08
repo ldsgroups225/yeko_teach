@@ -17,7 +17,7 @@ interface UseDataFetchingOptions {
 function useDataFetching<T>(
   fetchFunction: () => Promise<T>,
   initialData: T | null = null,
-  options: UseDataFetchingOptions = {},
+  options: UseDataFetchingOptions = {}
 ): UseDataFetchingResult<T> {
   const { lazy = false } = options
   const [data, setData] = useState<T | null>(initialData)
@@ -44,13 +44,11 @@ function useDataFetching<T>(
       if (isMountedRef.current) {
         setData(result)
       }
-    }
-    catch (err) {
+    } catch (err) {
       if (isMountedRef.current) {
         setError(err instanceof Error ? err : new Error('An error occurred'))
       }
-    }
-    finally {
+    } finally {
       if (isMountedRef.current) {
         setLoading(false)
         setRefreshing(false)

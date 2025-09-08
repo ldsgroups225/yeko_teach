@@ -1,11 +1,11 @@
 // src/modules/school/components/StudentSearchSortFilter.tsx
 
-import type { ITheme } from '@styles/theme'
 import CsText from '@components/CsText'
 import { Ionicons } from '@expo/vector-icons'
 import { useTheme } from '@src/hooks'
 import { spacing } from '@styles/spacing'
-import React from 'react'
+import type { ITheme } from '@styles/theme'
+import type React from 'react'
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 
 interface StudentSearchSortFilterProps {
@@ -19,7 +19,7 @@ const StudentSearchSortFilter: React.FC<StudentSearchSortFilterProps> = ({
   searchQuery,
   setSearchQuery,
   sortOrder,
-  setSortOrder,
+  setSortOrder
 }) => {
   const theme = useTheme()
   const styles = useStyles(theme)
@@ -28,7 +28,7 @@ const StudentSearchSortFilter: React.FC<StudentSearchSortFilterProps> = ({
     <View style={styles.container}>
       <View style={styles.searchContainer}>
         <Ionicons
-          name="search"
+          name='search'
           size={20}
           color={theme.textLight}
           style={styles.searchIcon}
@@ -37,7 +37,7 @@ const StudentSearchSortFilter: React.FC<StudentSearchSortFilterProps> = ({
           style={styles.searchInput}
           value={searchQuery}
           onChangeText={setSearchQuery}
-          placeholder="Rechercher des étudiants..."
+          placeholder='Rechercher des étudiants...'
           placeholderTextColor={theme.textLight}
         />
       </View>
@@ -50,10 +50,8 @@ const StudentSearchSortFilter: React.FC<StudentSearchSortFilterProps> = ({
           size={20}
           color={theme.text}
         />
-        <CsText variant="caption" style={styles.sortButtonText}>
-          Trier
-          {' '}
-          {sortOrder === 'asc' ? 'A-Z' : 'Z-A'}
+        <CsText variant='caption' style={styles.sortButtonText}>
+          Trier {sortOrder === 'asc' ? 'A-Z' : 'Z-A'}
         </CsText>
       </TouchableOpacity>
     </View>
@@ -64,7 +62,7 @@ function useStyles(theme: ITheme) {
   return StyleSheet.create({
     container: {
       padding: spacing.md,
-      backgroundColor: theme.card,
+      backgroundColor: theme.card
     },
     searchContainer: {
       flexDirection: 'row',
@@ -72,25 +70,25 @@ function useStyles(theme: ITheme) {
       backgroundColor: theme.background,
       borderRadius: 8,
       padding: spacing.sm,
-      marginBottom: spacing.sm,
+      marginBottom: spacing.sm
     },
     searchIcon: {
-      marginRight: spacing.sm,
+      marginRight: spacing.sm
     },
     searchInput: {
       flex: 1,
       color: theme.text,
-      fontSize: 16,
+      fontSize: 16
     },
     sortButton: {
       flexDirection: 'row',
       alignItems: 'center',
-      alignSelf: 'flex-end',
+      alignSelf: 'flex-end'
     },
     sortButtonText: {
       color: theme.text,
-      marginLeft: spacing.xs,
-    },
+      marginLeft: spacing.xs
+    }
   })
 }
 

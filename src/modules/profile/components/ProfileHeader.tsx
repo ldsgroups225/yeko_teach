@@ -1,12 +1,12 @@
 // src/modules/profile/components/ProfileHeader.tsx
 
-import type { IUserDTO } from '@modules/app/types/ILoginDTO'
-import type { ITheme } from '@styles/theme'
 import CsText from '@components/CsText'
 import { useThemedStyles } from '@hooks/index'
+import type { IUserDTO } from '@modules/app/types/ILoginDTO'
 import { spacing } from '@styles/index'
+import type { ITheme } from '@styles/theme'
 import { formatFullName } from '@utils/Formatting'
-import React from 'react'
+import type React from 'react'
 import { StyleSheet, View } from 'react-native'
 
 interface ProfileHeaderProps {
@@ -23,10 +23,10 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
 
   return (
     <View style={themedStyles.header}>
-      <CsText variant="h1" style={themedStyles.userName}>
+      <CsText variant='h1' style={themedStyles.userName}>
         {formatFullName(user?.firstName || '', user?.lastName || '')}
       </CsText>
-      <CsText variant="body" style={themedStyles.userEmail}>
+      <CsText variant='body' style={themedStyles.userEmail}>
         {user?.email || ''}
       </CsText>
     </View>
@@ -39,15 +39,15 @@ function styles(theme: ITheme) {
       alignItems: 'center',
       padding: spacing.xl,
       borderBottomWidth: 1,
-      borderBottomColor: theme.border,
+      borderBottomColor: theme.border
     },
     userName: {
       color: theme.text,
       fontWeight: 'bold',
-      marginBottom: spacing.sm,
+      marginBottom: spacing.sm
     },
     userEmail: {
-      color: theme.textLight,
-    },
+      color: theme.textLight
+    }
   })
 }

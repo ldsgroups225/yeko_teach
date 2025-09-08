@@ -12,8 +12,7 @@ export function useAuthLogout() {
         return false
       }
       return true
-    }
-    catch (err) {
+    } catch (err) {
       console.error('[E_AUTH_LOGOUT]:', err)
       return false
     }

@@ -9,8 +9,8 @@ jest.mock('./navigationRef')
 jest.mock('@react-navigation/native', () => ({
   StackActions: {
     push: jest.fn(),
-    pop: jest.fn(),
-  },
+    pop: jest.fn()
+  }
 }))
 
 describe('push', () => {
@@ -21,7 +21,7 @@ describe('push', () => {
 
     expect(navigationRef.isReady).toHaveBeenCalled()
     expect(navigationRef.current?.dispatch).toHaveBeenCalledWith(
-      StackActions.push(name),
+      StackActions.push(name)
     )
   })
 })
@@ -34,7 +34,7 @@ describe('pop', () => {
 
     expect(navigationRef.isReady).toHaveBeenCalled()
     expect(navigationRef.current?.dispatch).toHaveBeenCalledWith(
-      StackActions.pop(count),
+      StackActions.pop(count)
     )
   })
 })

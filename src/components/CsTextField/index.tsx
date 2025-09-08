@@ -1,11 +1,12 @@
 // src/components/CsTextField/index.tsx
 
-import type { CsTextFieldProps } from './type'
 import { Ionicons } from '@expo/vector-icons'
 import { useTheme, useThemedStyles } from '@src/hooks'
-import React, { useState } from 'react'
+import type React from 'react'
+import { useState } from 'react'
 import { Pressable, Text, TextInput, View } from 'react-native'
 import { styles } from './style'
+import type { CsTextFieldProps } from './type'
 
 const testID = 'csTextfield'
 
@@ -42,7 +43,7 @@ const CsTextField: React.FC<CsTextFieldProps> = ({
             themedStyles.input,
             error != null && error.length > 0 && themedStyles.inputError,
             disabled && themedStyles.inputDisabled,
-            inputStyle,
+            inputStyle
           ]}
           value={value}
           onChangeText={onChangeText}

@@ -7,49 +7,49 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   name: 'Yeko Prof',
   description: 'Yeko Professeur',
   slug: 'yeko-teach',
-  scheme: 'io.ldsgroups.yeko_teach',
+  scheme: 'yeko-teach',
   version: '1.0.0',
-  sdkVersion: '52.0.0',
+  newArchEnabled: true,
+  userInterfaceStyle: 'automatic',
   orientation: 'portrait',
   icon: './src/assets/images/icon.png',
-  userInterfaceStyle: 'automatic',
   runtimeVersion: '1.0.0',
   assetBundlePatterns: ['./src/assets/images/*'],
   locales: {
     tr: './src/assets/languages/turkish.json',
-    en: './src/assets/languages/english.json',
+    en: './src/assets/languages/english.json'
   },
   splash: {
     image: './src/assets/images/splash.png',
     resizeMode: 'contain',
-    backgroundColor: '#ffffff',
+    backgroundColor: '#ffffff'
   },
   ios: {
+    supportsTablet: true,
     bundleIdentifier: 'io.ldsgroups.yekoTeach',
     buildNumber: '1.0.0',
     infoPlist: {
-      CFBundleAllowMixedLocalizations: true,
-    },
+      CFBundleAllowMixedLocalizations: true
+    }
   },
   web: {
     bundler: 'metro',
+    output: 'single',
+    favicon: './src/assets/images/favicon.png'
   },
   android: {
     adaptiveIcon: {
       foregroundImage: './src/assets/images/adaptive-icon.png',
-      backgroundColor: '#ffffff',
+      backgroundColor: '#ffffff'
     },
     package: 'io.ldsgroups.yeko_teach',
     versionCode: 1,
+    edgeToEdgeEnabled: true
   },
-  // updates: {
-  //   enabled: true,
-  //   url: "https://u.expo.dev/49e4e24d-c928-4ff1-815d-f1a58ca580bd",
-  // },
   extra: {
     eas: {
-      projectId: 'fe2266ec-6e03-4384-9a57-5c9634e77314',
-    },
+      projectId: 'fe2266ec-6e03-4384-9a57-5c9634e77314'
+    }
   },
   owner: 'ldsgroups225',
   plugins: [
@@ -63,13 +63,18 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         android: {
           // Override the shared configuration for Android
           enableFTS: false,
-          useSQLCipher: false,
+          useSQLCipher: false
         },
         ios: {
           // You can also override the shared configurations for iOS
-          customBuildFlags: ['-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1'],
-        },
-      },
-    ],
+          customBuildFlags: [
+            '-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1'
+          ]
+        }
+      }
+    ]
   ],
+  experiments: {
+    typedRoutes: true
+  }
 })

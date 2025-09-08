@@ -17,9 +17,7 @@ function App() {
   useEffect(() => {
     if (Platform.OS !== 'web') {
       // TODO: Orientation Configuration
-      ScreenOrientation.lockAsync(
-        ScreenOrientation.OrientationLock.PORTRAIT_UP,
-      )
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP)
     }
   }, [])
 

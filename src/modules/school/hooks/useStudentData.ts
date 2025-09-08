@@ -12,7 +12,11 @@ import { Alert } from 'react-native'
  * @param initialData - Mock data to use if no data is found in AsyncStorage.
  * @returns An array of students and functions to update or reset them.
  */
-export function useStudentData(classId: string, subjectId: string, initialData: IStudentDTO[]) {
+export function useStudentData(
+  classId: string,
+  subjectId: string,
+  initialData: IStudentDTO[]
+) {
   const [students, setStudents] = useState<IStudentDTO[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -20,20 +24,17 @@ export function useStudentData(classId: string, subjectId: string, initialData: 
     const loadStudents = async () => {
       try {
         const storedStudents = await AsyncStorage.getItem(
-          `class_${classId}_subject_${subjectId}_students`,
+          `class_${classId}_subject_${subjectId}_students`
         )
         if (storedStudents) {
           setStudents(JSON.parse(storedStudents))
-        }
-        else {
+        } else {
           setStudents(initialData)
         }
-      }
-      catch (error) {
+      } catch (error) {
         console.error('Failed to load students:', error)
         Alert.alert('Error', 'Failed to load student data. Please try again.')
-      }
-      finally {
+      } finally {
         setIsLoading(false)
       }
     }
@@ -45,10 +46,9 @@ export function useStudentData(classId: string, subjectId: string, initialData: 
     try {
       await AsyncStorage.setItem(
         `class_${classId}_subject_${subjectId}_students`,
-        JSON.stringify(updatedStudents),
+        JSON.stringify(updatedStudents)
       )
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Failed to save students:', error)
       Alert.alert('Error', 'Failed to save student data. Please try again.')
     }

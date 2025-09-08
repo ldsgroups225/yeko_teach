@@ -1,0 +1,158 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.2.3/schema.json",
+  "root": true,
+  "files": {
+    "includes": ["src/**", "*.ts", "*.tsx", "*.js", "*.jsx", "App.tsx"],
+    "ignoreUnknown": true
+  },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 80,
+    "attributePosition": "auto"
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "jsxQuoteStyle": "single",
+      "semicolons": "asNeeded",
+      "trailingCommas": "none",
+      "arrowParentheses": "asNeeded",
+      "bracketSpacing": true,
+      "bracketSameLine": false
+    },
+    "globals": [
+      "__DEV__",
+      "fetch",
+      "FormData",
+      "navigator",
+      "requestAnimationFrame",
+      "cancelAnimationFrame",
+      "global",
+      "Buffer"
+    ]
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "a11y": {
+        "recommended": true,
+        "useAltText": "error",
+        "useButtonType": "off",
+        "useHtmlLang": "off",
+        "useValidAriaProps": "error",
+        "useValidAriaRole": "error",
+        "useValidAutocomplete": "off"
+      },
+      "correctness": {
+        "recommended": true,
+        "useJsxKeyInIterable": "error",
+        "noNestedComponentDefinitions": "error",
+        "noChildrenProp": "error",
+        "noProcessGlobal": "off",
+        "noUnreachable": "error",
+        "noUnusedVariables": "warn",
+        "noUnusedImports": "warn",
+        "noUnusedPrivateClassMembers": "warn",
+        "useExhaustiveDependencies": "warn",
+        "useHookAtTopLevel": "error"
+      },
+      "suspicious": {
+        "noDoubleEquals": "error",
+        "noImplicitAnyLet": "error",
+        "noExplicitAny": "warn",
+        "noVar": "error"
+      },
+      "style": {
+        "useConst": "warn",
+        "useImportType": "warn",
+        "noCommonJs": "error"
+      },
+      "nursery": {
+        "recommended": false
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": [
+        "*.config.ts",
+        "*.config.js",
+        "*.config.mjs",
+        "app.config.ts",
+        "babel.config.js",
+        "metro.config.js",
+        "jest.config.js",
+        "drizzle.config.ts",
+        "eslint.config.mjs",
+        "jsconfig.json"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noProcessGlobal": "off"
+          },
+          "style": {
+            "noCommonJs": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.ts", "**/*.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noImplicitAnyLet": "error"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/*.spec.ts",
+        "**/*.spec.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          },
+          "correctness": {
+            "noUnusedVariables": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/db/**", "src/drizzle/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/types/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,11 +1,10 @@
 // src/components/PasswordStrengthIndicator/index.tsx
 
-import type { ITheme } from '@styles/theme'
 import CsText from '@components/CsText'
-import translate from '@helpers/localization'
 import { useThemedStyles } from '@hooks/index'
 import { spacing } from '@styles/spacing'
-import React from 'react'
+import type { ITheme } from '@styles/theme'
+import type React from 'react'
 import { StyleSheet, View } from 'react-native'
 
 interface PasswordStrengthIndicatorProps {
@@ -13,22 +12,22 @@ interface PasswordStrengthIndicatorProps {
 }
 
 const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
-  strength,
+  strength
 }) => {
   const themedStyles = useThemedStyles<typeof styles>(styles)
 
   const getStrengthText = (strength: number): string => {
     switch (strength) {
       case 0:
-        return translate('passwordStrength.weak')
+        return 'Faible'
       case 1:
-        return translate('passwordStrength.fair')
+        return 'Moyen'
       case 2:
-        return translate('passwordStrength.good')
+        return 'Bon'
       case 3:
-        return translate('passwordStrength.strong')
+        return 'Fort'
       case 4:
-        return translate('passwordStrength.veryStrong')
+        return 'Très fort'
       default:
         return ''
     }
@@ -63,13 +62,13 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
                 backgroundColor:
                   index < strength
                     ? getStrengthColor(strength)
-                    : themedStyles.inactiveBar.backgroundColor,
-              },
+                    : themedStyles.inactiveBar.backgroundColor
+              }
             ]}
           />
         ))}
       </View>
-      <CsText variant="caption" style={themedStyles.strengthText}>
+      <CsText variant='caption' style={themedStyles.strengthText}>
         {getStrengthText(strength)}
       </CsText>
     </View>
@@ -79,40 +78,40 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
 function styles(theme: ITheme) {
   return StyleSheet.create({
     container: {
-      marginBottom: spacing.md,
+      marginBottom: spacing.md
     },
     barContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: spacing.xs,
+      marginBottom: spacing.xs
     },
     strengthBar: {
       flex: 1,
       height: 4,
       borderRadius: 2,
-      marginHorizontal: 2,
+      marginHorizontal: 2
     },
     inactiveBar: {
-      backgroundColor: theme.border,
+      backgroundColor: theme.border
     },
     strengthText: {
-      textAlign: 'center',
+      textAlign: 'center'
     },
     weak: {
-      backgroundColor: theme.error,
+      backgroundColor: theme.error
     },
     fair: {
-      backgroundColor: theme.warning,
+      backgroundColor: theme.warning
     },
     good: {
-      backgroundColor: theme.success,
+      backgroundColor: theme.success
     },
     strong: {
-      backgroundColor: theme.primary,
+      backgroundColor: theme.primary
     },
     veryStrong: {
-      backgroundColor: theme.primary,
-    },
+      backgroundColor: theme.primary
+    }
   })
 }
 

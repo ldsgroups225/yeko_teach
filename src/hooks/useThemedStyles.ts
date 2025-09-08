@@ -9,7 +9,9 @@ import useTheme from './useTheme'
  * @param {T} styles - The styles function that accepts the theme as an argument.
  * @returns {ReturnType<T>} - The result of applying the styles function to the current theme.
  */
-function useThemedStyles<T extends (...args: any) => any>(styles: any): ReturnType<T> {
+function useThemedStyles<T extends (...args: any) => any>(
+  styles: any
+): ReturnType<T> {
   return styles(useTheme())
 }
 

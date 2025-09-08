@@ -1,8 +1,8 @@
 // src/helpers/storage/index.ts
 
-import type { StoreEnum } from './storeEnum'
 import { isObjectLike } from '@helpers/global'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import type { StoreEnum } from './storeEnum'
 
 /**
  * Adds data to the storage with the specified key.
@@ -12,15 +12,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
  * @param value - The value to store.
  * @returns A Promise that resolves when the data is successfully stored, or rejects if there was an error.
  */
-export async function addStoreDataAsync(key: StoreEnum, value: unknown): Promise<void> {
+export async function addStoreDataAsync(
+  key: StoreEnum,
+  value: unknown
+): Promise<void> {
   try {
     if (isObjectLike(value)) {
       value = JSON.stringify(value)
     }
 
     await AsyncStorage.setItem(key.toString(), value as string)
-  }
-  catch (e) {
+  } catch (e) {
     // saving error
     console.error('Error saving data:', e)
   }
@@ -39,8 +41,7 @@ export async function getStoreDataAsync<T>(key: StoreEnum): Promise<T | null> {
       return JSON.parse(value) as T
     }
     return null
-  }
-  catch {
+  } catch {
     return null
   }
 }
@@ -57,8 +58,7 @@ export async function getStoreStringAsync(key: StoreEnum): Promise<string> {
       return value
     }
     return ''
-  }
-  catch {
+  } catch {
     return ''
   }
 }
@@ -72,8 +72,7 @@ export async function getStoreStringAsync(key: StoreEnum): Promise<string> {
 export async function removeStoreDataAsync(key: StoreEnum): Promise<void> {
   try {
     await AsyncStorage.removeItem(key.toString())
-  }
-  catch {
+  } catch {
     console.error('error')
   }
 }

@@ -1,7 +1,7 @@
 // src/providers/ThemeProvider.tsx
 
-import type { ITheme } from '@styles/theme'
 import { useAppSelector } from '@src/store'
+import type { ITheme } from '@styles/theme'
 import { DarkTheme, LightTheme } from '@styles/theme'
 import React from 'react'
 

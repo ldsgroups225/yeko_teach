@@ -1,9 +1,10 @@
 // src/providers/Localization.tsx
 
-import type { ReactNode } from 'react'
 import i18n from '@helpers/global/i18nInstance'
 import { useLocale } from '@hooks/useLocale'
-import React, { createContext, useContext } from 'react'
+import type React from 'react'
+import type { ReactNode } from 'react'
+import { createContext, useContext } from 'react'
 
 interface LocalizationContextType {
   locale: string
@@ -12,18 +13,18 @@ interface LocalizationContextType {
 }
 
 const LocalizationContext = createContext<LocalizationContextType | undefined>(
-  undefined,
+  undefined
 )
 
 export const LocalizationProvider: React.FC<{ children: ReactNode }> = ({
-  children,
+  children
 }) => {
   const { locale, changeLocale } = useLocale()
 
   const value = {
     locale,
     changeLocale,
-    t: (key: string, options?: object) => i18n.t(key, options),
+    t: (key: string, options?: object) => i18n.t(key, options)
   }
 
   return (
@@ -37,7 +38,7 @@ export function useLocalization() {
   const context = useContext(LocalizationContext)
   if (context === undefined) {
     throw new Error(
-      'useLocalization must be used within a LocalizationProvider',
+      'useLocalization must be used within a LocalizationProvider'
     )
   }
   return context

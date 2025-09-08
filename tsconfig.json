@@ -3,24 +3,54 @@
   "compilerOptions": {
     "target": "esnext",
     "jsx": "react-native",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "baseUrl": "./",
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "paths": {
-      "@assets/*": ["./src/assets/*"],
-      "@components/*": ["./src/components/*"],
-      "@helpers/*": ["./src/helpers/*"],
-      "@hooks/*": ["./src/hooks/*"],
-      "@modules/*": ["./src/modules/*"],
-      "@routers/*": ["./src/routers/*"],
-      "@providers/*": ["./src/providers/*"],
-      "@screens/*": ["./src/screens/*"],
-      "@store/*": ["./src/store/*"],
-      "@styles/*": ["./src/styles/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@src/*": ["./src/*"],
-      "@lib/*": ["./lib/*"]
+      "@assets/*": [
+        "./src/assets/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@helpers/*": [
+        "./src/helpers/*"
+      ],
+      "@hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@modules/*": [
+        "./src/modules/*"
+      ],
+      "@routers/*": [
+        "./src/routers/*"
+      ],
+      "@providers/*": [
+        "./src/providers/*"
+      ],
+      "@screens/*": [
+        "./src/screens/*"
+      ],
+      "@store/*": [
+        "./src/store/*"
+      ],
+      "@styles/*": [
+        "./src/styles/*"
+      ],
+      "@utils/*": [
+        "./src/utils/*"
+      ],
+      "@src/*": [
+        "./src/*"
+      ],
+      "@lib/*": [
+        "./lib/*"
+      ]
     },
     "resolveJsonModule": true,
     "allowJs": true,
@@ -35,6 +65,13 @@
     "isolatedModules": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*", "custom.d.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*",
+    "custom.d.ts",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

@@ -16,34 +16,35 @@ export function useSchoolJoin(teacherId: string): UseSchoolJoinReturn {
   const { loading, withLoading } = useLoading(false)
   const [error, setError] = useState<string | null>(null)
 
-  const joinSchool = useCallback(async (otp: string): Promise<boolean> => {
-    setError(null)
-    try {
-      const result = await withLoading(() =>
-        schoolJoinService.joinSchoolWithOtp(otp, teacherId),
-      )
+  const joinSchool = useCallback(
+    async (otp: string): Promise<boolean> => {
+      setError(null)
+      try {
+        const result = await withLoading(() =>
+          schoolJoinService.joinSchoolWithOtp(otp, teacherId)
+        )
 
-      if (result.success) {
-        showToast(result.message, ToastColorEnum.Success)
-        return true
-      }
-      else {
-        setError(result.message)
-        showToast(result.message, ToastColorEnum.Error)
+        if (result.success) {
+          showToast(result.message, ToastColorEnum.Success)
+          return true
+        } else {
+          setError(result.message)
+          showToast(result.message, ToastColorEnum.Error)
+          return false
+        }
+      } catch {
+        const errorMessage = 'An unexpected error occurred'
+        setError(errorMessage)
+        showToast(errorMessage, ToastColorEnum.Error)
         return false
       }
-    }
-    catch {
-      const errorMessage = 'An unexpected error occurred'
-      setError(errorMessage)
-      showToast(errorMessage, ToastColorEnum.Error)
-      return false
-    }
-  }, [teacherId, withLoading])
+    },
+    [teacherId, withLoading]
+  )
 
   return {
     joinSchool,
     loading,
-    error,
+    error
   }
 }

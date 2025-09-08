@@ -1,10 +1,10 @@
 // src/components/EmptyListComponent.tsx
 
-import type { ITheme } from '@styles/theme'
 import CsText from '@components/CsText'
 import { useTheme } from '@src/hooks'
 import { spacing } from '@styles/spacing'
-import React from 'react'
+import type { ITheme } from '@styles/theme'
+import type React from 'react'
 import { StyleSheet, View } from 'react-native'
 
 interface EmptyListComponentProps {
@@ -12,7 +12,7 @@ interface EmptyListComponentProps {
 }
 
 const EmptyListComponent: React.FC<EmptyListComponentProps> = ({
-  message = 'Aucune donnée trouvé',
+  message = 'Aucune donnée trouvé'
 }) => {
   const theme = useTheme()
   const styles = useStyles(theme)
@@ -30,12 +30,12 @@ function useStyles(theme: ITheme) {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      paddingVertical: spacing.xl,
+      paddingVertical: spacing.xl
     },
     emptyText: {
       color: theme.textLight,
-      fontSize: 16,
-    },
+      fontSize: 16
+    }
   })
 }
 

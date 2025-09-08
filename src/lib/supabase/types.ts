@@ -1,12 +1,12 @@
 // src/lib/supabase/types.ts
 
-export type Json
-  = | string
-    | number
-    | boolean
-    | null
-    | { [key: string]: Json | undefined }
-    | Json[]
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
 export interface Database {
   // Allows to automatically instantiate createClient with right options
@@ -179,7 +179,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'subjects'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       chat_topics: {
@@ -355,7 +355,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'chat_topics'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       classes: {
@@ -415,7 +415,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'schools'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       coefficients: {
@@ -484,7 +484,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'subjects'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       conduct_categories: {
@@ -657,7 +657,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'students'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       conduct_scores: {
@@ -783,7 +783,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'students'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       cron_job_logs: {
@@ -896,7 +896,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'cycles'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       homeworks: {
@@ -1025,7 +1025,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'users'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       installment_templates: {
@@ -1073,7 +1073,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'schools'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       invite_to_school: {
@@ -1124,7 +1124,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'schools'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       lessons_progress_reports: {
@@ -1189,7 +1189,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'lessons_progress_reports_config'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       lessons_progress_reports_config: {
@@ -1274,7 +1274,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'subjects'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       link_student_parent: {
@@ -1343,7 +1343,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'students'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       messages: {
@@ -1388,7 +1388,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'users'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       note_details: {
@@ -1461,7 +1461,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'students'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       notes: {
@@ -1618,7 +1618,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'users'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       notifications: {
@@ -1650,7 +1650,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'users'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       parent_chat_limits: {
@@ -1676,7 +1676,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'users'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       parent_otp_requests: {
@@ -1752,7 +1752,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'payment_view'
             referencedColumns: ['payment_plan_id']
-          },
+          }
         ]
       }
       payment_plans: {
@@ -1818,7 +1818,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'student_school_class'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       payments: {
@@ -1908,7 +1908,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'users'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       receipts: {
@@ -1937,7 +1937,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'payments'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       roles: {
@@ -2023,7 +2023,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'subjects'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       school_subjects: {
@@ -2083,7 +2083,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'subjects'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       school_years: {
@@ -2188,7 +2188,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'states'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       schools_teachers: {
@@ -2233,7 +2233,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'users'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       semesters: {
@@ -2291,7 +2291,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'student_semester_average_view'
             referencedColumns: ['school_year_id']
-          },
+          }
         ]
       }
       states: {
@@ -2461,7 +2461,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'students'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       students: {
@@ -2535,7 +2535,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'users'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       subjects: {
@@ -2644,7 +2644,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'users'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       transactions: {
@@ -2727,7 +2727,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'schools'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       tuition_settings: {
@@ -2787,7 +2787,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'schools'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       user_roles: {
@@ -2837,7 +2837,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'users'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       users: {
@@ -2890,7 +2890,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'states'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
     }
@@ -2982,7 +2982,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'students'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       average_grades_view_with_rank: {
@@ -3059,7 +3059,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'subjects'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       class_year_average_view: {
@@ -3083,7 +3083,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'grades'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       conduct_stats_view: {
@@ -3150,7 +3150,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'schools'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       payment_details_view: {
@@ -3219,7 +3219,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'student_semester_average_view'
             referencedColumns: ['school_year_id']
-          },
+          }
         ]
       }
       payment_view: {
@@ -3269,7 +3269,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'users'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       recent_conduct_incidents_view: {
@@ -3331,7 +3331,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'students'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       student_conduct_summary_view: {
@@ -3409,7 +3409,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'student_semester_average_view'
             referencedColumns: ['semester_id']
-          },
+          }
         ]
       }
       student_enrollment_view: {
@@ -3519,7 +3519,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'users'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       student_financial_summary_view: {
@@ -3605,7 +3605,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'students'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
       student_payment_status_view: {
@@ -3653,7 +3653,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'student_semester_average_view'
             referencedColumns: ['school_year_id']
-          },
+          }
         ]
       }
       student_semester_average_view: {
@@ -3731,7 +3731,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'students'
             referencedColumns: ['id']
-          },
+          }
         ]
       }
     }
@@ -3753,7 +3753,7 @@ export interface Database {
         Returns: number
       }
       create_attendance_and_participator_and_homework: {
-        Args: { attendances: Json, homework?: Json, participators: Json }
+        Args: { attendances: Json; homework?: Json; participators: Json }
         Returns: string
       }
       distribute_extra_fee: {
@@ -3795,7 +3795,7 @@ export interface Database {
         }[]
       }
       get_group_label: {
-        Args: { group_date: string, grouping_level: string }
+        Args: { group_date: string; grouping_level: string }
         Returns: string
       }
       get_last_five_inactive_schools: {
@@ -3823,7 +3823,7 @@ export interface Database {
         }[]
       }
       get_statistics: {
-        Args: { end_date?: string, start_date?: string }
+        Args: { end_date?: string; start_date?: string }
         Returns: {
           new_account_count: number
           reconnection_rate: number
@@ -3855,7 +3855,7 @@ export interface Database {
         Returns: Json
       }
       get_unique_notes_by_date: {
-        Args: { p_class_id: string, p_subject_id: string }
+        Args: { p_class_id: string; p_subject_id: string }
         Returns: {
           date: string
           id: string
@@ -3864,18 +3864,18 @@ export interface Database {
         }[]
       }
       mark_chat_read: {
-        Args: { chat_id_param: string, user_id_param: string }
+        Args: { chat_id_param: string; user_id_param: string }
         Returns: undefined
       }
       process_payment: {
         Args:
           | {
-            _amount: number
-            _payment_method: string
-            _school_id: string
-            _student_id: string
-          }
-          | { _amount: number, _payment_method: string, _student_id: string }
+              _amount: number
+              _payment_method: string
+              _school_id: string
+              _student_id: string
+            }
+          | { _amount: number; _payment_method: string; _student_id: string }
         Returns: Json
       }
       refresh_average_grades_view: {
@@ -3942,92 +3942,92 @@ type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-  | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-      & DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
-    : never = never,
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
+    : never = never
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-    & DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R
     }
-      ? R
-      : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables']
-    & DefaultSchema['Views'])
-    ? (DefaultSchema['Tables']
-      & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] &
+        DefaultSchema['Views'])
+    ? (DefaultSchema['Tables'] &
+        DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
-        ? R
-        : never
+      ? R
+      : never
     : never
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-  | keyof DefaultSchema['Tables']
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema['Tables']
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-    : never = never,
+    : never = never
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
-    Insert: infer I
-  }
+      Insert: infer I
+    }
     ? I
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
     ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
-      Insert: infer I
-    }
+        Insert: infer I
+      }
       ? I
       : never
     : never
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-  | keyof DefaultSchema['Tables']
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema['Tables']
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-    : never = never,
+    : never = never
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
-    Update: infer U
-  }
+      Update: infer U
+    }
     ? U
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
     ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
-      Update: infer U
-    }
+        Update: infer U
+      }
       ? U
       : never
     : never
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-  | keyof DefaultSchema['Enums']
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema['Enums']
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
-    : never = never,
+    : never = never
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -4038,13 +4038,13 @@ export type Enums<
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-  | keyof DefaultSchema['CompositeTypes']
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema['CompositeTypes']
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
-    : never = never,
+    : never = never
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -4057,7 +4057,7 @@ export const Constants = {
   public: {
     Enums: {
       school_status_enum: ['private', 'public'],
-      status_enum: ['pending', 'accepted', 'rejected'],
-    },
-  },
+      status_enum: ['pending', 'accepted', 'rejected']
+    }
+  }
 } as const

@@ -1,10 +1,10 @@
 // src/modules/school/components/ErrorView.tsx
 
-import type { ITheme } from '@styles/theme'
 import CsText from '@components/CsText'
 import { useTheme } from '@src/hooks'
 import { spacing } from '@styles/spacing'
-import React from 'react'
+import type { ITheme } from '@styles/theme'
+import type React from 'react'
 import { StyleSheet, View } from 'react-native'
 
 interface ErrorViewProps {
@@ -31,13 +31,13 @@ function useStyles(theme: ITheme) {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: theme.background,
+      backgroundColor: theme.background
     },
     errorText: {
       color: theme.error,
       textAlign: 'center',
-      padding: spacing.md,
-    },
+      padding: spacing.md
+    }
   })
 }
 

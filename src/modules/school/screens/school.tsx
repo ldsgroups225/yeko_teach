@@ -1,24 +1,24 @@
 // src/modules/school/screens/school.tsx
 
-import type { SchoolSortOption, SchoolSortOrder } from '@modules/app/constants/sortAndFilter'
-import type { ISchoolDTO } from '@modules/app/types/ILoginDTO'
-import type { ITheme } from '@styles/theme'
-
 import CsText from '@components/CsText'
 import EmptyListComponent from '@components/EmptyListComponent'
 import LoadingSpinner from '@components/LoadingSpinner'
-
 import useDataFetching from '@hooks/useDataFetching'
+import type {
+  SchoolSortOption,
+  SchoolSortOrder
+} from '@modules/app/constants/sortAndFilter'
+import type { ISchoolDTO } from '@modules/app/types/ILoginDTO'
 import { SchoolItem } from '@modules/school/components/SchoolItem'
 import { SearchHeader } from '@modules/school/components/SearchHeader'
 import { SortControls } from '@modules/school/components/SortControls'
-
 import MasonryList from '@react-native-seoul/masonry-list'
 import { useTheme, useThemedStyles } from '@src/hooks'
 import { useAppSelector } from '@src/store'
-
 import { spacing } from '@styles/spacing'
-import React, { useCallback, useMemo, useState } from 'react'
+import type { ITheme } from '@styles/theme'
+import type React from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 // Create a wrapper component for MasonryList to handle type issues
@@ -26,12 +26,13 @@ function TypeSafeMasonryList({
   renderItem,
   ...props
 }: {
-  renderItem: (info: { item: ISchoolDTO, index: number }) => React.ReactElement
+  renderItem: (info: { item: ISchoolDTO; index: number }) => React.ReactElement
 } & Omit<React.ComponentProps<typeof MasonryList>, 'renderItem'>) {
   return (
     <MasonryList
-      renderItem={({ item, i }: { item: unknown, i: number }) =>
-        renderItem({ item: item as ISchoolDTO, index: i })}
+      renderItem={({ item, i }: { item: unknown; i: number }) =>
+        renderItem({ item: item as ISchoolDTO, index: i })
+      }
       {...props}
     />
   )
@@ -54,7 +55,7 @@ const SchoolScreen: React.FC = () => {
     data: schools,
     loading,
     refreshing,
-    refetch: refetchData,
+    refetch: refetchData
   } = useDataFetching<ISchoolDTO[]>(fetchSchools, [])
 
   const filteredAndSortedSchools = useMemo(() => {
@@ -62,7 +63,7 @@ const SchoolScreen: React.FC = () => {
       schools || [],
       searchQuery,
       sortOption,
-      sortOrder,
+      sortOrder
     )
   }, [schools, searchQuery, sortOption, sortOrder])
 
@@ -73,7 +74,7 @@ const SchoolScreen: React.FC = () => {
   return (
     <View style={themedStyles.container}>
       <View style={themedStyles.header}>
-        <CsText variant="h2" style={themedStyles.title}>
+        <CsText variant='h2' style={themedStyles.title}>
           Ecoles où vous enseigné
         </CsText>
         <SearchHeader
@@ -116,20 +117,25 @@ const SchoolScreen: React.FC = () => {
   )
 }
 
-function filterAndSortSchools(schools: ISchoolDTO[], searchQuery: string, sortOption: SchoolSortOption, sortOrder: SchoolSortOrder): ISchoolDTO[] {
+function filterAndSortSchools(
+  schools: ISchoolDTO[],
+  searchQuery: string,
+  sortOption: SchoolSortOption,
+  sortOrder: SchoolSortOrder
+): ISchoolDTO[] {
   let result = schools
 
   if (searchQuery) {
     result = result.filter(
       school =>
-        school.name.toLowerCase().includes(searchQuery.toLowerCase())
-        || school.code.toLowerCase().includes(searchQuery.toLowerCase()),
+        school.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        school.code.toLowerCase().includes(searchQuery.toLowerCase())
     )
   }
 
   result.sort((a, b) => {
-    const compareResult
-      = sortOption === 'name'
+    const compareResult =
+      sortOption === 'name'
         ? a.name.localeCompare(b.name)
         : a.code.localeCompare(b.code)
     return sortOrder === 'asc' ? compareResult : -compareResult
@@ -142,29 +148,29 @@ function styles(theme: ITheme) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: theme.background,
+      backgroundColor: theme.background
     },
     header: {
       backgroundColor: theme.primary,
       paddingHorizontal: spacing.md,
-      paddingTop: spacing.sm,
+      paddingTop: spacing.sm
     },
     body: {
       flex: 1,
-      padding: spacing.md,
+      padding: spacing.md
     },
     title: {
       marginBottom: spacing.md,
-      color: theme.background,
+      color: theme.background
     },
     listContent: {
-      paddingBottom: spacing.xl,
+      paddingBottom: spacing.xl
     },
     emptyText: {
       textAlign: 'center',
       marginTop: spacing.xl,
-      color: theme.textLight,
-    },
+      color: theme.textLight
+    }
   })
 }
 

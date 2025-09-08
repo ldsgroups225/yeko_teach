@@ -1,7 +1,7 @@
 import type { PayloadAction } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 import type { ColorSchemeName } from 'react-native'
 import type { IAppState, ISemester, ProfileCompletion } from './IAppState'
-import { createSlice } from '@reduxjs/toolkit'
 
 /**
  * Initial state for the app slice.
@@ -25,8 +25,8 @@ const initialState: IAppState = {
     country: '',
     city: '',
     grade: '',
-    referral: '',
-  },
+    referral: ''
+  }
 }
 
 /**
@@ -52,7 +52,7 @@ const appSlice = createSlice({
      */
     setUserColorScheme(
       state: IAppState,
-      action: PayloadAction<ColorSchemeName>,
+      action: PayloadAction<ColorSchemeName>
     ) {
       state.userColorScheme = action.payload
     },
@@ -124,11 +124,11 @@ const appSlice = createSlice({
      */
     setProfileCompletion(
       state: IAppState,
-      action: PayloadAction<Partial<ProfileCompletion>>,
+      action: PayloadAction<Partial<ProfileCompletion>>
     ) {
       state.profileCompletion = {
         ...state.profileCompletion,
-        ...action.payload,
+        ...action.payload
       }
     },
 
@@ -137,7 +137,10 @@ const appSlice = createSlice({
      * @param state - The current state.
      * @param action - Action containing the school year.
      */
-    setSchoolYear(state: IAppState, action: PayloadAction<{ id: number, name: string }>) {
+    setSchoolYear(
+      state: IAppState,
+      action: PayloadAction<{ id: number; name: string }>
+    ) {
       state.schoolYear = action.payload
     },
 
@@ -148,8 +151,8 @@ const appSlice = createSlice({
      */
     setSemesters(state: IAppState, action: PayloadAction<ISemester[]>) {
       state.semesters = action.payload
-    },
-  },
+    }
+  }
 })
 
 export const {
@@ -163,7 +166,7 @@ export const {
   setExpoToken,
   setProfileCompletion,
   setSchoolYear,
-  setSemesters,
+  setSemesters
 } = appSlice.actions
 
 export default appSlice.reducer

@@ -1,7 +1,10 @@
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 
-export function formatDate(date: Date | string, formatString: string = 'EEEE dd MMMM'): string {
+export function formatDate(
+  date: Date | string,
+  formatString: string = 'EEEE dd MMMM'
+): string {
   return format(date, formatString, { locale: fr })
 }
 

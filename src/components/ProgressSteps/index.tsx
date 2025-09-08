@@ -1,9 +1,9 @@
 // src/components/ProgressSteps/index.tsx
 
-import type { ITheme } from '@styles/theme'
 import CsText from '@components/CsText'
 import { useThemedStyles } from '@hooks/index'
 import { spacing } from '@styles/spacing'
+import type { ITheme } from '@styles/theme'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
 
@@ -14,7 +14,7 @@ interface ProgressStepsProps {
 
 const ProgressSteps: React.FC<ProgressStepsProps> = ({
   totalSteps,
-  currentStep,
+  currentStep
 }) => {
   const themedStyles = useThemedStyles<typeof styles>(styles)
 
@@ -28,7 +28,7 @@ const ProgressSteps: React.FC<ProgressStepsProps> = ({
                 themedStyles.connector,
                 index <= currentStep
                   ? themedStyles.activeConnector
-                  : themedStyles.inactiveConnector,
+                  : themedStyles.inactiveConnector
               ]}
             />
           )}
@@ -39,16 +39,16 @@ const ProgressSteps: React.FC<ProgressStepsProps> = ({
                 ? themedStyles.completedStep
                 : index === currentStep
                   ? themedStyles.activeStep
-                  : themedStyles.inactiveStep,
+                  : themedStyles.inactiveStep
             ]}
           >
             <CsText
-              variant="caption"
+              variant='caption'
               style={StyleSheet.flatten([
                 themedStyles.stepText,
                 index <= currentStep
                   ? themedStyles.activeStepText
-                  : themedStyles.inactiveStepText,
+                  : themedStyles.inactiveStepText
               ])}
             >
               {index < currentStep ? '✓' : (index + 1).toString()}
@@ -66,7 +66,7 @@ function styles(theme: ITheme) {
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
-      marginBottom: spacing.xl,
+      marginBottom: spacing.xl
     },
     step: {
       width: 30,
@@ -74,41 +74,41 @@ function styles(theme: ITheme) {
       borderRadius: 15,
       justifyContent: 'center',
       alignItems: 'center',
-      borderWidth: 2,
+      borderWidth: 2
     },
     completedStep: {
       backgroundColor: theme.primary,
-      borderColor: theme.primary,
+      borderColor: theme.primary
     },
     activeStep: {
       backgroundColor: theme.background,
-      borderColor: theme.primary,
+      borderColor: theme.primary
     },
     inactiveStep: {
       backgroundColor: theme.background,
-      borderColor: theme.border,
+      borderColor: theme.border
     },
     stepText: {
       fontSize: 14,
-      fontWeight: 'bold',
+      fontWeight: 'bold'
     },
     activeStepText: {
-      color: theme.primary,
+      color: theme.primary
     },
     inactiveStepText: {
-      color: theme.textLight,
+      color: theme.textLight
     },
     connector: {
       height: 2,
       width: 30,
-      marginHorizontal: spacing.xs,
+      marginHorizontal: spacing.xs
     },
     activeConnector: {
-      backgroundColor: theme.primary,
+      backgroundColor: theme.primary
     },
     inactiveConnector: {
-      backgroundColor: theme.border,
-    },
+      backgroundColor: theme.border
+    }
   })
 }
 

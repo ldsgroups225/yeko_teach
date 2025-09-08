@@ -1,13 +1,13 @@
 // src/hooks/useAuthLogin.ts
 
-import type { IUserDTO } from '@modules/app/types/ILoginDTO'
 import {
   getStoreDataAsync,
   getStoreStringAsync,
-  removeStoreDataAsync,
+  removeStoreDataAsync
 } from '@helpers/storage'
 import { StoreEnum } from '@helpers/storage/storeEnum'
 import { auth } from '@modules/app/services/appService'
+import type { IUserDTO } from '@modules/app/types/ILoginDTO'
 import { isCacheTooOld } from '@utils/CacheTooOldChecker'
 import { useCallback } from 'react'
 
@@ -17,7 +17,7 @@ export function useAuthLogin(checkAuth: () => Promise<IUserDTO | null>) {
       // Step 1: Log in the user first
       const { error, data: session } = await auth.loginWithEmailAndPassword(
         email,
-        password,
+        password
       )
 
       if (error) {
@@ -30,9 +30,7 @@ export function useAuthLogin(checkAuth: () => Promise<IUserDTO | null>) {
 
       // Step 2: Check cached user data after successful login
       const cachedUser = await getStoreDataAsync<IUserDTO>(StoreEnum.User)
-      const cacheDuration = await getStoreStringAsync(
-        StoreEnum.CacheDuration,
-      )
+      const cacheDuration = await getStoreStringAsync(StoreEnum.CacheDuration)
 
       if (cachedUser && cacheDuration) {
         const isOldCache = isCacheTooOld(cacheDuration)
@@ -52,6 +50,6 @@ export function useAuthLogin(checkAuth: () => Promise<IUserDTO | null>) {
       // Step 4: Fetch fresh user data if cache is invalid or outdated
       return await checkAuth()
     },
-    [checkAuth],
+    [checkAuth]
   )
 }

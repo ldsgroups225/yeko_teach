@@ -12,13 +12,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-  },
+    alignItems: 'center'
+  }
 })
 
 export default function LoadingSpinner({
   size = 'large',
-  color = '#007AFF',
+  color = '#007AFF'
 }: LoadingSpinnerProps) {
   return (
     <View style={styles.container}>

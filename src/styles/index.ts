@@ -23,5 +23,5 @@ export {
   spacing,
   ToastColor,
   typography,
-  typographyVariants,
+  typographyVariants
 }

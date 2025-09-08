@@ -1,8 +1,8 @@
 // src/components/CsListTile/style.ts
 
-import type { ITheme } from '@styles/theme'
 import borderRadius from '@styles/borderRadius'
 import { spacing } from '@styles/spacing'
+import type { ITheme } from '@styles/theme'
 import { typography } from '@styles/typography'
 import { StyleSheet } from 'react-native'
 
@@ -14,29 +14,29 @@ export function styles(theme: ITheme) {
       paddingVertical: spacing.md,
       paddingHorizontal: spacing.lg,
       backgroundColor: theme.card,
-      borderRadius: borderRadius.medium,
+      borderRadius: borderRadius.medium
     },
     contentContainer: {
       flex: 1,
-      marginLeft: spacing.md,
+      marginLeft: spacing.md
     },
     title: {
       ...typography.body,
       color: theme.text,
-      marginBottom: spacing.xs,
+      marginBottom: spacing.xs
     },
     subtitle: {
       ...typography.caption,
-      color: theme.textLight,
+      color: theme.textLight
     },
     trailing: {
-      marginLeft: spacing.md,
+      marginLeft: spacing.md
     },
     dense: {
-      paddingVertical: spacing.sm,
+      paddingVertical: spacing.sm
     },
     pressable: {
-      opacity: 0.7,
-    },
+      opacity: 0.7
+    }
   })
 }

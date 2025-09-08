@@ -4,7 +4,7 @@ import { useAppSelector } from '@src/store'
 /**
  * @author Ali Burhan Keskin <alikeskin@milvasoft.com>
  */
-import React from 'react'
+import type React from 'react'
 import { View } from 'react-native'
 import { useDispatch } from 'react-redux'
 

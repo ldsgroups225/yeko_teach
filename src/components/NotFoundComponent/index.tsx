@@ -1,9 +1,9 @@
 // src/components/NotFoundComponent/index.tsx
 
 import type { JSX } from 'react'
-import type { NotFoundComponentProps } from './type'
 import { Text, View } from 'react-native'
 import { styles } from './style'
+import type { NotFoundComponentProps } from './type'
 
 const testID = 'notFoundComponent'
 /**

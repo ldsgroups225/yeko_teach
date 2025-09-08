@@ -1,8 +1,11 @@
 // src/helpers/router/index.ts
 
-import type { NavigationParams } from '@utils/Routes'
+import {
+  createNavigationContainerRef,
+  StackActions
+} from '@react-navigation/native'
 import type Routes from '@utils/Routes'
-import { createNavigationContainerRef, StackActions } from '@react-navigation/native'
+import type { NavigationParams } from '@utils/Routes'
 
 /**
  * Reference to the navigation container.
@@ -15,7 +18,10 @@ export const navigationRef = createNavigationContainerRef<NavigationParams>()
  * @param name - The name of the route to push.
  * @param params - Optional parameters to pass to the route.
  */
-export function push<RouteName extends keyof NavigationParams>(name: Routes, params?: NavigationParams[RouteName]) {
+export function push<RouteName extends keyof NavigationParams>(
+  name: Routes,
+  params?: NavigationParams[RouteName]
+) {
   if (navigationRef.isReady())
     navigationRef.current?.dispatch(StackActions.push(name, params))
 }
@@ -36,7 +42,10 @@ export function pop(count: number) {
  * @param name - The name of the route to navigate to.
  * @param params - Optional parameters to pass to the route.
  */
-export function navigate<RouteName extends keyof NavigationParams>(name: string, params?: NavigationParams[RouteName]) {
+export function navigate<RouteName extends keyof NavigationParams>(
+  name: string,
+  params?: NavigationParams[RouteName]
+) {
   if (navigationRef.isReady()) {
     navigationRef.current?.navigate(name, params)
   }
@@ -46,6 +55,5 @@ export function navigate<RouteName extends keyof NavigationParams>(name: string,
  * Navigates back to the previous screen.
  */
 export function goBack() {
-  if (navigationRef.isReady())
-    navigationRef.current?.goBack()
+  if (navigationRef.isReady()) navigationRef.current?.goBack()
 }

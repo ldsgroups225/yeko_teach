@@ -1,10 +1,15 @@
+import type React from 'react'
 import type { FlatListProps } from 'react-native'
-import React from 'react'
 import { FlatList, RefreshControl } from 'react-native'
-import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated'
+import Animated, {
+  FadeIn,
+  FadeOut,
+  LinearTransition
+} from 'react-native-reanimated'
 
-interface AnimatedFlatListProps<T> extends Omit<FlatListProps<T>, 'renderItem'> {
-  renderItem: (info: { item: T, index: number }) => React.ReactElement
+interface AnimatedFlatListProps<T>
+  extends Omit<FlatListProps<T>, 'renderItem'> {
+  renderItem: (info: { item: T; index: number }) => React.ReactElement
   onRefresh?: () => void
   refreshing?: boolean
 }
@@ -15,7 +20,7 @@ function AnimatedFlatList<T>({
   refreshing = false,
   ...props
 }: AnimatedFlatListProps<T>) {
-  const animatedRenderItem = ({ item, index }: { item: T, index: number }) => (
+  const animatedRenderItem = ({ item, index }: { item: T; index: number }) => (
     <Animated.View
       entering={FadeIn.delay(index * 50).springify()}
       exiting={FadeOut}
@@ -30,7 +35,9 @@ function AnimatedFlatList<T>({
       {...props}
       renderItem={animatedRenderItem}
       refreshControl={
-        onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={onRefresh} /> : undefined
+        onRefresh ? (
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        ) : undefined
       }
     />
   )

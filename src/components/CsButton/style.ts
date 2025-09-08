@@ -1,8 +1,8 @@
 // src/components/CsButton/style.ts
 
-import type { ITheme } from '@styles/theme'
 import borderRadius from '@styles/borderRadius'
 import { spacing } from '@styles/spacing'
+import type { ITheme } from '@styles/theme'
 import { typography } from '@styles/typography'
 import { StyleSheet } from 'react-native'
 
@@ -14,60 +14,60 @@ export function styles(theme: ITheme) {
       justifyContent: 'center',
       borderRadius: borderRadius.medium,
       paddingVertical: 12,
-      paddingHorizontal: 24,
+      paddingHorizontal: 24
     },
     buttonprimary: {
-      backgroundColor: theme.primary,
+      backgroundColor: theme.primary
     },
     buttonsecondary: {
       backgroundColor: theme.background,
       borderWidth: 1,
-      borderColor: theme.primary,
+      borderColor: theme.primary
     },
     buttontext: {
-      backgroundColor: theme.transparent,
+      backgroundColor: theme.transparent
     },
     buttonsmall: {
       paddingVertical: spacing.sm,
-      paddingHorizontal: spacing.md,
+      paddingHorizontal: spacing.md
     },
     buttonmedium: {
       paddingVertical: spacing.sm * 1.5,
-      paddingHorizontal: spacing.lg,
+      paddingHorizontal: spacing.lg
     },
     buttonlarge: {
       paddingVertical: spacing.sm * 2,
-      paddingHorizontal: spacing.xl,
+      paddingHorizontal: spacing.xl
     },
     buttonDisabled: {
-      opacity: 0.5,
+      opacity: 0.5
     },
     buttonText: {
       ...typography.button,
       textAlign: 'center',
-      color: theme.textLight,
+      color: theme.textLight
     },
     textprimary: {
-      color: theme.background,
+      color: theme.background
     },
     textsecondary: {
-      color: theme.primary,
+      color: theme.primary
     },
     texttext: {
-      color: theme.primary,
+      color: theme.primary
     },
     textsmall: {
-      fontSize: 14,
+      fontSize: 14
     },
     textmedium: {
-      fontSize: 16,
+      fontSize: 16
     },
     textlarge: {
-      fontSize: 18,
+      fontSize: 18
     },
     textDisabled: {},
     icon: {
-      marginRight: 8,
-    },
+      marginRight: 8
+    }
   })
 }

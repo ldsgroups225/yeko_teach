@@ -1,8 +1,8 @@
 // src/modules/schedule/hooks/useSchedule.ts
 
-import type { IScheduleDTO } from '@modules/app/types/IScheduleDTO'
 import { addStoreDataAsync, getStoreDataAsync } from '@helpers/storage'
 import { StoreEnum } from '@helpers/storage/storeEnum'
+import type { IScheduleDTO } from '@modules/app/types/IScheduleDTO'
 import { schedules } from '@modules/schedule/services/scheduleService'
 import { useCallback, useState } from 'react'
 
@@ -26,31 +26,28 @@ export function useSchedule(): UseScheduleReturn {
       setError(null)
       try {
         const cachedSchedulesData = await getStoreDataAsync<IScheduleDTO[]>(
-          StoreEnum.Schedules,
+          StoreEnum.Schedules
         )
-        if (cachedSchedulesData)
-          return cachedSchedulesData
+        if (cachedSchedulesData) return cachedSchedulesData
 
         const schedulesData = await schedules.getSchedules(teacherId)
         await addStoreDataAsync(StoreEnum.Schedules, schedulesData)
 
         return schedulesData
-      }
-      catch (err) {
+      } catch (err) {
         setError('Failed to get schedule records.')
         console.error('[E_GET_SCHEDULES]:', err)
         return null
-      }
-      finally {
+      } finally {
         setLoading(false)
       }
     },
-    [],
+    []
   )
 
   return {
     getSchedules,
     loading,
-    error,
+    error
   }
 }

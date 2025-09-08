@@ -1,14 +1,14 @@
 // src/network/index.ts
 
+import { loggedOut, setAuthToken } from '@modules/app/redux/appSlice'
 import type { BaseQueryFn } from '@reduxjs/toolkit/query'
+import { fetchBaseQuery } from '@reduxjs/toolkit/query'
 import type {
   FetchArgs,
   FetchBaseQueryArgs as FetchBaseQueryArgx,
-  FetchBaseQueryError,
+  FetchBaseQueryError
 } from '@reduxjs/toolkit/query/react'
 import type { RootState } from '@src/store'
-import { loggedOut, setAuthToken } from '@modules/app/redux/appSlice'
-import { fetchBaseQuery } from '@reduxjs/toolkit/query'
 
 /**
  * Configuration object for the base query used in network requests.
@@ -23,12 +23,12 @@ const FetchBaseQueryArgs: FetchBaseQueryArgx = {
     }
     return headers
   },
-  responseHandler: (response) => {
+  responseHandler: response => {
     if (!response.ok) {
       throw new Error(response.statusText)
     }
     return response.json()
-  },
+  }
 }
 
 /**
@@ -62,8 +62,7 @@ export const baseQueryWithReAuth: BaseQueryFn<
       api.dispatch(setAuthToken(refreshResult.data as never))
       // retry the initial query
       result = await baseQuery(args, api, extraOptions)
-    }
-    else {
+    } else {
       api.dispatch(loggedOut())
     }
   }

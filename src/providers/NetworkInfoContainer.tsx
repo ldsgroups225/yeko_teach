@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: $black80,
+    backgroundColor: $black80
   },
   modalView: {
     margin: 20,
@@ -25,16 +25,16 @@ const styles = StyleSheet.create({
     shadowColor: $black,
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 2
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5,
+    elevation: 5
   },
   modalText: {
     marginBottom: 15,
-    textAlign: 'center',
-  },
+    textAlign: 'center'
+  }
 })
 
 function NetworkInfoContainer({ children }: any) {
@@ -45,8 +45,7 @@ function NetworkInfoContainer({ children }: any) {
   useEffect(() => {
     if (isConnected === false) {
       setModalVisible(true)
-    }
-    else {
+    } else {
       setModalVisible(false)
     }
   }, [isConnected])
@@ -54,7 +53,7 @@ function NetworkInfoContainer({ children }: any) {
   return (
     <View style={styles.flex1}>
       <Modal
-        animationType="slide"
+        animationType='slide'
         transparent
         visible={modalVisible}
         onRequestClose={() => {
@@ -66,7 +65,7 @@ function NetworkInfoContainer({ children }: any) {
             <Text style={styles.modalText}>
               Check your internet connection!
             </Text>
-            <Button title="Ok" onPress={() => setModalVisible(false)} />
+            <Button title='Ok' onPress={() => setModalVisible(false)} />
           </View>
         </View>
       </Modal>

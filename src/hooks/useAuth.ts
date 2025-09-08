@@ -1,5 +1,6 @@
 // src/hooks/useAuth.ts
 
+import { auth } from '@modules/app/services/appService'
 import type { IUserDTO } from '@modules/app/types/ILoginDTO'
 import { useEffect } from 'react'
 import { useAuthCheck } from './useAuthCheck'
@@ -10,6 +11,13 @@ import { useLoading } from './useLoading'
 interface UseAuthReturn {
   loading: boolean
   login: (email: string, password: string) => Promise<IUserDTO | null>
+  signUp: (email: string, password: string) => Promise<any>
+  updateUserProfile: (
+    userId: string,
+    profileData: any
+  ) => Promise<{ error: any }>
+  isProfileComplete: (userId: string) => Promise<boolean>
+  sendPasswordResetEmail: (email: string) => Promise<{ error: any }>
   checkAuth: () => Promise<IUserDTO | null>
   logout: () => Promise<boolean>
 }
@@ -27,12 +35,28 @@ export function useAuth(): UseAuthReturn {
   const wrappedLogin = (email: string, password: string) =>
     withLoading(() => login(email, password))
 
+  const wrappedSignUp = (email: string, password: string) =>
+    withLoading(() => auth.signUp(email, password))
+
+  const wrappedUpdateUserProfile = (userId: string, profileData: any) =>
+    withLoading(() => auth.updateUserProfile(userId, profileData))
+
+  const wrappedIsProfileComplete = (userId: string) =>
+    withLoading(() => auth.isProfileComplete(userId))
+
+  const wrappedSendPasswordResetEmail = (email: string) =>
+    withLoading(() => auth.sendPasswordResetEmail(email))
+
   const wrappedLogout = () => withLoading(logout)
 
   return {
     loading,
     login: wrappedLogin,
+    signUp: wrappedSignUp,
+    updateUserProfile: wrappedUpdateUserProfile,
+    isProfileComplete: wrappedIsProfileComplete,
+    sendPasswordResetEmail: wrappedSendPasswordResetEmail,
     logout: wrappedLogout,
-    checkAuth,
+    checkAuth
   }
 }

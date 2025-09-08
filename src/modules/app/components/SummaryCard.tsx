@@ -3,7 +3,7 @@ import CsText from '@components/CsText'
 import { Ionicons } from '@expo/vector-icons'
 import { useThemedStyles } from '@hooks/index'
 import { spacing } from '@styles/spacing'
-import React from 'react'
+import type React from 'react'
 import { StyleSheet, View } from 'react-native'
 
 interface SummaryItemProps {
@@ -30,16 +30,16 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
   icon,
   value,
   label,
-  color,
+  color
 }) => {
   const themedStyles = useThemedStyles<typeof styles>(styles)
   return (
     <View style={themedStyles.summaryItem}>
       <Ionicons name={icon} size={24} color={color} />
-      <CsText variant="h3" style={{ ...themedStyles.summaryValue, color }}>
+      <CsText variant='h3' style={{ ...themedStyles.summaryValue, color }}>
         {value}
       </CsText>
-      <CsText variant="caption" style={themedStyles.summaryLabel}>
+      <CsText variant='caption' style={themedStyles.summaryLabel}>
         {label}
       </CsText>
     </View>
@@ -50,37 +50,36 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   items,
   primaryColor,
   successColor,
-  warningColor,
+  warningColor
 }) => {
   const themedStyles = useThemedStyles<typeof styles>(styles)
 
   const renderItems = () => {
     if (Array.isArray(items)) {
       return items.map((item, index) => <SummaryItem key={index} {...item} />)
-    }
-    else {
+    } else {
       return [
         <SummaryItem
-          key="average"
-          label="Moyenne Générale"
+          key='average'
+          label='Moyenne Générale'
           value={items.averageNote}
-          icon="school-outline"
+          icon='school-outline'
           color={primaryColor}
         />,
         <SummaryItem
-          key="best"
-          label="Meilleure Matière"
+          key='best'
+          label='Meilleure Matière'
           value={items.bestSubject}
-          icon="trophy-outline"
+          icon='trophy-outline'
           color={successColor}
         />,
         <SummaryItem
-          key="worst"
-          label="Matière à Améliorer"
+          key='worst'
+          label='Matière à Améliorer'
           value={items.worstSubject}
-          icon="trending-up-outline"
+          icon='trending-up-outline'
           color={warningColor}
-        />,
+        />
       ]
     }
   }
@@ -95,24 +94,24 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
 function styles() {
   return StyleSheet.create({
     summaryCard: {
-      marginBottom: spacing.md,
+      marginBottom: spacing.md
     },
     summaryRow: {
       flexDirection: 'row',
       justifyContent: 'space-around',
-      alignItems: 'flex-start',
+      alignItems: 'flex-start'
     },
     summaryItem: {
       alignItems: 'center',
-      flex: 1,
+      flex: 1
     },
     summaryValue: {
       marginVertical: spacing.xs,
-      textAlign: 'center',
+      textAlign: 'center'
     },
     summaryLabel: {
-      textAlign: 'center',
-    },
+      textAlign: 'center'
+    }
   })
 }
 

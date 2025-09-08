@@ -2,7 +2,14 @@
 
 import type { IToastType } from '@components/ToastMessage/IToastType'
 import { ToastColorEnum } from '@components/ToastMessage/ToastColorEnum'
-import React, { forwardRef, memo, useCallback, useImperativeHandle, useRef, useState } from 'react'
+import React, {
+  forwardRef,
+  memo,
+  useCallback,
+  useImperativeHandle,
+  useRef,
+  useState
+} from 'react'
 import { Animated, Text, TouchableWithoutFeedback } from 'react-native'
 import { styles, toastHeight } from './style'
 
@@ -22,7 +29,7 @@ const ToastMessage = forwardRef((props, ref) => {
 
   const [state, setState] = useState<IToastType>({
     type: ToastColorEnum.Info,
-    msg: '',
+    msg: ''
   })
 
   const closeToast = useCallback(() => {
@@ -31,7 +38,7 @@ const ToastMessage = forwardRef((props, ref) => {
         Animated.timing(animatedValue, {
           toValue: -toastHeight,
           duration: 300,
-          useNativeDriver: true,
+          useNativeDriver: true
         }).start()
       }
     }, state?.duration || 1500)
@@ -41,7 +48,7 @@ const ToastMessage = forwardRef((props, ref) => {
     Animated.timing(animatedValue, {
       toValue: 0,
       duration: 300,
-      useNativeDriver: true,
+      useNativeDriver: true
     }).start(() => closeToast())
   }, [animatedValue, closeToast])
 
@@ -55,7 +62,7 @@ const ToastMessage = forwardRef((props, ref) => {
     Animated.timing(animatedValue, {
       toValue: -toastHeight,
       duration: 300,
-      useNativeDriver: true,
+      useNativeDriver: true
     }).start()
   }, [animatedValue])
 
@@ -73,22 +80,25 @@ const ToastMessage = forwardRef((props, ref) => {
       setState({
         msg: param?.msg || '',
         duration: param.duration || 1500,
-        type: param.type || ToastColorEnum.Info,
+        type: param.type || ToastColorEnum.Info
       })
 
       showToast()
-    },
+    }
   }))
 
   return (
-    <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut}>
+    <TouchableWithoutFeedback
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+    >
       <Animated.View
         style={[
           {
             transform: [{ translateY: animatedValue }],
-            backgroundColor: state.type,
+            backgroundColor: state.type
           },
-          styles.root,
+          styles.root
         ]}
       >
         <Text style={styles.text} numberOfLines={3}>

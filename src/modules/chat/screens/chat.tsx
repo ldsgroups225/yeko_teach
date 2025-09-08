@@ -1,34 +1,24 @@
 // src/modules/chat/screens/chat.tsx
 
-import type { StackNavigationProp } from '@react-navigation/stack'
-import type { ITheme } from '@styles/theme'
-import type { ChatStackParams } from '@utils/Routes'
-import type { Conversation } from '../types/chat'
 import CsText from '@components/CsText'
 import EmptyListComponent from '@components/EmptyListComponent'
 import useDataFetching from '@hooks/useDataFetching'
 import { LoadingScreen, SummaryCard } from '@modules/app/components'
 import { useNavigation } from '@react-navigation/native'
+import type { StackNavigationProp } from '@react-navigation/stack'
 import { useTheme } from '@src/hooks'
 import { supabase } from '@src/lib/supabase'
 import { useAppSelector } from '@store/index'
 import { spacing } from '@styles/spacing'
+import type { ITheme } from '@styles/theme'
+import type { ChatStackParams } from '@utils/Routes'
 import Routes from '@utils/Routes'
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import {
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import type React from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { ConversationItem } from '../components/ConversationItem'
 import { useChat } from '../hooks/useChat'
+import type { Conversation } from '../types/chat'
 
 const ChatScreen: React.FC = () => {
   // Hooks and Navigation
@@ -50,8 +40,7 @@ const ChatScreen: React.FC = () => {
     try {
       const convos = await getConversations(user.id)
       return convos
-    }
-    catch {
+    } catch {
       return []
     }
   }, [user?.id])
@@ -60,15 +49,16 @@ const ChatScreen: React.FC = () => {
     data: conversations,
     loading,
     refreshing,
-    refetch: refetchData,
-  } = useDataFetching<Conversation[]>(fetchConversationsFunction, [], { lazy: true })
+    refetch: refetchData
+  } = useDataFetching<Conversation[]>(fetchConversationsFunction, [], {
+    lazy: true
+  })
 
   useEffect(() => {
     if (user?.id && !initialFetchDone.current) {
       refetchData()
       initialFetchDone.current = true
-    }
-    else if (!user?.id) {
+    } else if (!user?.id) {
       // console.log('ChatScreen: User not logged in, skipping initial fetch')
     }
   }, [user?.id, refetchData])
@@ -86,13 +76,11 @@ const ChatScreen: React.FC = () => {
           event: '*',
           schema: 'public',
           table: 'chats',
-          filter: `teacher_id=eq.${user.id}`,
+          filter: `teacher_id=eq.${user.id}`
         },
-        () => {
-
-        },
+        () => {}
       )
-      .subscribe((status) => {
+      .subscribe(status => {
         if (status === 'SUBSCRIBED') {
           // console.log('ChatScreen: Subscribed to chats listener channel') // Removed
         }
@@ -106,9 +94,12 @@ const ChatScreen: React.FC = () => {
 
     return () => {
       if (channel) {
-        supabase.removeChannel(channel)
+        supabase
+          .removeChannel(channel)
 
-          .catch(err => console.error('ChatScreen: Error removing channel:', err))
+          .catch(err =>
+            console.error('ChatScreen: Error removing channel:', err)
+          )
       }
     }
   }, [user?.id])
@@ -127,25 +118,28 @@ const ChatScreen: React.FC = () => {
       totalConversations: currentConversations.length,
       unreadMessages: currentConversations.reduce(
         (sum, converse) => sum + converse.unreadCount,
-        0,
-      ),
+        0
+      )
     }
   }, [conversations])
 
-  const summaryItems = useMemo(() => [
-    {
-      label: 'Conversations',
-      value: summary.totalConversations,
-      icon: 'chatbubbles-outline' as const,
-      color: styles.primary.color,
-    },
-    {
-      label: 'Messages non lus',
-      value: summary.unreadMessages,
-      icon: 'mail-unread-outline' as const,
-      color: styles.warning.color,
-    },
-  ], [summary, styles.primary.color, styles.warning.color])
+  const summaryItems = useMemo(
+    () => [
+      {
+        label: 'Conversations',
+        value: summary.totalConversations,
+        icon: 'chatbubbles-outline' as const,
+        color: styles.primary.color
+      },
+      {
+        label: 'Messages non lus',
+        value: summary.unreadMessages,
+        icon: 'mail-unread-outline' as const,
+        color: styles.warning.color
+      }
+    ],
+    [summary, styles.primary.color, styles.warning.color]
+  )
 
   const renderHeader = () => (
     <View style={styles.header}>
@@ -156,7 +150,7 @@ const ChatScreen: React.FC = () => {
             key={filter}
             style={[
               styles.filterButton,
-              selectedFilter === filter && styles.selectedFilterButton,
+              selectedFilter === filter && styles.selectedFilterButton
             ]}
             onPress={() => setSelectedFilter(filter)}
             disabled={loading || refreshing}
@@ -164,7 +158,7 @@ const ChatScreen: React.FC = () => {
             <CsText
               style={StyleSheet.flatten([
                 styles.filterButtonText,
-                selectedFilter === filter && styles.selectedFilterButtonText,
+                selectedFilter === filter && styles.selectedFilterButtonText
               ])}
             >
               {filter === 'unread' ? 'Non lus' : 'Tout'}
@@ -196,23 +190,27 @@ const ChatScreen: React.FC = () => {
           />
         )}
         keyExtractor={item => item.id}
-        ListHeaderComponent={(
+        ListHeaderComponent={
           <SummaryCard
             items={summaryItems}
             primaryColor={styles.primary.color}
             successColor={styles.success.color}
             warningColor={styles.warning.color}
           />
-        )}
+        }
         onRefresh={refetchData}
         refreshing={refreshing}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
-          !loading && !refreshing && filteredConversations.length === 0
-            ? (
-                <EmptyListComponent message={selectedFilter === 'unread' ? 'Aucun message non lu' : 'Aucune conversation trouvée'} />
-              )
-            : null
+          !loading && !refreshing && filteredConversations.length === 0 ? (
+            <EmptyListComponent
+              message={
+                selectedFilter === 'unread'
+                  ? 'Aucun message non lu'
+                  : 'Aucune conversation trouvée'
+              }
+            />
+          ) : null
         }
         initialNumToRender={10}
         maxToRenderPerBatch={10}
@@ -227,49 +225,49 @@ function useStyles(theme: ITheme) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: theme.background,
+      backgroundColor: theme.background
     },
     header: {
       backgroundColor: theme.primary,
       padding: spacing.md,
-      paddingTop: spacing.xl,
+      paddingTop: spacing.xl
     },
     headerTitle: {
       color: theme.background,
       fontSize: 24,
       fontWeight: 'bold',
-      marginBottom: spacing.sm,
+      marginBottom: spacing.sm
     },
     filterContainer: {
       flexDirection: 'row',
       justifyContent: 'space-around',
       backgroundColor: theme.card,
       borderRadius: 8,
-      padding: spacing.xs,
+      padding: spacing.xs
     },
     filterButton: {
       alignItems: 'center',
       paddingVertical: spacing.xs,
       paddingHorizontal: spacing.lg,
       flex: 1,
-      marginHorizontal: spacing.xs,
+      marginHorizontal: spacing.xs
     },
     selectedFilterButton: {
       backgroundColor: theme.primary,
-      borderRadius: 8,
+      borderRadius: 8
     },
     filterButtonText: {
       color: theme.text,
       fontSize: 12,
-      fontWeight: '500',
+      fontWeight: '500'
     },
     selectedFilterButtonText: {
       color: theme.background,
-      fontWeight: 'bold',
+      fontWeight: 'bold'
     },
     conversationList: {
       flex: 1,
-      padding: spacing.md,
+      padding: spacing.md
     },
     newConversationButton: {
       flexDirection: 'row',
@@ -278,18 +276,18 @@ function useStyles(theme: ITheme) {
       backgroundColor: theme.primary,
       padding: spacing.sm,
       borderRadius: 8,
-      margin: spacing.md,
+      margin: spacing.md
     },
     buttonText: {
       color: theme.background,
       marginLeft: spacing.xs,
-      fontWeight: 'bold',
+      fontWeight: 'bold'
     },
     primary: {
-      color: theme.primary,
+      color: theme.primary
     },
     success: { color: theme.success },
-    warning: { color: theme.warning },
+    warning: { color: theme.warning }
   })
 }
 

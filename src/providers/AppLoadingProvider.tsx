@@ -1,6 +1,5 @@
 // src/providers/AppLoadingProvider.tsx
 
-import type { ReactElement } from 'react'
 import MontserratFont from '@assets/font'
 import { drizzleDb } from '@src/db/config'
 import migrations from '@src/drizzle/migrations'
@@ -8,7 +7,9 @@ import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator'
 import { useDrizzleStudio } from 'expo-drizzle-studio-plugin'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
-import React, { useCallback } from 'react'
+import type React from 'react'
+import type { ReactElement } from 'react'
+import { useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 SplashScreen.preventAutoHideAsync().then(r => r)
@@ -18,7 +19,7 @@ interface Props {
 }
 
 const styles = StyleSheet.create({
-  flex1: { flex: 1 },
+  flex1: { flex: 1 }
 })
 
 /**
@@ -31,9 +32,12 @@ const styles = StyleSheet.create({
  */
 function AppLoadingProvider({ children }: Props): ReactElement | null {
   const [fontsLoaded, fontError] = useFonts(MontserratFont)
-  const { success: dbMigrated, error: dbError } = useMigrations(drizzleDb, migrations)
+  const { success: dbMigrated, error: dbError } = useMigrations(
+    drizzleDb,
+    migrations
+  )
 
-  useDrizzleStudio(drizzleDb)
+  useDrizzleStudio(drizzleDb.$client)
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded || fontError) {

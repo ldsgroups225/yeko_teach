@@ -8,6 +8,6 @@ export default {
   journal,
   migrations: {
     m0000,
-    m0001,
-  },
+    m0001
+  }
 }

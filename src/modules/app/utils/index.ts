@@ -15,5 +15,5 @@ export {
   formatting,
   groupBy,
   truncateText,
-  validate,
+  validate
 }

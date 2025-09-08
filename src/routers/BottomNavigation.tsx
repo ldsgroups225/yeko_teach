@@ -22,7 +22,7 @@ function isTabBarVisible(route: any): boolean {
     Routes.School,
     Routes.Chat,
     Routes.User,
-    undefined,
+    undefined
   ]
   return initialRoutes.includes(routeName as Routes | undefined)
 }
@@ -40,7 +40,7 @@ export default function TabNavigator() {
           tabBarStyle: {
             backgroundColor: theme.card,
             borderTopColor: theme.border,
-            display: isTabBarVisible(route) ? 'flex' : 'none',
+            display: isTabBarVisible(route) ? 'flex' : 'none'
             // Optional platform-specific height adjustments:
             // height: Platform.OS === 'ios' ? 90 : 60,
             // paddingBottom: Platform.OS === 'ios' ? 30 : 0,
@@ -48,51 +48,51 @@ export default function TabNavigator() {
           tabBarInactiveTintColor: theme.textLight,
           tabBarLabelStyle: {
             fontSize: 10,
-            paddingBottom: Platform.OS === 'ios' ? 0 : 5,
+            paddingBottom: Platform.OS === 'ios' ? 0 : 5
           },
           tabBarIconStyle: {
-            marginTop: Platform.OS === 'ios' ? 5 : 0,
+            marginTop: Platform.OS === 'ios' ? 5 : 0
           },
-          headerShown: false,
+          headerShown: false
         })}
       >
         <Tab.Screen
-          name="Programmes"
+          name='Programmes'
           component={ScheduleStack}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <AntDesign name="calendar" size={size} color={color} />
-            ),
+              <AntDesign name='calendar' size={size} color={color} />
+            )
           }}
         />
 
         <Tab.Screen
-          name="Ecoles"
+          name='Ecoles'
           component={SchoolStack}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="school-outline" size={size} color={color} />
-            ),
+              <Ionicons name='school-outline' size={size} color={color} />
+            )
           }}
         />
 
         <Tab.Screen
-          name="Chats"
+          name='Chats'
           component={ChatStack}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="chatbubbles-outline" size={size} color={color} />
-            ),
+              <Ionicons name='chatbubbles-outline' size={size} color={color} />
+            )
           }}
         />
 
         <Tab.Screen
-          name="Profile"
+          name='Profile'
           component={ProfileStack}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="person-outline" color={color} size={size} />
-            ),
+              <Ionicons name='person-outline' color={color} size={size} />
+            )
           }}
         />
       </Tab.Navigator>

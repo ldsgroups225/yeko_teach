@@ -1,13 +1,9 @@
 // src/hooks/useLocale.ts
 
-import type {
-  SupportedLocale,
-} from '@helpers/global/i18nInstance'
-import type { Locale } from 'date-fns'
-import i18n, {
-  DEFAULT_LOCALE,
-} from '@helpers/global/i18nInstance'
+import type { SupportedLocale } from '@helpers/global/i18nInstance'
+import i18n, { DEFAULT_LOCALE } from '@helpers/global/i18nInstance'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import type { Locale } from 'date-fns'
 import { setDefaultOptions } from 'date-fns'
 import { enUS, fr, tr } from 'date-fns/locale'
 import * as Localization from 'expo-localization'
@@ -16,7 +12,7 @@ import { useCallback, useEffect, useState } from 'react'
 const localeMap: Record<SupportedLocale, Locale> = {
   en: enUS,
   fr,
-  tr,
+  tr
 }
 
 function updateI18nInstance(locale: SupportedLocale): void {
@@ -37,8 +33,7 @@ export function useLocale() {
         if (savedLocale && savedLocale in localeMap) {
           setLocale(savedLocale as SupportedLocale)
         }
-      }
-      catch (error) {
+      } catch (error) {
         console.error('Failed to load saved locale:', error)
       }
     }
@@ -53,8 +48,7 @@ export function useLocale() {
     const saveLocale = async () => {
       try {
         await AsyncStorage.setItem('userLocale', locale)
-      }
-      catch (error) {
+      } catch (error) {
         console.error('Failed to save locale:', error)
       }
     }

@@ -1,20 +1,14 @@
-import type { ITheme } from '@styles/theme'
-import type { Conversation } from '../types/chat'
 import CsText from '@components/CsText'
 import { CsCard } from '@components/index'
 import { formatDate } from '@modules/app/utils'
 import { useTheme } from '@src/hooks'
 import { shadows } from '@styles/shadows'
 import { spacing } from '@styles/spacing'
-import React, {
-  useEffect,
-  useRef,
-} from 'react'
-import {
-  Animated,
-  StyleSheet,
-  View,
-} from 'react-native'
+import type { ITheme } from '@styles/theme'
+import type React from 'react'
+import { useEffect, useRef } from 'react'
+import { Animated, StyleSheet, View } from 'react-native'
+import type { Conversation } from '../types/chat'
 
 export const ConversationItem: React.FC<{
   conversation: Conversation
@@ -28,7 +22,7 @@ export const ConversationItem: React.FC<{
     Animated.timing(opacity, {
       toValue: 1,
       duration: 500,
-      useNativeDriver: true,
+      useNativeDriver: true
     }).start()
   }, [])
 
@@ -38,17 +32,17 @@ export const ConversationItem: React.FC<{
       {
         translateY: opacity.interpolate({
           inputRange: [0, 1],
-          outputRange: [50, 0],
-        }),
-      },
-    ],
+          outputRange: [50, 0]
+        })
+      }
+    ]
   }
 
   return (
     <Animated.View style={[themedStyles.conversationItem, animatedStyle]}>
       <CsCard style={themedStyles.conversationCard} onPress={onPress}>
         <View style={themedStyles.conversationHeader}>
-          <CsText variant="h3" style={themedStyles.conversationTopic}>
+          <CsText variant='h3' style={themedStyles.conversationTopic}>
             {conversation.topic}
           </CsText>
           {conversation.unreadCount > 0 && (
@@ -60,19 +54,18 @@ export const ConversationItem: React.FC<{
           )}
         </View>
         <CsText
-          variant="body"
+          variant='body'
           numberOfLines={2}
           style={themedStyles.lastMessage}
         >
           {conversation.lastMessage}
         </CsText>
         <View style={themedStyles.conversationFooter}>
-          <CsText variant="caption" style={themedStyles.participantText}>
-            {conversation.participants[1]}
-            {' '}
+          <CsText variant='caption' style={themedStyles.participantText}>
+            {conversation.participants[1]}{' '}
             {/* Assuming index 1 is the other participant */}
           </CsText>
-          <CsText variant="caption" style={themedStyles.dateText}>
+          <CsText variant='caption' style={themedStyles.dateText}>
             {formatDate(conversation.lastMessageDate, 'd MMM yyyy')}
           </CsText>
         </View>
@@ -84,47 +77,47 @@ export const ConversationItem: React.FC<{
 function useStyles(theme: ITheme) {
   return StyleSheet.create({
     conversationItem: {
-      marginBottom: spacing.md,
+      marginBottom: spacing.md
     },
     conversationCard: {
       padding: spacing.md,
-      ...shadows.small,
+      ...shadows.small
     },
     conversationHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: spacing.xs,
+      marginBottom: spacing.xs
     },
     conversationTopic: {
-      flex: 1,
+      flex: 1
     },
     unreadBadge: {
       backgroundColor: theme.primary,
       borderRadius: 12,
       paddingHorizontal: 8,
-      paddingVertical: 4,
+      paddingVertical: 4
     },
     unreadBadgeText: {
       color: theme.background,
       fontSize: 12,
-      fontWeight: 'bold',
+      fontWeight: 'bold'
     },
     lastMessage: {
       color: theme.textLight,
-      marginBottom: spacing.xs,
+      marginBottom: spacing.xs
     },
     conversationFooter: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      alignItems: 'flex-start',
+      alignItems: 'flex-start'
     },
     participantText: {
       color: theme.textLight,
-      width: '70%',
+      width: '70%'
     },
     dateText: {
-      color: theme.textLight,
-    },
+      color: theme.textLight
+    }
   })
 }

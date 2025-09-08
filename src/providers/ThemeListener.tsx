@@ -14,13 +14,13 @@ export default function ThemeListener() {
 
   useEffect(() => {
     const handleColorModeChange = async (
-      preferences: Appearance.AppearancePreferences,
+      preferences: Appearance.AppearancePreferences
     ) => {
       dispatch(setUserColorScheme(preferences?.colorScheme))
     }
 
     Appearance.addChangeListener(
-      throttle(handleColorModeChange, 100, { leading: false, trailing: true }),
+      throttle(handleColorModeChange, 100, { leading: false, trailing: true })
     )
 
     return () => {}

@@ -19,11 +19,11 @@ export const styles = StyleSheet.create({
     zIndex: 99999,
     paddingLeft: 30,
     paddingRight: 30,
-    paddingTop: 35,
+    paddingTop: 35
   },
   text: {
     fontWeight: '700',
     color: $white,
-    fontSize: 16,
-  },
+    fontSize: 16
+  }
 })

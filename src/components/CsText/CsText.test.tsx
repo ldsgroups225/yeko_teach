@@ -15,37 +15,47 @@ describe('csText', () => {
   })
 
   it('applies correct styles for different variants', () => {
-    const { getByTestId, rerender } = render(<CsText variant="h1">Heading 1</CsText>)
+    const { getByTestId, rerender } = render(
+      <CsText variant='h1'>Heading 1</CsText>
+    )
     const text = getByTestId(`${testID}-text`)
     expect(text.props.style).toEqual(
-      expect.arrayContaining([expect.objectContaining({ fontSize: 32 })]),
+      expect.arrayContaining([expect.objectContaining({ fontSize: 32 })])
     )
 
-    rerender(<CsText variant="body">Body text</CsText>)
+    rerender(<CsText variant='body'>Body text</CsText>)
     expect(text.props.style).toEqual(
-      expect.arrayContaining([expect.objectContaining({ fontSize: 16 })]),
+      expect.arrayContaining([expect.objectContaining({ fontSize: 16 })])
     )
   })
 
   it('applies correct color styles', () => {
-    const { getByTestId, rerender } = render(<CsText color="primary">Primary text</CsText>)
+    const { getByTestId, rerender } = render(
+      <CsText color='primary'>Primary text</CsText>
+    )
     const text = getByTestId(`${testID}-text`)
     expect(text.props.style).toEqual(
-      expect.arrayContaining([expect.objectContaining({ color: expect.any(String) })]),
+      expect.arrayContaining([
+        expect.objectContaining({ color: expect.any(String) })
+      ])
     )
 
-    rerender(<CsText color="error">Error text</CsText>)
+    rerender(<CsText color='error'>Error text</CsText>)
     expect(text.props.style).toEqual(
-      expect.arrayContaining([expect.objectContaining({ color: expect.any(String) })]),
+      expect.arrayContaining([
+        expect.objectContaining({ color: expect.any(String) })
+      ])
     )
   })
 
   it('allows custom styles to be applied', () => {
     const customStyle = { marginBottom: 10 }
-    const { getByTestId } = render(<CsText style={customStyle}>Custom styled text</CsText>)
+    const { getByTestId } = render(
+      <CsText style={customStyle}>Custom styled text</CsText>
+    )
     const text = getByTestId(`${testID}-text`)
     expect(text.props.style).toEqual(
-      expect.arrayContaining([expect.objectContaining(customStyle)]),
+      expect.arrayContaining([expect.objectContaining(customStyle)])
     )
   })
 })

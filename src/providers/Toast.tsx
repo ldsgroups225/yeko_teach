@@ -32,7 +32,7 @@ export const toastActions = {
    */
   open(param: IToastType) {
     useToastRef?.open(param)
-  },
+  }
 }
 
 export default ToastUtils

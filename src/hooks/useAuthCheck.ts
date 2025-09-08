@@ -1,14 +1,14 @@
 // src/hooks/useAuthCheck.ts
 
-import type { IUserDTO } from '@modules/app/types/ILoginDTO'
 import {
   addStoreDataAsync,
   getStoreDataAsync,
   getStoreStringAsync,
-  removeStoreDataAsync,
+  removeStoreDataAsync
 } from '@helpers/storage'
 import { StoreEnum } from '@helpers/storage/storeEnum'
 import { auth } from '@modules/app/services/appService'
+import type { IUserDTO } from '@modules/app/types/ILoginDTO'
 import { isCacheTooOld } from '@utils/CacheTooOldChecker'
 import { useCallback } from 'react'
 import { useTeacherData } from './useTeacherData'
@@ -21,7 +21,7 @@ export function useAuthCheck() {
       // Step 1: Get current user first
       const {
         data: { session },
-        error: sessionError,
+        error: sessionError
       } = await auth.getAccount()
 
       if (sessionError) {
@@ -32,11 +32,9 @@ export function useAuthCheck() {
       if (session) {
         // Step 2: Check cached user data after successful login
         const cachedTeacherUser = await getStoreDataAsync<IUserDTO>(
-          StoreEnum.User,
+          StoreEnum.User
         )
-        const cacheDuration = await getStoreStringAsync(
-          StoreEnum.CacheDuration,
-        )
+        const cacheDuration = await getStoreStringAsync(StoreEnum.CacheDuration)
 
         if (cachedTeacherUser && cacheDuration) {
           const isOldCache = isCacheTooOld(cacheDuration)
@@ -67,8 +65,7 @@ export function useAuthCheck() {
         }
       }
       return null
-    }
-    catch (err) {
+    } catch (err) {
       console.error('[E_AUTH_CHECK]:', err)
       return null
     }

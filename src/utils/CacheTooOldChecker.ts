@@ -15,7 +15,9 @@
 export function isCacheTooOld(cacheDate: string): boolean {
   const cacheTime = new Date(cacheDate).getTime()
   if (Number.isNaN(cacheTime)) {
-    console.warn(`Invalid cache date provided: "${cacheDate}". Treating cache as expired.`)
+    console.warn(
+      `Invalid cache date provided: "${cacheDate}". Treating cache as expired.`
+    )
     return true
   }
 

@@ -1,10 +1,10 @@
 // src/routers/ScheduleStack.tsx
 
-import type { ScheduleStackParams } from '@utils/Routes'
 import translate from '@helpers/localization'
 import ScheduleScreen from '@modules/schedule/screens/schedule'
 import { createStackNavigator } from '@react-navigation/stack'
 import { useTheme } from '@src/hooks'
+import type { ScheduleStackParams } from '@utils/Routes'
 import Routes from '@utils/Routes'
 import { ScreenOptions } from '@utils/ScreenOptions'
 import * as React from 'react'
@@ -26,7 +26,7 @@ function ChatStack() {
         component={ScheduleScreen}
         options={{
           headerTitle: translate('navigation.profile'),
-          headerShown: false,
+          headerShown: false
         }}
       />
     </Stack.Navigator>

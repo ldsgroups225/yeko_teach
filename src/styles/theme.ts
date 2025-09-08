@@ -40,6 +40,8 @@ export const LightTheme = {
   surfaceVariant: '#E1E2EC', // Alternative surface color
   onSurfaceVariant: '#44474F', // Text on surface variant
   outline: '#74777F', // Outline color for components
+  overlay: 'rgba(0, 0, 0, 0.5)', // Overlay for modals
+  overlayLight: 'rgba(0, 0, 0, 0.3)' // Light overlay
 }
 
 export type ITheme = typeof LightTheme
@@ -84,4 +86,6 @@ export const DarkTheme: ITheme = {
   surfaceVariant: '#2F3033', // Alternative surface color for dark mode
   onSurfaceVariant: '#C4C6D0', // Text on surface variant for dark mode
   outline: '#8C8E93', // Outline color for components in dark mode
+  overlay: 'rgba(0, 0, 0, 0.7)', // Overlay for modals in dark mode
+  overlayLight: 'rgba(0, 0, 0, 0.5)' // Light overlay in dark mode
 }

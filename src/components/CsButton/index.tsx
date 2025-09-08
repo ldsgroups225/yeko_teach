@@ -1,16 +1,16 @@
 // src/components/CsButton/index.tsx
 
-import type { CsButtonProps } from './type'
 import { useTheme, useThemedStyles } from '@src/hooks'
-import React from 'react'
+import type React from 'react'
 import { ActivityIndicator, Pressable, Text } from 'react-native'
 import Animated, {
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
+  withSpring
 } from 'react-native-reanimated'
 import { styles } from './style'
+import type { CsButtonProps } from './type'
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
 
@@ -25,7 +25,7 @@ const CsButton: React.FC<CsButtonProps> = ({
   size = 'medium',
   icon,
   style,
-  textStyle,
+  textStyle
 }) => {
   const theme = useTheme()
   const themedStyles = useThemedStyles<typeof styles>(styles)
@@ -35,7 +35,7 @@ const CsButton: React.FC<CsButtonProps> = ({
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
-    opacity: opacity.value,
+    opacity: opacity.value
   }))
 
   const handlePressIn = () => {
@@ -57,7 +57,7 @@ const CsButton: React.FC<CsButtonProps> = ({
     themedStyles[`button${variant}`],
     themedStyles[`button${size}`],
     disabled && themedStyles.buttonDisabled,
-    style,
+    style
   ]
 
   const textStyleArray = [
@@ -65,7 +65,7 @@ const CsButton: React.FC<CsButtonProps> = ({
     themedStyles[`text${variant}`],
     themedStyles[`text${size}`],
     disabled && themedStyles.textDisabled,
-    textStyle,
+    textStyle
   ]
 
   return (
@@ -78,24 +78,22 @@ const CsButton: React.FC<CsButtonProps> = ({
       style={[buttonStyle, animatedStyle]}
       android_ripple={{ color: theme.rippleColor }}
     >
-      {loading
-        ? (
-            <ActivityIndicator
-              testID={`${testID}-loading`}
-              color={theme.background}
-              size="small"
-            />
-          )
-        : (
-            <>
-              {icon && (
-                <Animated.View style={themedStyles.icon}>{icon}</Animated.View>
-              )}
-              <Text testID={`${testID}-text`} style={textStyleArray}>
-                {title}
-              </Text>
-            </>
+      {loading ? (
+        <ActivityIndicator
+          testID={`${testID}-loading`}
+          color={theme.background}
+          size='small'
+        />
+      ) : (
+        <>
+          {icon && (
+            <Animated.View style={themedStyles.icon}>{icon}</Animated.View>
           )}
+          <Text testID={`${testID}-text`} style={textStyleArray}>
+            {title}
+          </Text>
+        </>
+      )}
     </AnimatedPressable>
   )
 }

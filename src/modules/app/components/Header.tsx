@@ -1,7 +1,7 @@
 import { FontAwesome5 } from '@expo/vector-icons'
 import { useThemedStyles } from '@src/hooks'
 import { colors, spacing, typography } from '@styles/index'
-import React from 'react'
+import type React from 'react'
 import {
   Dimensions,
   Image,
@@ -9,7 +9,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native'
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
@@ -26,13 +26,16 @@ export const Header: React.FC = () => {
       <ImageBackground
         source={require('@assets/images/school-background.jpg')}
         style={themedStyles.headerBackground}
-        resizeMode="cover"
+        resizeMode='cover'
       >
         <View style={themedStyles.overlay} />
         <View style={themedStyles.headerContent}>
-          <Image source={require('@assets/images/yeko-logo.png')} style={themedStyles.logo} />
+          <Image
+            source={require('@assets/images/yeko-logo.png')}
+            style={themedStyles.logo}
+          />
           <TouchableOpacity style={themedStyles.menuButton}>
-            <FontAwesome5 name="bars" size={24} color={colors.white} />
+            <FontAwesome5 name='bars' size={24} color={colors.white} />
           </TouchableOpacity>
         </View>
         <View style={themedStyles.profileContainer}>
@@ -52,49 +55,49 @@ function styles() {
   return StyleSheet.create({
     headerContainer: {
       height: IMAGE_HEIGHT,
-      maxHeight: SCREEN_HEIGHT * 0.4, // Limit to 40% of screen height
+      maxHeight: SCREEN_HEIGHT * 0.4 // Limit to 40% of screen height
     },
     headerBackground: {
       width: '100%',
       height: '100%',
-      justifyContent: 'space-between',
+      justifyContent: 'space-between'
     },
     overlay: {
       ...StyleSheet.absoluteFillObject,
-      backgroundColor: $black30,
+      backgroundColor: $black30
     },
     headerContent: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'flex-start',
-      padding: spacing.md,
+      padding: spacing.md
     },
     logo: {
       width: 80,
       height: 40,
-      resizeMode: 'contain',
+      resizeMode: 'contain'
     },
     menuButton: {
-      padding: spacing.sm,
+      padding: spacing.sm
     },
     profileContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      padding: spacing.md,
+      padding: spacing.md
     },
     profilePic: {
       width: 40,
       height: 40,
       borderRadius: 20,
-      marginRight: spacing.sm,
+      marginRight: spacing.sm
     },
     profileName: {
       ...typography.NORMAL,
-      color: colors.white,
+      color: colors.white
     },
     orangeBar: {
       height: 4,
-      backgroundColor: colors.secondary,
-    },
+      backgroundColor: colors.secondary
+    }
   })
 }

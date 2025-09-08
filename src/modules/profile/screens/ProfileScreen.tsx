@@ -1,6 +1,5 @@
 // src/modules/profile/screens/ProfileScreen.tsx
 
-import type { ITheme } from '@styles/theme'
 import CsButton from '@components/CsButton'
 import { OtpForm } from '@components/OtpForm'
 import { ToastColorEnum } from '@components/ToastMessage/ToastColorEnum'
@@ -12,13 +11,15 @@ import { useSchoolJoin } from '@hooks/useSchoolJoin'
 import { loggedOut } from '@modules/app/redux/appSlice'
 import { useAppSelector } from '@src/store'
 import { spacing } from '@styles/index'
-import React, { useCallback, useEffect, useState } from 'react'
+import type { ITheme } from '@styles/theme'
+import type React from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Modal, ScrollView, StyleSheet, View } from 'react-native'
 import Animated, {
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
-  withTiming,
+  withTiming
 } from 'react-native-reanimated'
 import { useDispatch } from 'react-redux'
 import { ClearCacheSection, ProfileHeader, ProfileSection } from '../components'
@@ -31,7 +32,11 @@ const $black50 = '#00000050'
 const ProfileScreen: React.FC = () => {
   const themedStyles = useThemedStyles<typeof createStyles>(createStyles)
   const user = useAppSelector(state => state?.AppReducer?.user)
-  const { joinSchool, loading: isJoiningSchool, error: joinSchoolError } = useSchoolJoin(user?.id || '')
+  const {
+    joinSchool,
+    loading: isJoiningSchool,
+    error: joinSchoolError
+  } = useSchoolJoin(user?.id || '')
 
   const dispatch = useDispatch()
   const { logout, loading: isLoggingOut } = useAuth()
@@ -45,7 +50,7 @@ const ProfileScreen: React.FC = () => {
 
   // Define an animated style that drives the opacity based on the shared value.
   const fadeStyle = useAnimatedStyle(() => ({
-    opacity: fade.value,
+    opacity: fade.value
   }))
 
   useEffect(() => {
@@ -61,8 +66,7 @@ const ProfileScreen: React.FC = () => {
         dispatch(loggedOut())
         await clearCache()
       }
-    }
-    catch {
+    } catch {
       showToast('Un problème rencontré lors de la déconnexion, réessayer')
     }
   }, [dispatch, logout, clearCache])
@@ -82,16 +86,19 @@ const ProfileScreen: React.FC = () => {
     fade.value = withTiming(1, { duration: 300 })
   }, [fade])
 
-  const handleOtpComplete = useCallback(async (code: string) => {
-    const joined = await joinSchool(code)
-    if (joined) {
-      await clearCache()
-      // Fade out the OTP form then hide it.
-      fade.value = withTiming(0, { duration: 300 }, () => {
-        runOnJS(setShowOtpForm)(false)
-      })
-    }
-  }, [fade, joinSchool, clearCache])
+  const handleOtpComplete = useCallback(
+    async (code: string) => {
+      const joined = await joinSchool(code)
+      if (joined) {
+        await clearCache()
+        // Fade out the OTP form then hide it.
+        fade.value = withTiming(0, { duration: 300 }, () => {
+          runOnJS(setShowOtpForm)(false)
+        })
+      }
+    },
+    [fade, joinSchool, clearCache]
+  )
 
   const handleOtpCancel = useCallback(() => {
     // Fade out the OTP form then hide it.
@@ -100,30 +107,29 @@ const ProfileScreen: React.FC = () => {
     })
   }, [fade])
 
-  if (!user)
-    return null
+  if (!user) return null
 
   return (
     <ScrollView style={themedStyles.container}>
       <ProfileHeader user={user} />
 
       <ProfileSection
-        title="Mettre à jour le profil"
+        title='Mettre à jour le profil'
         onPress={handleUpdateProfile}
         disabled={isUpdatingProfile || showOtpForm || isJoiningSchool}
         loading={isUpdatingProfile}
-        infoText="ℹ️ Modifier votre nom et photo"
+        infoText='ℹ️ Modifier votre nom et photo'
       />
 
       <ProfileSection
-        title="Joindre une nouvelle école"
+        title='Joindre une nouvelle école'
         onPress={handleJoinNewSchool}
         disabled={showOtpForm || isJoiningSchool}
-        infoText="Entrez le code OTP pour lier votre profil à une nouvelle école"
+        infoText='Entrez le code OTP pour lier votre profil à une nouvelle école'
       />
 
       <Modal
-        animationType="slide"
+        animationType='slide'
         transparent
         visible={showOtpForm}
         onRequestClose={() => setShowOtpForm(false)}
@@ -147,7 +153,7 @@ const ProfileScreen: React.FC = () => {
       />
 
       <CsButton
-        title="Déconnexion"
+        title='Déconnexion'
         onPress={handleLogout}
         disabled={isLoggingOut || showOtpForm || isJoiningSchool}
         loading={isLoggingOut}
@@ -161,13 +167,13 @@ function createStyles(theme: ITheme) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: theme.background,
+      backgroundColor: theme.background
     },
     centeredView: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: $black50,
+      backgroundColor: $black50
     },
     modalView: {
       margin: 20,
@@ -178,22 +184,22 @@ function createStyles(theme: ITheme) {
       shadowColor: $black,
       shadowOffset: {
         width: 0,
-        height: 2,
+        height: 2
       },
       shadowOpacity: 0.25,
       shadowRadius: 4,
       elevation: 5,
-      width: '90%',
+      width: '90%'
     },
     otpFormContainer: {
       padding: spacing.lg,
       borderBottomWidth: 1,
-      borderBottomColor: theme.border,
+      borderBottomColor: theme.border
     },
     logoutButton: {
       margin: spacing.lg,
-      backgroundColor: theme.error,
-    },
+      backgroundColor: theme.error
+    }
   })
 }
 

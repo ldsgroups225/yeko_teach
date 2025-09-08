@@ -9,8 +9,8 @@ import ErrorComponent from './index'
 const mockStore = configureStore()
 const States = {
   AppReducer: {
-    userColorScheme: 'light',
-  },
+    userColorScheme: 'light'
+  }
 }
 const Store = mockStore(States)
 
@@ -20,7 +20,7 @@ describe('errorComponent', () => {
     const { getByText } = render(
       <Provider store={Store}>
         <ErrorComponent errorMessage={errorMessage} />
-      </Provider>,
+      </Provider>
     )
     const messageElement = getByText(errorMessage)
     expect(messageElement).toBeTruthy()

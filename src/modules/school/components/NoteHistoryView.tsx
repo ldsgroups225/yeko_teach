@@ -1,16 +1,23 @@
 // src/modules/school/components/NoteHistoryView.tsx
 
-import type { INoteDTO } from '@modules/app/types/ILoginDTO'
-import type { ITheme } from '@styles/theme'
 import CsText from '@components/CsText'
 import EmptyListComponent from '@components/EmptyListComponent'
 import { Ionicons } from '@expo/vector-icons'
 import { NOTE_OPTIONS } from '@modules/app/constants/noteTypes'
+import type { INoteDTO } from '@modules/app/types/ILoginDTO'
 import { useTheme } from '@src/hooks'
 import { spacing } from '@styles/spacing'
+import type { ITheme } from '@styles/theme'
 import { format } from 'date-fns'
-import React from 'react'
-import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import type React from 'react'
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native'
 
 interface NoteHistoryViewProps {
   notes: INoteDTO[]
@@ -31,7 +38,7 @@ export const NoteHistoryView: React.FC<NoteHistoryViewProps> = ({
   onEndReached,
   isLoadingMore = false,
   hasMore = false,
-  deletingNoteId = null,
+  deletingNoteId = null
 }) => {
   const theme = useTheme()
   const styles = useStyles(theme)
@@ -46,19 +53,19 @@ export const NoteHistoryView: React.FC<NoteHistoryViewProps> = ({
         disabled={item.isActive}
       >
         <View style={styles.noteHeader}>
-          <CsText variant="h3">{item.title}</CsText>
-          <CsText variant="caption" style={styles.noteType}>
+          <CsText variant='h3'>{item.title}</CsText>
+          <CsText variant='caption' style={styles.noteType}>
             {NOTE_OPTIONS.find(t => t.value === item.noteType)?.label}
           </CsText>
         </View>
 
         <View style={styles.noteDetails}>
           <View style={styles.detailRow}>
-            <CsText variant="body">
+            <CsText variant='body'>
               Notée sur:
               {item.totalPoints}
             </CsText>
-            <CsText variant="body">
+            <CsText variant='body'>
               Coeff:
               {item.weight}
             </CsText>
@@ -66,37 +73,31 @@ export const NoteHistoryView: React.FC<NoteHistoryViewProps> = ({
 
           <View style={styles.detailRow}>
             {item.dueDate && (
-              <CsText variant="caption">
-                Évaluation du
-                {' '}
-                {format(new Date(item.dueDate), 'dd/MM/yyyy')}
+              <CsText variant='caption'>
+                Évaluation du {format(new Date(item.dueDate), 'dd/MM/yyyy')}
               </CsText>
             )}
 
             <View style={styles.noteStatus}>
-              {item.isPublished
-                ? (
-                    <View style={styles.publishedBadge}>
-                      <CsText variant="caption" style={styles.publishedBadgeText}>
-                        Publié
-                      </CsText>
-                    </View>
-                  )
-                : item.isActive
-                  ? (
-                      <View style={styles.activeBadge}>
-                        <CsText variant="caption" style={styles.activeBadgeText}>
-                          Distribué
-                        </CsText>
-                      </View>
-                    )
-                  : (
-                      <View style={styles.draftBadge}>
-                        <CsText variant="caption" style={styles.draftBadgeText}>
-                          Brouillon
-                        </CsText>
-                      </View>
-                    )}
+              {item.isPublished ? (
+                <View style={styles.publishedBadge}>
+                  <CsText variant='caption' style={styles.publishedBadgeText}>
+                    Publié
+                  </CsText>
+                </View>
+              ) : item.isActive ? (
+                <View style={styles.activeBadge}>
+                  <CsText variant='caption' style={styles.activeBadgeText}>
+                    Distribué
+                  </CsText>
+                </View>
+              ) : (
+                <View style={styles.draftBadge}>
+                  <CsText variant='caption' style={styles.draftBadgeText}>
+                    Brouillon
+                  </CsText>
+                </View>
+              )}
             </View>
           </View>
 
@@ -111,17 +112,18 @@ export const NoteHistoryView: React.FC<NoteHistoryViewProps> = ({
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.trashButton, deletingNoteId === item.id && styles.disabledButton]}
+                style={[
+                  styles.trashButton,
+                  deletingNoteId === item.id && styles.disabledButton
+                ]}
                 onPress={() => onPressDelete(item.id!)}
                 disabled={!!deletingNoteId}
               >
-                {deletingNoteId === item.id
-                  ? (
-                      <ActivityIndicator size="small" color={theme.background} />
-                    )
-                  : (
-                      <Ionicons name="trash" size={24} color={theme.background} />
-                    )}
+                {deletingNoteId === item.id ? (
+                  <ActivityIndicator size='small' color={theme.background} />
+                ) : (
+                  <Ionicons name='trash' size={24} color={theme.background} />
+                )}
               </TouchableOpacity>
             </View>
           )}
@@ -131,12 +133,11 @@ export const NoteHistoryView: React.FC<NoteHistoryViewProps> = ({
   }
 
   const renderFooter = () => {
-    if (!isLoadingMore)
-      return null
+    if (!isLoadingMore) return null
 
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="small" color={theme.primary} />
+        <ActivityIndicator size='small' color={theme.primary} />
       </View>
     )
   }
@@ -148,7 +149,7 @@ export const NoteHistoryView: React.FC<NoteHistoryViewProps> = ({
       keyExtractor={item => item.id!}
       style={styles.notesList}
       ListEmptyComponent={
-        <EmptyListComponent message="Aucune évaluation enregistrée" />
+        <EmptyListComponent message='Aucune évaluation enregistrée' />
       }
       onEndReached={hasMore ? onEndReached : undefined}
       onEndReachedThreshold={0.5}
@@ -163,66 +164,66 @@ function useStyles(theme: ITheme) {
       backgroundColor: theme.card,
       borderRadius: 8,
       padding: spacing.md,
-      marginBottom: spacing.sm,
+      marginBottom: spacing.sm
     },
     disabledNoteItem: {
-      opacity: 0.6,
+      opacity: 0.6
     },
     noteHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: spacing.sm,
+      marginBottom: spacing.sm
     },
     noteType: {
-      color: theme.textLight,
+      color: theme.textLight
     },
     noteDetails: {
-      marginBottom: spacing.sm,
+      marginBottom: spacing.sm
     },
     detailRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: spacing.xs,
+      marginBottom: spacing.xs
     },
     noteStatus: {
-      alignItems: 'flex-end',
+      alignItems: 'flex-end'
     },
     publishedBadge: {
       backgroundColor: theme.success,
       paddingHorizontal: spacing.sm,
       paddingVertical: spacing.xs,
-      borderRadius: 4,
+      borderRadius: 4
     },
     activeBadge: {
       backgroundColor: theme.secondary,
       paddingHorizontal: spacing.sm,
       paddingVertical: spacing.xs,
-      borderRadius: 4,
+      borderRadius: 4
     },
     draftBadge: {
       backgroundColor: theme.error,
       paddingHorizontal: spacing.sm,
       paddingVertical: spacing.xs,
-      borderRadius: 4,
+      borderRadius: 4
     },
     publishedBadgeText: {
-      color: theme.text,
+      color: theme.text
     },
     activeBadgeText: {
-      color: theme.text,
+      color: theme.text
     },
     draftBadgeText: {
-      color: theme.background,
+      color: theme.background
     },
     notesList: {
-      flex: 1,
+      flex: 1
     },
     buttonGroup: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       marginTop: spacing.md,
-      columnGap: spacing.sm,
+      columnGap: spacing.sm
     },
     sendButton: {
       backgroundColor: theme.primary,
@@ -230,11 +231,11 @@ function useStyles(theme: ITheme) {
       paddingVertical: spacing.xs,
       paddingHorizontal: spacing.sm,
       alignItems: 'center',
-      flex: 1,
+      flex: 1
     },
     disabledButton: {
       backgroundColor: theme.textLight,
-      opacity: 0.5,
+      opacity: 0.5
     },
     trashButton: {
       backgroundColor: theme.error,
@@ -244,19 +245,19 @@ function useStyles(theme: ITheme) {
       alignItems: 'center',
       justifyContent: 'center',
       minWidth: 44,
-      minHeight: 44,
+      minHeight: 44
     },
     disabledTrashButton: {
       backgroundColor: theme.textLight,
-      opacity: 0.7,
+      opacity: 0.7
     },
     sendButtonText: {
-      color: theme.background,
+      color: theme.background
     },
     loaderContainer: {
       paddingVertical: spacing.md,
-      alignItems: 'center',
-    },
+      alignItems: 'center'
+    }
   })
 }
 

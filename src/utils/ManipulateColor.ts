@@ -8,11 +8,11 @@ type ColorInput =
   | [number, number, number]
   | [number, number, number, number]
   | {
-    r: number
-    g: number
-    b: number
-    a?: number
-  }
+      r: number
+      g: number
+      b: number
+      a?: number
+    }
 
 /**
  * Options for color manipulation.
@@ -54,7 +54,7 @@ interface ColorOptions {
 export function manipulateColor(
   color: ColorInput,
   opacity?: number,
-  options: ColorOptions = {},
+  options: ColorOptions = {}
 ): string {
   const { alpha = 1, format = 'rgb', adjustments = {} } = options
   // Use provided opacity if available; otherwise, use alpha from options
@@ -79,7 +79,13 @@ export function manipulateColor(
     }
 
     // Expand shorthand (3-digit) hex to full 6-digit
-    const fullHex = hex.length === 3 ? hex.split('').map(ch => ch + ch).join('') : hex
+    const fullHex =
+      hex.length === 3
+        ? hex
+            .split('')
+            .map(ch => ch + ch)
+            .join('')
+        : hex
 
     r = Number.parseInt(fullHex.slice(0, 2), 16)
     g = Number.parseInt(fullHex.slice(2, 4), 16)
@@ -89,14 +95,12 @@ export function manipulateColor(
     if (fullHex.length === 8 && opacity === undefined) {
       a = Number.parseInt(fullHex.slice(6, 8), 16) / 255
     }
-  }
-  else if (Array.isArray(color)) {
+  } else if (Array.isArray(color)) {
     // Destructure the array; if alpha is missing, default to finalAlpha
-    [r, g, b, a = finalAlpha] = color
-  }
-  else {
+    ;[r, g, b, a = finalAlpha] = color
+  } else {
     // Destructure from object; if alpha is missing, default to finalAlpha
-    ({ r, g, b, a = finalAlpha } = color)
+    ;({ r, g, b, a = finalAlpha } = color)
   }
 
   // Clamp and round RGB values and clamp alpha
@@ -111,8 +115,7 @@ export function manipulateColor(
   // Apply adjustments if provided (checking explicitly for defined values)
   if (typeof adjustments.hue === 'number') {
     h = (h + adjustments.hue) % 360
-    if (h < 0)
-      h += 360 // Ensure positive hue
+    if (h < 0) h += 360 // Ensure positive hue
   }
   if (typeof adjustments.saturation === 'number') {
     s = clamp(s + adjustments.saturation, 0, 1)
@@ -122,7 +125,7 @@ export function manipulateColor(
   }
 
   // Convert adjusted HSL back to RGB
-  [r, g, b] = hslToRgb(h, s, l)
+  ;[r, g, b] = hslToRgb(h, s, l)
 
   // Format the final color output
   switch (format) {
@@ -193,19 +196,13 @@ function hslToRgb(h: number, s: number, l: number): [number, number, number] {
 
   if (s === 0) {
     r = g = b = l // Achromatic
-  }
-  else {
+  } else {
     const hue2rgb = (p: number, q: number, t: number): number => {
-      if (t < 0)
-        t += 1
-      if (t > 1)
-        t -= 1
-      if (t < 1 / 6)
-        return p + (q - p) * 6 * t
-      if (t < 1 / 2)
-        return q
-      if (t < 2 / 3)
-        return p + (q - p) * (2 / 3 - t) * 6
+      if (t < 0) t += 1
+      if (t > 1) t -= 1
+      if (t < 1 / 6) return p + (q - p) * 6 * t
+      if (t < 1 / 2) return q
+      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6
       return p
     }
 

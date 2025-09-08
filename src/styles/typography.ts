@@ -13,64 +13,64 @@ export const typography: { [key: string]: TextStyle } = {
     fontFamily: fonts.bold,
     fontSize: 32,
     lineHeight: 40,
-    letterSpacing: 0.25,
+    letterSpacing: 0.25
   },
   h2: {
     fontFamily: fonts.bold,
     fontSize: 24,
     lineHeight: 32,
-    letterSpacing: 0,
+    letterSpacing: 0
   },
   h3: {
     fontFamily: fonts.bold,
     fontSize: 20,
     lineHeight: 28,
-    letterSpacing: 0.15,
+    letterSpacing: 0.15
   },
   h4: {
     fontFamily: fonts.medium,
     fontSize: 18,
     lineHeight: 24,
-    letterSpacing: 0.15,
+    letterSpacing: 0.15
   },
   body: {
     fontFamily: fonts.regular,
     fontSize: 16,
     lineHeight: 24,
-    letterSpacing: 0.5,
+    letterSpacing: 0.5
   },
   bodyMedium: {
     fontFamily: fonts.medium,
     fontSize: 16,
     lineHeight: 24,
-    letterSpacing: 0.5,
+    letterSpacing: 0.5
   },
   bodySmall: {
     fontFamily: fonts.regular,
     fontSize: 14,
     lineHeight: 20,
-    letterSpacing: 0.25,
+    letterSpacing: 0.25
   },
   caption: {
     fontFamily: fonts.regular,
     fontSize: 12,
     lineHeight: 16,
-    letterSpacing: 0.4,
+    letterSpacing: 0.4
   },
   button: {
     fontFamily: fonts.medium,
     fontSize: 14,
     lineHeight: 20,
     letterSpacing: 1.25,
-    textTransform: 'uppercase',
+    textTransform: 'uppercase'
   },
   overline: {
     fontFamily: fonts.regular,
     fontSize: 10,
     lineHeight: 16,
     letterSpacing: 1.5,
-    textTransform: 'uppercase',
-  },
+    textTransform: 'uppercase'
+  }
 }
 
 /**
@@ -79,7 +79,10 @@ export const typography: { [key: string]: TextStyle } = {
  * @param modifications - An object containing the properties to change or add.
  * @returns A new TextStyle object with the applied modifications.
  */
-export function createTextStyle(baseStyle: TextStyle, modifications: Partial<TextStyle>): TextStyle {
+export function createTextStyle(
+  baseStyle: TextStyle,
+  modifications: Partial<TextStyle>
+): TextStyle {
   return { ...baseStyle, ...modifications }
 }
 
@@ -89,6 +92,8 @@ export function createTextStyle(baseStyle: TextStyle, modifications: Partial<Tex
 export const typographyVariants = {
   h1Light: createTextStyle(typography.h1, { fontFamily: fonts.regular }),
   bodyBold: createTextStyle(typography.body, { fontFamily: fonts.bold }),
-  captionMedium: createTextStyle(typography.caption, { fontFamily: fonts.medium }),
+  captionMedium: createTextStyle(typography.caption, {
+    fontFamily: fonts.medium
+  })
   // Add more variants as needed
 }

@@ -17,21 +17,21 @@ export function styles(theme: ITheme) {
       alignItems: 'center',
       justifyContent: 'center',
       flexDirection: 'column',
-      backgroundColor: $black85,
+      backgroundColor: $black85
     },
 
     activityIndicatorText: {
       marginTop: 2,
       fontWeight: 'bold',
       fontSize: 4,
-      color: theme.primary,
+      color: theme.primary
     },
 
     modalContainer: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: $black30,
-    },
+      backgroundColor: $black30
+    }
   })
 }

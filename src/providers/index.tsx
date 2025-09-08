@@ -1,6 +1,6 @@
 // src/providers/index.tsx
 
-import React from 'react'
+import type React from 'react'
 import AppLoadingProvider from './AppLoadingProvider'
 import NetworkInfoContainer from './NetworkInfoContainer'
 import ThemeListener from './ThemeListener'

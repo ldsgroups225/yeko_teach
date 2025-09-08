@@ -10,7 +10,7 @@ import {
   Montserrat_600SemiBold,
   Montserrat_700Bold,
   Montserrat_800ExtraBold,
-  Montserrat_900Black,
+  Montserrat_900Black
 } from '@expo-google-fonts/montserrat'
 
 const Thin = Montserrat_100Thin
@@ -35,7 +35,7 @@ const MontserratFont = {
   SemiBold,
   Bold,
   ExtraBold,
-  Black,
+  Black
 }
 
 export default MontserratFont

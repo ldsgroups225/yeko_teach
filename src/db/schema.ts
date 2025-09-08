@@ -19,7 +19,7 @@ export const noteTable = sqliteTable('notes', () => ({
   dueDate: text('due_date'),
   createdAt: text('created_at').$default(() => new Date().toISOString()),
   lastSyncAt: text('last_sync_at'),
-  isPublished: int('is_published').notNull().default(0),
+  isPublished: int('is_published').notNull().default(0)
 }))
 
 export const noteDetailTable = sqliteTable('note_details', () => ({
@@ -27,5 +27,5 @@ export const noteDetailTable = sqliteTable('note_details', () => ({
   noteId: int('note_id').notNull(),
   studentId: text('student_id').notNull(),
   note: int('note').notNull(),
-  gradedAt: text('graded_at'),
+  gradedAt: text('graded_at')
 }))

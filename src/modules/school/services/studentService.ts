@@ -21,7 +21,9 @@ export const students = {
 
     if (error) {
       console.error('Error getting students:', error)
-      throw new Error('Erreur lors de la récupération des élèves de cette classe')
+      throw new Error(
+        'Erreur lors de la récupération des élèves de cette classe'
+      )
     }
 
     if (!data || data.length === 0) {
@@ -31,7 +33,7 @@ export const students = {
     return data.map(student => ({
       id: student.student_id,
       firstName: student.students.first_name,
-      lastName: student.students.last_name,
+      lastName: student.students.last_name
     }))
-  },
+  }
 }

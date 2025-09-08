@@ -2,7 +2,7 @@ import CsCard from '@components/CsCard'
 import CsText from '@components/CsText'
 import { useThemedStyles } from '@hooks/index'
 import { spacing } from '@src/styles'
-import React from 'react'
+import type React from 'react'
 import { StyleSheet, View } from 'react-native'
 
 export interface MenuItemProps {
@@ -18,7 +18,7 @@ export const MenuItem: React.FC<MenuItemProps> = ({ icon, label, onPress }) => {
     <CsCard style={themedStyles.menuItem} onPress={onPress}>
       <View style={themedStyles.menuItemContent}>
         {icon}
-        <CsText variant="body" style={themedStyles.menuItemText}>
+        <CsText variant='body' style={themedStyles.menuItemText}>
           {label}
         </CsText>
       </View>
@@ -31,16 +31,16 @@ function styles() {
     menuItem: {
       width: '45%',
       aspectRatio: 1,
-      marginBottom: spacing.md,
+      marginBottom: spacing.md
     },
     menuItemContent: {
       flex: 1,
       justifyContent: 'center',
-      alignItems: 'center',
+      alignItems: 'center'
     },
     menuItemText: {
       marginTop: spacing.xs,
-      textAlign: 'center',
-    },
+      textAlign: 'center'
+    }
   })
 }

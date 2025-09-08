@@ -13,7 +13,7 @@ import { toastActions } from '@src/providers/Toast'
 export function showToast(
   msg: string,
   type?: ToastColorEnum,
-  duration?: number,
+  duration?: number
 ) {
   toastActions.open({ msg, type, duration })
 }

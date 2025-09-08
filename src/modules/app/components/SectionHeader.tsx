@@ -1,7 +1,7 @@
 import CsText from '@components/CsText'
 import { useThemedStyles } from '@hooks/index'
 import { spacing } from '@styles/spacing'
-import React from 'react'
+import type React from 'react'
 import { StyleSheet } from 'react-native'
 
 interface SectionHeaderProps {
@@ -12,7 +12,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({ title }) => {
   const themedStyles = useThemedStyles<typeof styles>(styles)
 
   return (
-    <CsText variant="h2" style={themedStyles.sectionTitle}>
+    <CsText variant='h2' style={themedStyles.sectionTitle}>
       {title}
     </CsText>
   )
@@ -23,8 +23,8 @@ function styles() {
     sectionTitle: {
       marginTop: spacing.md,
       marginBottom: spacing.sm,
-      paddingHorizontal: spacing.md,
-    },
+      paddingHorizontal: spacing.md
+    }
   })
 }
 

@@ -8,38 +8,38 @@ export function styles(theme: ITheme) {
   return StyleSheet.create({
     base: {
       ...typography.body,
-      color: theme.text,
+      color: theme.text
     },
     h1: {
-      ...typography.h1,
+      ...typography.h1
     },
     h2: {
-      ...typography.h2,
+      ...typography.h2
     },
     h3: {
-      ...typography.h3,
+      ...typography.h3
     },
     body: {
-      ...typography.body,
+      ...typography.body
     },
     caption: {
-      ...typography.caption,
+      ...typography.caption
     },
     overline: {
-      ...typography.overline,
+      ...typography.overline
     },
     primary: {
-      color: theme.primary,
+      color: theme.primary
     },
     secondary: {
-      color: theme.secondary,
+      color: theme.secondary
     },
     error: {
       ...typography.body,
-      color: theme.notification,
+      color: theme.notification
     },
     light: {
-      color: theme.textLight,
-    },
+      color: theme.textLight
+    }
   })
 }

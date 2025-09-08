@@ -9,7 +9,7 @@ import CsButton from './index'
 // Mock the hooks
 jest.mock('@src/hooks', () => ({
   useTheme: jest.fn(),
-  useThemedStyles: jest.fn(),
+  useThemedStyles: jest.fn()
 }))
 
 // Mock react-native-reanimated
@@ -22,7 +22,7 @@ jest.mock('react-native-reanimated', () => {
     useAnimatedStyle: jest.fn(() => ({})),
     withSpring: jest.fn(),
     withSequence: jest.fn(),
-    runOnJS: jest.fn(fn => fn),
+    runOnJS: jest.fn(fn => fn)
   }
 })
 
@@ -30,16 +30,20 @@ const testID = 'csButton'
 
 describe('csButton', () => {
   beforeEach(() => {
-    (useTheme as jest.Mock).mockReturnValue({
+    ;(useTheme as jest.Mock).mockReturnValue({
       primary: '#007AFF',
       background: '#FFFFFF',
       textLight: '#FFFFFF',
-      rippleColor: 'rgba(0,0,0,0.1)',
-    });
-    (useThemedStyles as jest.Mock).mockReturnValue({
+      rippleColor: 'rgba(0,0,0,0.1)'
+    })
+    ;(useThemedStyles as jest.Mock).mockReturnValue({
       button: { borderRadius: 8 },
       buttonprimary: { backgroundColor: '#007AFF' },
-      buttonsecondary: { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#007AFF' },
+      buttonsecondary: {
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1,
+        borderColor: '#007AFF'
+      },
       buttontext: { backgroundColor: 'transparent' },
       buttonsmall: { paddingVertical: 8, paddingHorizontal: 16 },
       buttonmedium: { paddingVertical: 12, paddingHorizontal: 24 },
@@ -49,7 +53,7 @@ describe('csButton', () => {
       textprimary: { color: '#FFFFFF' },
       textsecondary: { color: '#007AFF' },
       textmedium: { fontSize: 16 },
-      icon: { marginRight: 8 },
+      icon: { marginRight: 8 }
     })
   })
 
@@ -62,7 +66,9 @@ describe('csButton', () => {
 
   it('calls onPress when button is pressed', () => {
     const onPressMock = jest.fn()
-    const { getByTestId } = render(<CsButton title="Press me" onPress={onPressMock} />)
+    const { getByTestId } = render(
+      <CsButton title='Press me' onPress={onPressMock} />
+    )
     const button = getByTestId(`${testID}-pressable`)
     fireEvent.press(button)
     expect(onPressMock).toHaveBeenCalledTimes(1)
@@ -70,7 +76,7 @@ describe('csButton', () => {
 
   it('applies disabled style when button is disabled', () => {
     const { getByTestId } = render(
-      <CsButton title="Press me" onPress={() => {}} disabled />,
+      <CsButton title='Press me' onPress={() => {}} disabled />
     )
     const button = getByTestId(`${testID}-pressable`)
     expect(button.props.accessibilityState.disabled).toBe(true)
@@ -79,7 +85,7 @@ describe('csButton', () => {
 
   it('shows loading indicator when loading prop is true', () => {
     const { getByTestId, queryByTestId } = render(
-      <CsButton title="Press me" onPress={() => {}} loading />,
+      <CsButton title='Press me' onPress={() => {}} loading />
     )
     const loadingIndicator = getByTestId(`${testID}-loading`)
     const buttonText = queryByTestId(`${testID}-text`)
@@ -89,44 +95,57 @@ describe('csButton', () => {
 
   it('applies correct styles for different variants', () => {
     const { getByTestId, rerender } = render(
-      <CsButton title="Press me" onPress={() => {}} variant="primary" />,
+      <CsButton title='Press me' onPress={() => {}} variant='primary' />
     )
     let button = getByTestId(`${testID}-pressable`)
     expect(button.props.style[0]).toContainEqual({ backgroundColor: '#007AFF' })
 
-    rerender(<CsButton title="Press me" onPress={() => {}} variant="secondary" />)
+    rerender(
+      <CsButton title='Press me' onPress={() => {}} variant='secondary' />
+    )
     button = getByTestId(`${testID}-pressable`)
     expect(button.props.style[0]).toContainEqual({
       backgroundColor: '#FFFFFF',
       borderWidth: 1,
-      borderColor: '#007AFF',
+      borderColor: '#007AFF'
     })
 
-    rerender(<CsButton title="Press me" onPress={() => {}} variant="text" />)
+    rerender(<CsButton title='Press me' onPress={() => {}} variant='text' />)
     button = getByTestId(`${testID}-pressable`)
-    expect(button.props.style[0]).toContainEqual({ backgroundColor: 'transparent' })
+    expect(button.props.style[0]).toContainEqual({
+      backgroundColor: 'transparent'
+    })
   })
 
   it('applies correct styles for different sizes', () => {
     const { getByTestId, rerender } = render(
-      <CsButton title="Press me" onPress={() => {}} size="small" />,
+      <CsButton title='Press me' onPress={() => {}} size='small' />
     )
     let button = getByTestId(`${testID}-pressable`)
-    expect(button.props.style[0]).toContainEqual({ paddingVertical: 8, paddingHorizontal: 16 })
+    expect(button.props.style[0]).toContainEqual({
+      paddingVertical: 8,
+      paddingHorizontal: 16
+    })
 
-    rerender(<CsButton title="Press me" onPress={() => {}} size="medium" />)
+    rerender(<CsButton title='Press me' onPress={() => {}} size='medium' />)
     button = getByTestId(`${testID}-pressable`)
-    expect(button.props.style[0]).toContainEqual({ paddingVertical: 12, paddingHorizontal: 24 })
+    expect(button.props.style[0]).toContainEqual({
+      paddingVertical: 12,
+      paddingHorizontal: 24
+    })
 
-    rerender(<CsButton title="Press me" onPress={() => {}} size="large" />)
+    rerender(<CsButton title='Press me' onPress={() => {}} size='large' />)
     button = getByTestId(`${testID}-pressable`)
-    expect(button.props.style[0]).toContainEqual({ paddingVertical: 16, paddingHorizontal: 32 })
+    expect(button.props.style[0]).toContainEqual({
+      paddingVertical: 16,
+      paddingHorizontal: 32
+    })
   })
 
   it('renders icon when provided', () => {
-    const TestIcon = () => <View testID="test-icon" />
+    const TestIcon = () => <View testID='test-icon' />
     const { getByTestId } = render(
-      <CsButton title="Press me" onPress={() => {}} icon={<TestIcon />} />,
+      <CsButton title='Press me' onPress={() => {}} icon={<TestIcon />} />
     )
     const icon = getByTestId('test-icon')
     expect(icon).toBeTruthy()
@@ -137,11 +156,11 @@ describe('csButton', () => {
     const customTextStyle = { color: 'green' }
     const { getByTestId } = render(
       <CsButton
-        title="Press me"
+        title='Press me'
         onPress={() => {}}
         style={customStyle}
         textStyle={customTextStyle}
-      />,
+      />
     )
     const button = getByTestId(`${testID}-pressable`)
     const buttonText = getByTestId(`${testID}-text`)
@@ -151,7 +170,9 @@ describe('csButton', () => {
 
   it('handles press animations without errors', () => {
     const onPressMock = jest.fn()
-    const { getByTestId } = render(<CsButton title="Press me" onPress={onPressMock} />)
+    const { getByTestId } = render(
+      <CsButton title='Press me' onPress={onPressMock} />
+    )
     const button = getByTestId(`${testID}-pressable`)
 
     // Simulate press events

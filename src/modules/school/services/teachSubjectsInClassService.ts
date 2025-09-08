@@ -16,12 +16,14 @@ export const subjects = {
 
     if (error) {
       console.error('Error getting subjects:', error)
-      throw new Error('Erreur lors de la récupération des matières enseignées dans cette classe')
+      throw new Error(
+        'Erreur lors de la récupération des matières enseignées dans cette classe'
+      )
     }
 
     return data.map(subject => ({
       id: subject.subject_id,
-      name: subject.subjects.name,
+      name: subject.subjects.name
     }))
-  },
+  }
 }

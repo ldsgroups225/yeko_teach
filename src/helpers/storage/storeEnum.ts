@@ -7,5 +7,5 @@ export enum StoreEnum {
   Classes,
   Notes,
   CacheDuration,
-  Schedules,
+  Schedules
 }

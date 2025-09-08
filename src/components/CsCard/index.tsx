@@ -1,16 +1,16 @@
 // src/components/CsCard/index.tsx
 
-import type { CsCardProps } from './type'
 import { useTheme, useThemedStyles } from '@src/hooks'
-import React from 'react'
+import type React from 'react'
 import { Pressable, Text, View } from 'react-native'
 import Animated, {
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
+  withSpring
 } from 'react-native-reanimated'
 import { styles } from './style'
+import type { CsCardProps } from './type'
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
 
@@ -25,7 +25,7 @@ const CsCard: React.FC<CsCardProps> = ({
   titleStyle,
   contentStyle,
   footerStyle,
-  children,
+  children
 }) => {
   const theme = useTheme()
   const themedStyles = useThemedStyles<typeof styles>(styles)
@@ -35,7 +35,7 @@ const CsCard: React.FC<CsCardProps> = ({
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
-    opacity: opacity.value,
+    opacity: opacity.value
   }))
 
   const handlePressIn = () => {
@@ -63,9 +63,13 @@ const CsCard: React.FC<CsCardProps> = ({
   const cardContent = (
     <>
       {title && <Text style={[themedStyles.title, titleStyle]}>{title}</Text>}
-      {content && <Text style={[themedStyles.content, contentStyle]}>{content}</Text>}
+      {content && (
+        <Text style={[themedStyles.content, contentStyle]}>{content}</Text>
+      )}
       {children}
-      {footer && <View style={[themedStyles.footer, footerStyle]}>{footer}</View>}
+      {footer && (
+        <View style={[themedStyles.footer, footerStyle]}>{footer}</View>
+      )}
     </>
   )
 

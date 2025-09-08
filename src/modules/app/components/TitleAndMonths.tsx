@@ -1,8 +1,9 @@
-import type { ITheme } from '@styles/theme'
 import CsText from '@components/CsText'
 import { useThemedStyles } from '@src/hooks'
 import { borderRadius, spacing } from '@src/styles'
-import React, { useEffect, useState } from 'react'
+import type { ITheme } from '@styles/theme'
+import type React from 'react'
+import { useEffect, useState } from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 
 const SCHOOL_MONTHS = [
@@ -15,7 +16,7 @@ const SCHOOL_MONTHS = [
   'MAR',
   'AVR',
   'MAI',
-  'JUN',
+  'JUN'
 ] as const
 
 // type SchoolMonth = (typeof SCHOOL_MONTHS)[number];
@@ -29,10 +30,8 @@ interface TitleAndMonthsProps {
 
 export function getSchoolMonthIndex(date: Date): number {
   const month = date.getMonth()
-  if (month >= 0 && month <= 5)
-    return month + 4
-  if (month >= 8 && month <= 11)
-    return month - 8
+  if (month >= 0 && month <= 5) return month + 4
+  if (month >= 8 && month <= 11) return month - 8
   return 0
 }
 
@@ -40,10 +39,10 @@ const TitleAndMonths: React.FC<TitleAndMonthsProps> = ({
   title,
   defaultSelectedMonth,
   onMonthChange,
-  customMonths = SCHOOL_MONTHS,
+  customMonths = SCHOOL_MONTHS
 }) => {
   const [activeMonth, setActiveMonth] = useState(
-    defaultSelectedMonth ?? getSchoolMonthIndex(new Date()),
+    defaultSelectedMonth ?? getSchoolMonthIndex(new Date())
   )
   const themedStyles = useThemedStyles<typeof styles>(styles)
 
@@ -64,14 +63,14 @@ const TitleAndMonths: React.FC<TitleAndMonthsProps> = ({
             key={month}
             style={[
               themedStyles.monthButton,
-              activeMonth === index && themedStyles.activeMonthButton,
+              activeMonth === index && themedStyles.activeMonthButton
             ]}
             onPress={() => handleMonthPress(index)}
           >
             <CsText
               style={StyleSheet.flatten([
                 themedStyles.monthButtonText,
-                activeMonth === index && themedStyles.activeMonthButtonText,
+                activeMonth === index && themedStyles.activeMonthButtonText
               ])}
             >
               {month}
@@ -88,36 +87,36 @@ function styles(theme: ITheme) {
     header: {
       backgroundColor: theme.primary,
       padding: spacing.md,
-      paddingTop: spacing.xl,
+      paddingTop: spacing.xl
     },
     headerTitle: {
       color: theme.background,
       fontSize: 24,
       fontWeight: 'bold',
-      marginBottom: spacing.sm,
+      marginBottom: spacing.sm
     },
     monthsContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       backgroundColor: theme.card,
       borderRadius: borderRadius.medium,
-      padding: spacing.xs,
+      padding: spacing.xs
     },
     monthButton: {
       alignItems: 'center',
       padding: spacing.xs,
-      borderRadius: borderRadius.small,
+      borderRadius: borderRadius.small
     },
     activeMonthButton: {
-      backgroundColor: theme.primary,
+      backgroundColor: theme.primary
     },
     monthButtonText: {
       color: theme.text,
-      fontSize: 12,
+      fontSize: 12
     },
     activeMonthButtonText: {
-      color: theme.background,
-    },
+      color: theme.background
+    }
   })
 }
 

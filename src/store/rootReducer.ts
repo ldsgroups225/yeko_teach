@@ -8,5 +8,5 @@ import { combineReducers } from 'redux'
  * @returns The combined reducer object.
  */
 export default combineReducers({
-  AppReducer,
+  AppReducer
 })

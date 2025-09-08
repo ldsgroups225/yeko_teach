@@ -9,7 +9,11 @@ import type { ParamListBase } from '@react-navigation/native'
 export enum Routes {
   Core = 'Core',
   Login = 'Login',
+  TeacherSignUp = 'TeacherSignUp',
   EmailConfirmation = 'EmailConfirmation',
+  CompleteTeacherProfile = 'CompleteTeacherProfile',
+  ForgotPassword = 'ForgotPassword',
+  ResetPassword = 'ResetPassword',
   User = 'User',
   School = 'School',
   SchoolDetails = 'SchoolDetails',
@@ -17,7 +21,7 @@ export enum Routes {
   Chat = 'Chat',
   ChatDetails = 'ChatDetails',
   Schedule = 'Schedule',
-  SchoolClassNotes = 'SchoolClassNotes',
+  SchoolClassNotes = 'SchoolClassNotes'
 }
 
 /**
@@ -26,7 +30,11 @@ export enum Routes {
 export interface RootStackParams extends ParamListBase {
   [Routes.Core]: undefined
   [Routes.Login]: undefined
+  [Routes.TeacherSignUp]: undefined
   [Routes.EmailConfirmation]: { email: string }
+  [Routes.CompleteTeacherProfile]: undefined
+  [Routes.ForgotPassword]: undefined
+  [Routes.ResetPassword]: { accessToken: string }
 }
 
 /**

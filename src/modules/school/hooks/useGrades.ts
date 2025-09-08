@@ -7,11 +7,11 @@ import { useMemo } from 'react'
 export function useGrades(classes: IClassDTO[]): ISelectOptions[] {
   return useMemo(() => {
     const uniqueGradesMap = new Map<number, ISelectOptions>()
-    classes.forEach((cls) => {
+    classes.forEach(cls => {
       if (!uniqueGradesMap.has(cls.gradeId)) {
         uniqueGradesMap.set(cls.gradeId, {
           label: cls.gradeName,
-          value: cls.gradeId.toString(),
+          value: cls.gradeId.toString()
         })
       }
     })

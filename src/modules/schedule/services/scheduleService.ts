@@ -27,7 +27,9 @@ export const schedules = {
 
     if (teacherError) {
       console.error('Error getting teacher class assignments:', teacherError)
-      throw new Error(`Failed to fetch teacher classes: ${teacherError.message}`)
+      throw new Error(
+        `Failed to fetch teacher classes: ${teacherError.message}`
+      )
     }
 
     if (!teacherClasses || teacherClasses.length === 0) {
@@ -52,7 +54,7 @@ export const schedules = {
         day_of_week,
         start_time,
         end_time
-      `,
+      `
       )
       .in('class_id', classIds)
 
@@ -73,8 +75,8 @@ export const schedules = {
         subjectName: record.subjects?.name ?? '',
         dayOfWeek: record.day_of_week,
         startTime: record.start_time,
-        endTime: record.end_time,
-      }),
+        endTime: record.end_time
+      })
     )
-  },
+  }
 }

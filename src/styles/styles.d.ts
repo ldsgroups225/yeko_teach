@@ -11,10 +11,12 @@ declare global {
   type StylesOf<T extends NamedStyles<T> | NamedStyles<any>> = {
     [P in keyof T]: T[P] extends ViewStyle | TextStyle | ImageStyle
       ? T[P]
-      : StylesOf<T[P]>;
+      : StylesOf<T[P]>
   }
 
   interface StyleSheetType {
-    create: <T extends NamedStyles<T> | NamedStyles<any>>(styles: T | NamedStyles<T>) => StylesOf<T>
+    create: <T extends NamedStyles<T> | NamedStyles<any>>(
+      styles: T | NamedStyles<T>
+    ) => StylesOf<T>
   }
 }

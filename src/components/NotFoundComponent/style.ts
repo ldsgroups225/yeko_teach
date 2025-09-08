@@ -9,11 +9,11 @@ export const styles = StyleSheet.create({
   root: {
     marginTop: spacing.xxl,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   title: {
     fontWeight: 'bold',
     fontSize: 20,
-    color: $orange,
-  },
+    color: $orange
+  }
 })

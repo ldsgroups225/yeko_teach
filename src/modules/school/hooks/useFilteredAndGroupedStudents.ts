@@ -10,14 +10,18 @@ import { useMemo } from 'react'
  * @param sortOrder - The order in which to sort students.
  * @returns Filtered and grouped students.
  */
-export function useFilteredAndGroupedStudents(students: IStudentDTO[], searchQuery: string, sortOrder: 'asc' | 'desc') {
+export function useFilteredAndGroupedStudents(
+  students: IStudentDTO[],
+  searchQuery: string,
+  sortOrder: 'asc' | 'desc'
+) {
   const filteredAndSortedStudents = useMemo(() => {
     return students
       .filter(
         student =>
-          student.firstName.toLowerCase().includes(searchQuery.toLowerCase())
-          || student.lastName.toLowerCase().includes(searchQuery.toLowerCase())
-          || student.idNumber.toLowerCase().includes(searchQuery.toLowerCase()),
+          student.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          student.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          student.idNumber.toLowerCase().includes(searchQuery.toLowerCase())
       )
       .sort((a, b) => {
         const compareResult = a.lastName.localeCompare(b.lastName)
@@ -26,18 +30,21 @@ export function useFilteredAndGroupedStudents(students: IStudentDTO[], searchQue
   }, [students, searchQuery, sortOrder])
 
   const groupedStudents = useMemo(() => {
-    const grouped = filteredAndSortedStudents.reduce((acc, student) => {
-      const firstLetter = student.lastName[0].toUpperCase()
-      if (!acc[firstLetter]) {
-        acc[firstLetter] = []
-      }
-      acc[firstLetter].push(student)
-      return acc
-    }, {} as Record<string, IStudentDTO[]>)
+    const grouped = filteredAndSortedStudents.reduce(
+      (acc, student) => {
+        const firstLetter = student.lastName[0].toUpperCase()
+        if (!acc[firstLetter]) {
+          acc[firstLetter] = []
+        }
+        acc[firstLetter].push(student)
+        return acc
+      },
+      {} as Record<string, IStudentDTO[]>
+    )
 
     return Object.entries(grouped).map(([letter, students]) => ({
       title: letter,
-      data: students,
+      data: students
     }))
   }, [filteredAndSortedStudents])
 

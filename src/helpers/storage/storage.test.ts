@@ -1,7 +1,12 @@
 // src/helpers/storage/storage.test.ts
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { addStoreDataAsync, getStoreDataAsync, getStoreStringAsync, removeStoreDataAsync } from './index'
+import {
+  addStoreDataAsync,
+  getStoreDataAsync,
+  getStoreStringAsync,
+  removeStoreDataAsync
+} from './index'
 import { StoreEnum } from './storeEnum'
 
 jest.mock('@react-native-async-storage/async-storage')
@@ -22,7 +27,10 @@ describe('addStoreDataAsync', () => {
 
     await addStoreDataAsync(key, JSON.stringify(value))
 
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith(key, JSON.stringify(value))
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith(
+      key,
+      JSON.stringify(value)
+    )
   })
 })
 

@@ -1,16 +1,16 @@
 // src/components/CsListTile/index.tsx
 
-import type { CsListTileProps } from './type'
 import { useTheme, useThemedStyles } from '@src/hooks'
-import React from 'react'
+import type React from 'react'
 import { Pressable, Text, View } from 'react-native'
 import Animated, {
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
+  withSpring
 } from 'react-native-reanimated'
 import { styles } from './style'
+import type { CsListTileProps } from './type'
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
 
@@ -25,7 +25,7 @@ const CsListTile: React.FC<CsListTileProps> = ({
   dense = false,
   style,
   titleStyle,
-  subtitleStyle,
+  subtitleStyle
 }) => {
   const theme = useTheme()
   const themedStyles = useThemedStyles<typeof styles>(styles)
@@ -35,7 +35,7 @@ const CsListTile: React.FC<CsListTileProps> = ({
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
-    opacity: opacity.value,
+    opacity: opacity.value
   }))
 
   const handlePressIn = () => {
@@ -58,14 +58,20 @@ const CsListTile: React.FC<CsListTileProps> = ({
     }
   }
 
-  const containerStyle = [themedStyles.container, dense && themedStyles.dense, style]
+  const containerStyle = [
+    themedStyles.container,
+    dense && themedStyles.dense,
+    style
+  ]
 
   const content = (
     <>
       {leading && <View>{leading}</View>}
       <View style={themedStyles.contentContainer}>
         <Text style={[themedStyles.title, titleStyle]}>{title}</Text>
-        {subtitle && <Text style={[themedStyles.subtitle, subtitleStyle]}>{subtitle}</Text>}
+        {subtitle && (
+          <Text style={[themedStyles.subtitle, subtitleStyle]}>{subtitle}</Text>
+        )}
       </View>
       {trailing && <View style={themedStyles.trailing}>{trailing}</View>}
     </>
