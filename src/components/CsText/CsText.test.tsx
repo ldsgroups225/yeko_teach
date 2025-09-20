@@ -1,7 +1,6 @@
 // src/components/CsText/CsText.test.tsx
 
 import { render } from '@testing-library/react-native'
-import React from 'react'
 import CsText from './index'
 
 const testID = 'csText'

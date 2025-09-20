@@ -2,15 +2,14 @@
 
 import type { IToastType } from '@components/ToastMessage/IToastType'
 import { ToastMessage } from '@src/components'
-import React from 'react'
 
-let useToastRef: any
+let useToastRef: unknown
 
 /**
  * Sets the reference to the `useToastRef` property.
  * @param useToastRefProp - The reference to the `useToastRef` property.
  */
-function setUseBackDropRef(useToastRefProp: any) {
+function setUseBackDropRef(useToastRefProp: unknown) {
   useToastRef = useToastRefProp
 }
 
@@ -31,7 +30,7 @@ export const toastActions = {
    * @param param - The parameters for the toast notification.
    */
   open(param: IToastType) {
-    useToastRef?.open(param)
+    ;(useToastRef as { open: (param: IToastType) => void })?.open(param)
   }
 }
 

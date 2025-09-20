@@ -1,6 +1,5 @@
 // src/components/LoadingSpinner.tsx
 
-import React from 'react'
 import { ActivityIndicator, StyleSheet, View } from 'react-native'
 
 interface LoadingSpinnerProps {

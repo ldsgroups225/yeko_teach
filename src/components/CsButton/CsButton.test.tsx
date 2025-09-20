@@ -2,7 +2,6 @@
 
 import { useTheme, useThemedStyles } from '@src/hooks'
 import { fireEvent, render } from '@testing-library/react-native'
-import React from 'react'
 import { View } from 'react-native'
 import CsButton from './index'
 
@@ -14,7 +13,7 @@ jest.mock('@src/hooks', () => ({
 
 // Mock react-native-reanimated
 jest.mock('react-native-reanimated', () => {
-  const Reanimated = require('react-native-reanimated/mock')
+  const Reanimated = jest.requireActual('react-native-reanimated/mock')
   Reanimated.default.call = () => {}
   return {
     ...Reanimated,

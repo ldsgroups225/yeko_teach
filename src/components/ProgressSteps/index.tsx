@@ -4,6 +4,7 @@ import CsText from '@components/CsText'
 import { useThemedStyles } from '@hooks/index'
 import { spacing } from '@styles/spacing'
 import type { ITheme } from '@styles/theme'
+import { generateUUID } from '@utils/generateUUID'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
 
@@ -21,7 +22,7 @@ const ProgressSteps: React.FC<ProgressStepsProps> = ({
   return (
     <View style={themedStyles.container}>
       {Array.from({ length: totalSteps }).map((_, index) => (
-        <React.Fragment key={index}>
+        <React.Fragment key={`step-${generateUUID()}`}>
           {index > 0 && (
             <View
               style={[

@@ -20,6 +20,7 @@ import type { ITheme } from '@styles/theme'
 import type React from 'react'
 import { useCallback, useMemo, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 // Create a wrapper component for MasonryList to handle type issues
 function TypeSafeMasonryList({
@@ -72,7 +73,7 @@ const SchoolScreen: React.FC = () => {
   }
 
   return (
-    <View style={themedStyles.container}>
+    <SafeAreaView style={themedStyles.container}>
       <View style={themedStyles.header}>
         <CsText variant='h2' style={themedStyles.title}>
           Ecoles où vous enseigné
@@ -113,7 +114,7 @@ const SchoolScreen: React.FC = () => {
           }
         />
       </View>
-    </View>
+    </SafeAreaView>
   )
 }
 

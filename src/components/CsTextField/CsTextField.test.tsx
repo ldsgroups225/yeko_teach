@@ -1,7 +1,6 @@
 // src/components/CsTextField/CsTextField.test.tsx
 
 import { fireEvent, render } from '@testing-library/react-native'
-import React from 'react'
 import CsTextField from './index'
 
 const testID = 'csTextfield'

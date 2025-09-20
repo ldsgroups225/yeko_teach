@@ -2,7 +2,6 @@
 
 import CsText from '@components/CsText'
 import { useThemedStyles } from '@hooks/index'
-import * as React from 'react'
 import { View } from 'react-native'
 import { styles } from './style'
 import type { CsDividerProps } from './type'

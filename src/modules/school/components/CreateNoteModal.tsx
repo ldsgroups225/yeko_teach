@@ -111,11 +111,9 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
     description: z.string().optional(),
     totalPoints: z.preprocess(
       val => Number.parseFloat(String(val)),
-      z
-        .number()
-        .positive({
-          message: 'Les points totaux doivent être un nombre positif'
-        })
+      z.number().positive({
+        message: 'Les points totaux doivent être un nombre positif'
+      })
     ),
     weight: z.preprocess(
       val => Number.parseFloat(String(val)),

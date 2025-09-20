@@ -129,7 +129,7 @@ export default function Login() {
 
       await clearCache()
       goHomePage(user)
-    } catch (error: any) {
+    } catch (error) {
       console.error('Login error:', error)
       const errorMessage = getAuthErrorMessage(error)
       showToast(errorMessage, ToastColorEnum.Error)
@@ -295,7 +295,7 @@ function styles(theme: ITheme) {
       width: 150,
       height: 200,
       alignSelf: 'center',
-      marginTop: 30,
+      marginTop: 20,
       objectFit: 'contain'
     },
     scrollContent: {
@@ -304,23 +304,23 @@ function styles(theme: ITheme) {
       paddingHorizontal: spacing.sm
     },
     title: {
-      marginBottom: spacing.xl,
+      marginBottom: spacing.sm,
       textAlign: 'center'
     },
     input: {
-      marginBottom: spacing.lg
+      marginBottom: spacing.sm
     },
     button: {
-      marginVertical: spacing.md
+      marginVertical: spacing.sm
     },
     forgotPassword: {
       alignSelf: 'flex-end',
-      marginBottom: spacing.md
+      marginBottom: spacing.sm
     },
     divider: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginVertical: spacing.xs
+      marginVertical: spacing.lg
     },
     dividerLine: {
       flex: 1,
@@ -337,8 +337,7 @@ function styles(theme: ITheme) {
     signUpContainer: {
       flexDirection: 'row',
       justifyContent: 'center',
-      alignItems: 'center',
-      marginTop: spacing.xs
+      alignItems: 'center'
     },
     signUpText: {
       color: theme.textLight,

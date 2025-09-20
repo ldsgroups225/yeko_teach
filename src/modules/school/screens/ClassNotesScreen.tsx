@@ -267,7 +267,7 @@ const ClassNotesScreen: React.FC<Props> = () => {
         if (!selectedSubjectId && subjectsData.length > 0) {
           setSelectedSubjectId(subjectsData[0].id)
         }
-      } catch (err: any) {
+      } catch (err) {
         console.error('Error loading initial data:', err)
         setError(err.message || 'Échec du chargement des données')
       } finally {

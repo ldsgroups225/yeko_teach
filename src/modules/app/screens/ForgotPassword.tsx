@@ -19,7 +19,7 @@ import {
   sanitizeInput,
   validateForm
 } from '@utils/validation'
-import React, { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 import {
   Image,
   KeyboardAvoidingView,
@@ -101,7 +101,7 @@ export default function ForgotPassword() {
         'Email de réinitialisation envoyé avec succès',
         ToastColorEnum.Success
       )
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Reset password error:', error)
       const errorMessage = getAuthErrorMessage(error)
       showToast(errorMessage, ToastColorEnum.Error)

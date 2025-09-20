@@ -3,7 +3,7 @@
 import translate from '@helpers/localization'
 import { useTheme, useThemedStyles } from '@src/hooks'
 import type { JSX } from 'react'
-import React, { memo } from 'react'
+import { memo } from 'react'
 import { ActivityIndicator, Modal, Text, View } from 'react-native'
 import { styles } from './style'
 import type { GeneralActivityIndicatorProps } from './type'

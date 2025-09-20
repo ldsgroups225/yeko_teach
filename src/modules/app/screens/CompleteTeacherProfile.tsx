@@ -8,9 +8,7 @@ import { showToast } from '@helpers/toast/showToast'
 import { useTheme, useThemedStyles } from '@hooks/index'
 import { useAuth } from '@hooks/useAuth'
 import { setUser } from '@modules/app/redux/appSlice'
-import type { ISchool } from '@modules/app/services/schoolService'
 import { schoolService } from '@modules/app/services/schoolService'
-import { Picker } from '@react-native-picker/picker'
 import { useNavigation } from '@react-navigation/native'
 import type { StackNavigationProp } from '@react-navigation/stack'
 import { useAppSelector } from '@src/store'
@@ -23,7 +21,7 @@ import {
   sanitizeInput,
   validateForm
 } from '@utils/validation'
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   Alert,
   KeyboardAvoidingView,
@@ -68,20 +66,14 @@ function CompleteTeacherProfile() {
   // Form state
   const [currentStep, setCurrentStep] = useState<'basic' | 'school'>('basic')
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    phone: ''
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
+    phone: user?.phone || ''
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // School state
-  const [schools, setSchools] = useState<ISchool[]>([])
-  const [selectedSchoolId, setSelectedSchoolId] = useState<string>('')
-  const [schoolJoinMethod, setSchoolJoinMethod] = useState<'select' | 'otp'>(
-    'select'
-  )
-  const [isLoadingSchools, setIsLoadingSchools] = useState(false)
   const [isJoiningSchool, setIsJoiningSchool] = useState(false)
 
   // Prevent going back
@@ -98,28 +90,17 @@ function CompleteTeacherProfile() {
     return unsubscribe
   }, [navigation])
 
-  const loadSchools = async () => {
-    setIsLoadingSchools(true)
-    try {
-      const { data, error } = await schoolService.getSchools()
-      if (error) {
-        console.error('Error loading schools:', error)
-        showToast('Erreur lors du chargement des écoles', ToastColorEnum.Error)
-        return
-      }
-      setSchools(data || [])
-    } catch (error) {
-      console.error('Error loading schools:', error)
-      showToast('Erreur lors du chargement des écoles', ToastColorEnum.Error)
-    } finally {
-      setIsLoadingSchools(false)
-    }
-  }
-
-  // Load schools
+  // Update form data when user changes (e.g., from Google OAuth)
   useEffect(() => {
-    loadSchools()
-  }, [loadSchools])
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        firstName: user.firstName || prev.firstName,
+        lastName: user.lastName || prev.lastName,
+        phone: user.phone || prev.phone
+      }))
+    }
+  }, [user])
 
   // Update form field
   const updateField = (field: keyof typeof formData, value: string) => {
@@ -178,7 +159,8 @@ function CompleteTeacherProfile() {
 
       if (error) {
         showToast(
-          error.message || 'Erreur lors de la mise à jour du profil',
+          (error as { message: string }).message ||
+            'Erreur lors de la mise à jour du profil',
           ToastColorEnum.Error
         )
         return
@@ -189,7 +171,8 @@ function CompleteTeacherProfile() {
         ...user,
         firstName: formData.firstName,
         lastName: formData.lastName,
-        phone: formData.phone
+        phone: formData.phone,
+        schools: user.schools || [] // Ensure schools array exists
       }
       dispatch(setUser(updatedUser))
 
@@ -199,7 +182,7 @@ function CompleteTeacherProfile() {
         'Informations personnelles sauvegardées',
         ToastColorEnum.Success
       )
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating profile:', error)
       showToast(
         'Une erreur est survenue lors de la mise à jour du profil',
@@ -207,50 +190,6 @@ function CompleteTeacherProfile() {
       )
     } finally {
       setIsSubmitting(false)
-    }
-  }
-
-  // Handle school selection
-  const handleJoinSchoolBySelection = async () => {
-    if (!selectedSchoolId) {
-      showToast('Veuillez sélectionner une école', ToastColorEnum.Warning)
-      return
-    }
-
-    if (!user) {
-      showToast('Aucun utilisateur connecté', ToastColorEnum.Error)
-      return
-    }
-
-    setIsJoiningSchool(true)
-
-    try {
-      const { data: _data, error } = await schoolService.requestToJoinSchool(
-        user.id,
-        selectedSchoolId
-      )
-
-      if (error) {
-        showToast(
-          error.message || "Erreur lors de la demande d'adhésion",
-          ToastColorEnum.Error
-        )
-        return
-      }
-
-      showToast(
-        "Demande d'adhésion envoyée avec succès",
-        ToastColorEnum.Success
-      )
-      navigation.navigate(Routes.Core as never)
-    } catch (error: any) {
-      console.error('Error joining school:', error)
-      showToast(
-        "Une erreur est survenue lors de la demande d'adhésion",
-        ToastColorEnum.Error
-      )
-    } finally {
-      setIsJoiningSchool(false)
     }
   }
 
@@ -282,7 +221,7 @@ function CompleteTeacherProfile() {
 
       showToast('École rejointe avec succès !', ToastColorEnum.Success)
       navigation.navigate(Routes.Core as never)
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error joining school with OTP:', error)
       showToast(
         "Une erreur est survenue lors de l'adhésion",
@@ -422,117 +361,19 @@ function CompleteTeacherProfile() {
             entering={FadeInUp.delay(200).duration(1000).springify()}
             style={themedStyles.formContainer}
           >
-            <View style={themedStyles.schoolMethodContainer}>
-              <TouchableOpacity
-                style={[
-                  themedStyles.methodButton,
-                  schoolJoinMethod === 'select' &&
-                    themedStyles.methodButtonActive
-                ]}
-                onPress={() => setSchoolJoinMethod('select')}
-              >
-                <Ionicons
-                  name='school-outline'
-                  size={24}
-                  color={
-                    schoolJoinMethod === 'select'
-                      ? theme.primary
-                      : theme.textLight
-                  }
-                />
-                <CsText
-                  variant='body'
-                  style={StyleSheet.flatten([
-                    themedStyles.methodButtonText,
-                    schoolJoinMethod === 'select'
-                      ? themedStyles.methodButtonTextActive
-                      : null
-                  ])}
-                >
-                  Sélectionner une école
-                </CsText>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  themedStyles.methodButton,
-                  schoolJoinMethod === 'otp' && themedStyles.methodButtonActive
-                ]}
-                onPress={() => setSchoolJoinMethod('otp')}
-              >
-                <Ionicons
-                  name='key-outline'
-                  size={24}
-                  color={
-                    schoolJoinMethod === 'otp' ? theme.primary : theme.textLight
-                  }
-                />
-                <CsText
-                  variant='body'
-                  style={StyleSheet.flatten([
-                    themedStyles.methodButtonText,
-                    schoolJoinMethod === 'otp'
-                      ? themedStyles.methodButtonTextActive
-                      : null
-                  ])}
-                >
-                  Code OTP
-                </CsText>
-              </TouchableOpacity>
+            <View style={themedStyles.otpContainer}>
+              <CsText variant='h3' style={themedStyles.otpTitle}>
+                Rejoindre votre école
+              </CsText>
+              <CsText variant='body' style={themedStyles.otpDescription}>
+                Entrez le code OTP fourni par votre établissement scolaire pour
+                rejoindre votre école.
+              </CsText>
+              <OtpForm
+                onComplete={handleJoinSchoolWithOTP}
+                loading={isJoiningSchool}
+              />
             </View>
-
-            {schoolJoinMethod === 'select' && (
-              <View style={themedStyles.schoolSelectContainer}>
-                <CsText variant='body' style={themedStyles.pickerLabel}>
-                  École *
-                </CsText>
-                <View style={themedStyles.pickerContainer}>
-                  <Picker
-                    selectedValue={selectedSchoolId}
-                    onValueChange={setSelectedSchoolId}
-                    style={themedStyles.picker}
-                    enabled={!isLoadingSchools}
-                  >
-                    <Picker.Item
-                      label={
-                        isLoadingSchools
-                          ? 'Chargement...'
-                          : 'Sélectionnez votre école'
-                      }
-                      value=''
-                    />
-                    {schools.map(school => (
-                      <Picker.Item
-                        key={school.id}
-                        label={school.name}
-                        value={school.id}
-                      />
-                    ))}
-                  </Picker>
-                </View>
-
-                <CsButton
-                  title={
-                    isJoiningSchool
-                      ? 'Envoi de la demande...'
-                      : 'Envoyer la demande'
-                  }
-                  onPress={handleJoinSchoolBySelection}
-                  loading={isJoiningSchool}
-                  disabled={isJoiningSchool || !selectedSchoolId}
-                  style={themedStyles.button}
-                />
-              </View>
-            )}
-
-            {schoolJoinMethod === 'otp' && (
-              <View style={themedStyles.otpContainer}>
-                <OtpForm
-                  onComplete={handleJoinSchoolWithOTP}
-                  loading={isJoiningSchool}
-                />
-              </View>
-            )}
 
             <TouchableOpacity
               onPress={handleSkipSchool}
@@ -605,55 +446,21 @@ function styles(theme: ITheme) {
     button: {
       marginTop: spacing.lg
     },
-    schoolMethodContainer: {
-      flexDirection: 'row',
-      marginBottom: spacing.lg,
-      gap: spacing.sm
-    },
-    methodButton: {
-      flex: 1,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: spacing.md,
-      borderRadius: 12,
-      borderWidth: 1,
-      borderColor: theme.border,
-      backgroundColor: theme.card
-    },
-    methodButtonActive: {
-      borderColor: theme.primary,
-      backgroundColor: `${theme.primary}10`
-    },
-    methodButtonText: {
-      marginLeft: spacing.sm,
-      color: theme.textLight
-    },
-    methodButtonTextActive: {
-      color: theme.primary,
-      fontWeight: '600'
-    },
-    schoolSelectContainer: {
-      marginBottom: spacing.lg
-    },
-    pickerLabel: {
-      fontWeight: '600',
-      color: theme.text,
-      marginBottom: spacing.xs
-    },
-    pickerContainer: {
-      borderWidth: 1,
-      borderColor: theme.border,
-      borderRadius: 12,
-      backgroundColor: theme.card,
-      marginBottom: spacing.md
-    },
-    picker: {
-      height: 50
-    },
     otpContainer: {
       alignItems: 'center',
       marginBottom: spacing.lg
+    },
+    otpTitle: {
+      textAlign: 'center',
+      marginBottom: spacing.sm,
+      color: theme.text
+    },
+    otpDescription: {
+      textAlign: 'center',
+      color: theme.textLight,
+      marginBottom: spacing.xl,
+      lineHeight: 22,
+      paddingHorizontal: spacing.md
     },
     skipButton: {
       alignItems: 'center',

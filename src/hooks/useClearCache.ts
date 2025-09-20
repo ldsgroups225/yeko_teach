@@ -47,7 +47,7 @@ export function useClearCache({
     } finally {
       setIsClearing(false)
     }
-  }, [])
+  }, [showErrorToast, showSuccesToast])
 
   return { clearCache, isClearing }
 }

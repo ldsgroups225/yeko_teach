@@ -37,7 +37,7 @@ export const AUTH_ERROR_MESSAGES: Record<AuthErrorType, string> = {
 /**
  * Parse Supabase auth error and return appropriate error type and message
  */
-export function parseAuthError(error: AuthError | Error | any): {
+export function parseAuthError(error: AuthError | Error | unknown): {
   type: AuthErrorType
   message: string
 } {
@@ -48,7 +48,7 @@ export function parseAuthError(error: AuthError | Error | any): {
     }
   }
 
-  const errorMessage = error.message?.toLowerCase() || ''
+  const errorMessage = (error as Error).message?.toLowerCase() || ''
 
   // Invalid login credentials
   if (
@@ -131,14 +131,18 @@ export function parseAuthError(error: AuthError | Error | any): {
   // Default to unknown error
   return {
     type: AuthErrorType.UNKNOWN_ERROR,
-    message: error.message || AUTH_ERROR_MESSAGES[AuthErrorType.UNKNOWN_ERROR]
+    message:
+      (error as Error).message ||
+      AUTH_ERROR_MESSAGES[AuthErrorType.UNKNOWN_ERROR]
   }
 }
 
 /**
  * Get user-friendly error message from auth error
  */
-export function getAuthErrorMessage(error: AuthError | Error | any): string {
+export function getAuthErrorMessage(
+  error: AuthError | Error | unknown
+): string {
   const { message } = parseAuthError(error)
   return message
 }
@@ -147,7 +151,7 @@ export function getAuthErrorMessage(error: AuthError | Error | any): string {
  * Check if error is recoverable (user can retry)
  */
 export function isRecoverableAuthError(
-  error: AuthError | Error | any
+  error: AuthError | Error | unknown
 ): boolean {
   const { type } = parseAuthError(error)
 
@@ -166,7 +170,7 @@ export function isRecoverableAuthError(
  * Check if error requires email confirmation
  */
 export function requiresEmailConfirmation(
-  error: AuthError | Error | any
+  error: AuthError | Error | unknown
 ): boolean {
   const { type } = parseAuthError(error)
   return type === AuthErrorType.EMAIL_NOT_CONFIRMED
@@ -175,7 +179,7 @@ export function requiresEmailConfirmation(
 /**
  * Check if error is due to rate limiting
  */
-export function isRateLimitError(error: AuthError | Error | any): boolean {
+export function isRateLimitError(error: AuthError | Error | unknown): boolean {
   const { type } = parseAuthError(error)
   return type === AuthErrorType.RATE_LIMIT
 }
@@ -183,7 +187,7 @@ export function isRateLimitError(error: AuthError | Error | any): boolean {
 /**
  * Get suggested action for auth error
  */
-export function getAuthErrorAction(error: AuthError | Error | any): string {
+export function getAuthErrorAction(error: AuthError | Error | unknown): string {
   const { type } = parseAuthError(error)
 
   switch (type) {

@@ -10,7 +10,7 @@ import Routes from '@utils/Routes'
 import type React from 'react'
 import { StyleSheet, View } from 'react-native'
 
-type EmailConfirmationProps = {}
+type EmailConfirmationProps = Record<string, never>
 
 function styles(theme: ITheme) {
   return StyleSheet.create({

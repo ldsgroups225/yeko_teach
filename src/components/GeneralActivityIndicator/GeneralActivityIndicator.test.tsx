@@ -3,7 +3,6 @@
 import translate from '@helpers/localization'
 import { useTheme, useThemedStyles } from '@src/hooks'
 import { render } from '@testing-library/react-native'
-import React from 'react'
 import GeneralActivityIndicator from './index'
 
 // Mock the hooks and translation function

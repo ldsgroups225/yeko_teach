@@ -1,4 +1,3 @@
-import process from 'node:process'
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
 import { supabase } from '@src/lib/supabase/config'
 
@@ -11,7 +10,7 @@ const ERole = {
 // Types
 interface GoogleAuthResult {
   success: boolean
-  user?: any
+  user?: unknown
   error?: string
 }
 
@@ -26,39 +25,76 @@ interface GoogleProfile {
 }
 
 /**
- * Configures the Google Sign-In module.
+ * Configure Google Sign-In with client IDs
+ * Call this once when the app starts
  */
-export function configureGoogleSignIn() {
+export function configureGoogleSignIn(): void {
+  const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
+  const iosClientId = process.env.EXPO_PUBLIC_IOS_CLIENT_ID
+
+  if (!webClientId) {
+    console.warn(
+      "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID introuvable dans l'environnement"
+    )
+    return
+  }
+
   GoogleSignin.configure({
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-    offlineAccess: true // Required to get the idToken
+    webClientId, // From Google Cloud Console (Web client)
+    iosClientId, // From Google Cloud Console (iOS client) - optional
+    scopes: ['email', 'profile'],
+    offlineAccess: true, // For refresh tokens
+    forceCodeForRefreshToken: true
   })
 }
 
 /**
  * Sign in with Google for existing users
+ * Adapted from your web implementation
  */
 export async function signInWithGoogle(): Promise<GoogleAuthResult> {
   try {
+    // Check if Google Play Services are available (Android)
     await GoogleSignin.hasPlayServices()
+
+    // Sign in to Google
     const userInfo = await GoogleSignin.signIn()
 
     if (!userInfo.data?.idToken) {
-      return { success: false, error: 'No ID token received from Google' }
+      throw new Error('Erreur lors de la connexion avec Google')
     }
 
+    // Sign in to Supabase with Google ID token
     const { data, error } = await supabase.auth.signInWithIdToken({
       provider: 'google',
       token: userInfo.data.idToken
     })
 
     if (error) {
-      return { success: false, error: error.message }
+      return { success: false, error: (error as { message: string }).message }
+    }
+
+    if (!data.user) {
+      throw new Error('Erreur lors de la connexion avec Google')
+    }
+
+    // Ensure user has TEACHER role - create if doesn't exist
+    const roleResult = await ensureUserHasTeacherRole(
+      data.user.id,
+      data.user.email || ''
+    )
+    if (!roleResult.success) {
+      throw new Error(
+        roleResult.error || "Oups, vous n'avez pas de compte enseignant"
+      )
     }
 
     return { success: true, user: data.user }
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Google sign-in failed' }
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: (error as any).message || 'Erreur lors de la connexion avec Google'
+    }
   }
 }
 
@@ -67,25 +103,70 @@ export async function signInWithGoogle(): Promise<GoogleAuthResult> {
  */
 export async function signUpWithGoogle(): Promise<GoogleAuthResult> {
   try {
+    // Check if Google Play Services are available (Android)
     await GoogleSignin.hasPlayServices()
+
+    // Sign in to Google to get user info
     const userInfo = await GoogleSignin.signIn()
 
     if (!userInfo.data?.idToken) {
-      return { success: false, error: 'No ID token received from Google' }
+      throw new Error('Erreur lors de la connexion avec Google')
     }
 
+    // Sign up to Supabase with Google ID token
     const { data, error } = await supabase.auth.signInWithIdToken({
       provider: 'google',
       token: userInfo.data.idToken
     })
 
     if (error) {
-      return { success: false, error: error.message }
+      throw new Error(error.message)
+    }
+
+    if (!data.user) {
+      throw new Error('Erreur lors de la connexion avec Google')
+    }
+
+    // Ensure user has TEACHER role - create if doesn't exist
+    const roleResult = await ensureUserHasTeacherRole(
+      data.user.id,
+      data.user.email || ''
+    )
+    if (!roleResult.success) {
+      throw new Error(
+        roleResult.error || "Oups, vous n'avez pas de compte enseignant"
+      )
+    }
+
+    // Check if this is a new user (created less than 1 minute ago)
+    const userCreatedAt = new Date(data.user.created_at).getTime()
+    const now = Date.now()
+    const isNewUser = now - userCreatedAt < 60000 // Less than 1 minute
+
+    if (isNewUser) {
+      // Create user profile from Google data
+      await createUserFromGoogleProfile(data.user.id, {
+        sub: data.user.id,
+        email: data.user.email || '',
+        name:
+          data.user.user_metadata?.full_name ||
+          data.user.user_metadata?.name ||
+          '',
+        picture:
+          data.user.user_metadata?.picture ||
+          data.user.user_metadata?.avatar_url,
+        given_name: data.user.user_metadata?.given_name,
+        family_name: data.user.user_metadata?.family_name,
+        email_verified: data.user.email_confirmed_at !== null
+      })
     }
 
     return { success: true, user: data.user }
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Google sign-up failed' }
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: (error as any).message || 'Google sign-up failed'
+    }
   }
 }
 
@@ -147,9 +228,9 @@ export async function ensureUserHasTeacherRole(
     }
 
     return { success: true }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error ensuring TEACHER role:', error)
-    return { success: false, error: error.message }
+    return { success: false, error: (error as any).message }
   }
 }
 
@@ -191,8 +272,8 @@ export async function createUserFromGoogleProfile(
     }
 
     return { success: true }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating user from Google profile:', error)
-    return { success: false, error: error.message }
+    return { success: false, error: (error as any).message }
   }
 }

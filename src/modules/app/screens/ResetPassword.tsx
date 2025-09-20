@@ -141,7 +141,7 @@ export default function ResetPassword() {
 
       // Navigate to login
       navigation.navigate(Routes.Login)
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Reset password error:', error)
       showToast(
         'Une erreur est survenue lors de la réinitialisation',

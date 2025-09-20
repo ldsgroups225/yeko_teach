@@ -1,11 +1,18 @@
 import { supabase } from '@src/lib/supabase'
 import type {
   AuthError,
-  AuthTokenResponse,
   AuthTokenResponsePassword,
-  Session
+  Session,
+  User
 } from '@supabase/auth-js'
 import type { PostgrestError } from '@supabase/supabase-js'
+
+export interface UpdateProfileData {
+  firstName?: string
+  lastName?: string
+  phone?: string
+  schoolId?: string
+}
 
 interface IGetSession {
   data: {
@@ -96,18 +103,19 @@ export const auth = {
    * @param {string} password - The user's password.
    * @returns {Promise<AuthTokenResponse>} - The response containing the session data.
    */
-  async signUp(email: string, password: string): Promise<AuthTokenResponse> {
-    const response = await supabase.auth.signUp({
+  async signUp(email: string, password: string): Promise<User | null> {
+    const { data, error } = await supabase.auth.signUp({
       email,
       password
     })
 
-    if (response.error) {
-      throw response.error
+    if (error) {
+      console.error('Error signing up:', error)
+      throw error
     }
 
     // Type assertion to handle the case where user might be null
-    return response as AuthTokenResponse
+    return data.user
   },
 
   /**
@@ -123,12 +131,7 @@ export const auth = {
    */
   async updateUserProfile(
     userId: string,
-    profileData: {
-      firstName?: string
-      lastName?: string
-      phone?: string
-      schoolId?: string
-    }
+    profileData: UpdateProfileData
   ): Promise<{ error: PostgrestError | null }> {
     try {
       // Update user profile in users table

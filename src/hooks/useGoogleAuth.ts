@@ -25,12 +25,19 @@ interface OAuthState {
   isLoading: boolean
   error: string | null
   isAuthenticated: boolean
-  user: any | null
+  user: unknown | null
 }
 
 interface GoogleOAuthResult {
   success: boolean
-  user?: any
+  user?: {
+    id: string
+    email: string
+    user_metadata: {
+      given_name: string
+      family_name: string
+    }
+  }
   error?: string
 }
 
@@ -80,6 +87,9 @@ export function useGoogleAuth() {
         const { error: profileError } = await supabase.from('users').upsert({
           id: userId,
           email: userEmail,
+          first_name: '', // Will be filled during profile completion
+          last_name: '', // Will be filled during profile completion
+          phone: '', // Will be filled during profile completion
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         })
@@ -100,9 +110,9 @@ export function useGoogleAuth() {
         }
 
         return { success: true }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Error ensuring TEACHER role:', error)
-        return { success: false, error: error.message }
+        return { success: false, error: (error as { message: string }).message }
       }
     },
     []
@@ -132,6 +142,46 @@ export function useGoogleAuth() {
   }, [])
 
   /**
+   * Check if user profile is complete
+   * Validates that user has provided firstName, lastName, and phone
+   */
+  const checkProfileComplete = useCallback(
+    async (userId: string): Promise<boolean> => {
+      try {
+        const { data: userProfile, error } = await supabase
+          .from('users')
+          .select('first_name, last_name, phone')
+          .eq('id', userId)
+          .single()
+
+        if (error) {
+          console.error('Error checking profile completeness:', error)
+          return false
+        }
+
+        // Check if all required fields are present and not empty
+        const hasFirstName = Boolean(userProfile?.first_name?.trim())
+        const hasLastName = Boolean(userProfile?.last_name?.trim())
+        const hasPhone = Boolean(userProfile?.phone?.trim())
+
+        console.log('Profile completeness check:', {
+          userId,
+          hasFirstName,
+          hasLastName,
+          hasPhone,
+          profile: userProfile
+        })
+
+        return hasFirstName && hasLastName && hasPhone
+      } catch (error) {
+        console.error('Error in checkProfileComplete:', error)
+        return false
+      }
+    },
+    []
+  )
+
+  /**
    * Handle successful OAuth result
    */
   const handleOAuthSuccess = useCallback(
@@ -153,14 +203,16 @@ export function useGoogleAuth() {
           return
         }
 
-        // Create user object for Redux store
+        // Create user object for Redux store with complete structure
         const user = {
           id: result.user.id,
           email: result.user.email || '',
           firstName: result.user.user_metadata?.given_name || '',
           lastName: result.user.user_metadata?.family_name || '',
+          phone: '', // Will be filled during profile completion
           pushToken: '',
-          children: []
+          children: [],
+          schools: [] // Initialize empty schools array to prevent undefined errors
         }
 
         // Update Redux state
@@ -183,47 +235,32 @@ export function useGoogleAuth() {
         }))
 
         // Check if profile completion is needed
-        const isProfileComplete = await checkProfileComplete(user.id)
+        const profileComplete = await checkProfileComplete(user.id)
 
-        if (!isProfileComplete) {
+        if (!profileComplete) {
+          console.log('Google OAuth - Redirecting to CompleteTeacherProfile')
           // Navigate to complete profile screen
           navigation.navigate(Routes.CompleteTeacherProfile as never)
         } else {
+          console.log('Google OAuth - Profile complete, redirecting to Core')
           // Navigate to main app (Core/Tabs)
           navigation.navigate(Routes.Core as never)
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Error in handleOAuthSuccess:', error)
-        handleOAuthError(error.message || 'Erreur lors de la connexion')
+        handleOAuthError(
+          (error as Error).message || 'Erreur lors de la connexion'
+        )
       }
     },
-    [dispatch, navigation, ensureUserHasTeacherRole]
+    [
+      dispatch,
+      navigation,
+      ensureUserHasTeacherRole,
+      checkProfileComplete,
+      handleOAuthError
+    ]
   )
-
-  /**
-   * Check if user profile is complete
-   */
-  async function checkProfileComplete(userId: string): Promise<boolean> {
-    try {
-      const { data: userProfile, error } = await supabase
-        .from('users')
-        .select('first_name, last_name, phone')
-        .eq('id', userId)
-        .single()
-
-      if (error) {
-        console.error('Error checking profile completeness:', error)
-        return false
-      }
-
-      return Boolean(
-        userProfile?.first_name && userProfile?.last_name && userProfile?.phone
-      )
-    } catch (error) {
-      console.error('Error in checkProfileComplete:', error)
-      return false
-    }
-  }
 
   /**
    * Google Sign-In for existing users
@@ -235,12 +272,14 @@ export function useGoogleAuth() {
       const result = await signInWithGoogle()
 
       if (result.success && result.user) {
-        await handleOAuthSuccess(result, false)
+        await handleOAuthSuccess(result as GoogleOAuthResult, false)
       } else {
         handleOAuthError(result.error || 'Erreur de connexion avec Google')
       }
-    } catch (error: any) {
-      handleOAuthError(error.message || 'Erreur de connexion avec Google')
+    } catch (error: unknown) {
+      handleOAuthError(
+        (error as Error).message || 'Erreur de connexion avec Google'
+      )
     }
   }, [handleOAuthSuccess, handleOAuthError])
 
@@ -254,12 +293,14 @@ export function useGoogleAuth() {
       const result = await signUpWithGoogle()
 
       if (result.success && result.user) {
-        await handleOAuthSuccess(result, true)
+        await handleOAuthSuccess(result as GoogleOAuthResult, true)
       } else {
         handleOAuthError(result.error || "Erreur d'inscription avec Google")
       }
-    } catch (error: any) {
-      handleOAuthError(error.message || "Erreur d'inscription avec Google")
+    } catch (error: unknown) {
+      handleOAuthError(
+        (error as Error).message || "Erreur d'inscription avec Google"
+      )
     }
   }, [handleOAuthSuccess, handleOAuthError])
 
@@ -275,7 +316,7 @@ export function useGoogleAuth() {
         isAuthenticated: false,
         user: null
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error signing out from Google:', error)
     }
   }, [])

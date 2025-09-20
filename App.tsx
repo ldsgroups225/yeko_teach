@@ -1,7 +1,7 @@
 // App.tsx
 
 import * as ScreenOrientation from 'expo-screen-orientation'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { Platform } from 'react-native'
 import { enableScreens } from 'react-native-screens'
 import { Provider } from 'react-redux'

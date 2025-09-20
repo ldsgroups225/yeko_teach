@@ -91,8 +91,10 @@ function TeacherSignUp() {
     try {
       const result = await signUp(formData.email, formData.password)
 
-      if (result?.error) {
-        const errorMessage = getAuthErrorMessage(result.error)
+      if (result && typeof result === 'object' && 'error' in result) {
+        const errorMessage = getAuthErrorMessage(
+          (result as { error: string }).error
+        )
         showToast(errorMessage, ToastColorEnum.Error)
         return
       }
@@ -106,7 +108,7 @@ function TeacherSignUp() {
 
       // Clear form
       setFormData({ email: '', password: '', confirmPassword: '' })
-    } catch (error: any) {
+    } catch (error) {
       console.error('Sign up error:', error)
       const errorMessage = getAuthErrorMessage(error)
       showToast(errorMessage, ToastColorEnum.Error)
@@ -261,7 +263,7 @@ function styles(theme: ITheme) {
       width: 120,
       height: 160,
       alignSelf: 'center',
-      marginTop: 40,
+      marginTop: 20,
       objectFit: 'contain'
     },
     scrollContent: {
@@ -276,20 +278,20 @@ function styles(theme: ITheme) {
     },
     subtitle: {
       textAlign: 'center',
-      marginBottom: spacing.xl,
+      marginBottom: spacing.md,
       color: theme.textLight,
-      lineHeight: 22
+      lineHeight: 18
     },
     formContainer: {
-      marginBottom: spacing.lg
+      marginBottom: spacing.sm
     },
     signUpButton: {
-      marginBottom: spacing.md
+      marginBottom: spacing.sm
     },
     divider: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginVertical: spacing.md
+      marginVertical: spacing.lg
     },
     dividerLine: {
       flex: 1,
@@ -301,7 +303,7 @@ function styles(theme: ITheme) {
       color: theme.textLight
     },
     googleButton: {
-      marginBottom: spacing.lg
+      marginBottom: spacing.sm
     },
     loginContainer: {
       flexDirection: 'row',

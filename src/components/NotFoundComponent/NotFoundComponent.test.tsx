@@ -1,7 +1,6 @@
 // src/components/NotFoundComponent/NotFoundComponent.test.tsx
 
 import { render } from '@testing-library/react-native'
-import React from 'react'
 import NotFoundComponent from './index'
 
 const testID = 'notFoundComponent'

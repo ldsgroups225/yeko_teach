@@ -5,7 +5,7 @@ import { supabase } from '@src/lib/supabase'
 interface JoinSchoolResponse {
   success: boolean
   message: string
-  error?: any
+  error?: unknown
 }
 
 /**

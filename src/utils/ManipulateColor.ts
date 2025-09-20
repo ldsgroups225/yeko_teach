@@ -123,7 +123,6 @@ export function manipulateColor(
   if (typeof adjustments.lightness === 'number') {
     l = clamp(l + adjustments.lightness, 0, 1)
   }
-
   // Convert adjusted HSL back to RGB
   ;[r, g, b] = hslToRgb(h, s, l)
 

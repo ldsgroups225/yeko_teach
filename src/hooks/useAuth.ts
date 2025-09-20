@@ -1,6 +1,6 @@
 // src/hooks/useAuth.ts
 
-import { auth } from '@modules/app/services/appService'
+import { auth, type UpdateProfileData } from '@modules/app/services/appService'
 import type { IUserDTO } from '@modules/app/types/ILoginDTO'
 import { useEffect } from 'react'
 import { useAuthCheck } from './useAuthCheck'
@@ -11,13 +11,13 @@ import { useLoading } from './useLoading'
 interface UseAuthReturn {
   loading: boolean
   login: (email: string, password: string) => Promise<IUserDTO | null>
-  signUp: (email: string, password: string) => Promise<any>
+  signUp: (email: string, password: string) => Promise<unknown>
   updateUserProfile: (
     userId: string,
-    profileData: any
-  ) => Promise<{ error: any }>
+    profileData: unknown
+  ) => Promise<{ error: unknown }>
   isProfileComplete: (userId: string) => Promise<boolean>
-  sendPasswordResetEmail: (email: string) => Promise<{ error: any }>
+  sendPasswordResetEmail: (email: string) => Promise<{ error: unknown }>
   checkAuth: () => Promise<IUserDTO | null>
   logout: () => Promise<boolean>
 }
@@ -30,7 +30,7 @@ export function useAuth(): UseAuthReturn {
 
   useEffect(() => {
     withLoading(checkAuth)
-  }, [])
+  }, [checkAuth, withLoading])
 
   const wrappedLogin = (email: string, password: string) =>
     withLoading(() => login(email, password))
@@ -38,8 +38,10 @@ export function useAuth(): UseAuthReturn {
   const wrappedSignUp = (email: string, password: string) =>
     withLoading(() => auth.signUp(email, password))
 
-  const wrappedUpdateUserProfile = (userId: string, profileData: any) =>
-    withLoading(() => auth.updateUserProfile(userId, profileData))
+  const wrappedUpdateUserProfile = (
+    userId: string,
+    profileData: UpdateProfileData
+  ) => withLoading(() => auth.updateUserProfile(userId, profileData))
 
   const wrappedIsProfileComplete = (userId: string) =>
     withLoading(() => auth.isProfileComplete(userId))

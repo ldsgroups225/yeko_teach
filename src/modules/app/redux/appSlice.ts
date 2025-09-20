@@ -1,3 +1,4 @@
+import type { IStudentDTO, IUserDTO } from '@modules/app/types/ILoginDTO'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { createSlice } from '@reduxjs/toolkit'
 import type { ColorSchemeName } from 'react-native'
@@ -71,8 +72,8 @@ const appSlice = createSlice({
      * @param state - The current state.
      * @param action - Action containing the user object.
      */
-    setUser(state: IAppState, action: PayloadAction<any>) {
-      state.user = action.payload
+    setUser(state: IAppState, action: PayloadAction<unknown>) {
+      state.user = action.payload as IUserDTO
       state.isSignedIn = true
     },
 
@@ -81,8 +82,8 @@ const appSlice = createSlice({
      * @param state - The current state.
      * @param action - Action containing the user object.
      */
-    setSelectedStudent(state: IAppState, action: PayloadAction<any>) {
-      state.selectedStudent = action.payload
+    setSelectedStudent(state: IAppState, action: PayloadAction<unknown>) {
+      state.selectedStudent = action.payload as IStudentDTO
     },
 
     /**

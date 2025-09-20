@@ -59,7 +59,7 @@ export function useAuthFlow() {
           ToastColorEnum.Success
         )
         return { success: true, user }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Login error:', error)
         const errorMessage = getAuthErrorMessage(error)
 
@@ -85,10 +85,12 @@ export function useAuthFlow() {
       try {
         const result = await signUp(email, password)
 
-        if (result?.error) {
-          const errorMessage = getAuthErrorMessage(result.error)
+        if (result && typeof result === 'object' && 'error' in result) {
+          const errorMessage = getAuthErrorMessage(
+            (result as { error: string }).error
+          )
           showToast(errorMessage, ToastColorEnum.Error)
-          return { success: false, error: result.error }
+          return { success: false, error: (result as { error: string }).error }
         }
 
         // Navigate to email confirmation
@@ -99,7 +101,7 @@ export function useAuthFlow() {
         )
 
         return { success: true }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Sign up error:', error)
         const errorMessage = getAuthErrorMessage(error)
         showToast(errorMessage, ToastColorEnum.Error)
@@ -128,7 +130,7 @@ export function useAuthFlow() {
           ToastColorEnum.Success
         )
         return { success: true }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Forgot password error:', error)
         const errorMessage = getAuthErrorMessage(error)
         showToast(errorMessage, ToastColorEnum.Error)
@@ -175,7 +177,7 @@ export function useAuthFlow() {
         navigation.navigate(Routes.Core as never)
 
         return { success: true, user: updatedUser }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Complete profile error:', error)
         const errorMessage = getAuthErrorMessage(error)
         showToast(errorMessage, ToastColorEnum.Error)
@@ -204,13 +206,15 @@ export function useAuthFlow() {
    * Navigate to appropriate screen based on auth state
    */
   const navigateBasedOnAuthState = useCallback(
-    async (user: any) => {
+    async (user: unknown) => {
       if (!user) {
         navigation.navigate(Routes.Login as never)
         return
       }
 
-      const profileComplete = await checkProfileCompletion(user.id)
+      const profileComplete = await checkProfileCompletion(
+        (user as { id: string }).id
+      )
 
       if (profileComplete) {
         navigation.navigate(Routes.Core as never)

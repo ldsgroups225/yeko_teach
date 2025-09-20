@@ -7,14 +7,13 @@ import { useTheme } from '@src/hooks'
 import type { ScheduleStackParams } from '@utils/Routes'
 import Routes from '@utils/Routes'
 import { ScreenOptions } from '@utils/ScreenOptions'
-import * as React from 'react'
 import { enableScreens } from 'react-native-screens'
 
 enableScreens()
 
 const Stack = createStackNavigator<ScheduleStackParams>()
 
-function ChatStack() {
+function ScheduleStack() {
   const theme = useTheme()
   return (
     <Stack.Navigator
@@ -33,4 +32,4 @@ function ChatStack() {
   )
 }
 
-export default React.memo(ChatStack)
+export default ScheduleStack

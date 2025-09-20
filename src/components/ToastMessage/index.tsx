@@ -2,7 +2,7 @@
 
 import type { IToastType } from '@components/ToastMessage/IToastType'
 import { ToastColorEnum } from '@components/ToastMessage/ToastColorEnum'
-import React, {
+import {
   forwardRef,
   memo,
   useCallback,
@@ -24,7 +24,7 @@ let stop = false
  * <ToastMessage ref={toastRef} />
  * ```
  */
-const ToastMessage = forwardRef((props, ref) => {
+const ToastMessage = forwardRef((_props, ref) => {
   const animatedValue = useRef(new Animated.Value(-toastHeight)).current
 
   const [state, setState] = useState<IToastType>({

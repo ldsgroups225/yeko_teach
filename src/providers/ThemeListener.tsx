@@ -2,7 +2,7 @@
 
 import { setUserColorScheme } from '@modules/app/redux/appSlice'
 import throttle from 'lodash.throttle'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { Appearance } from 'react-native'
 import { useDispatch } from 'react-redux'
 
@@ -26,5 +26,5 @@ export default function ThemeListener() {
     return () => {}
   }, [dispatch])
 
-  return <></>
+  return null
 }

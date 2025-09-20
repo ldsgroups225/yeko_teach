@@ -17,7 +17,8 @@ import { useTheme } from '@src/hooks'
 import { useAppSelector } from '@src/store'
 import { spacing } from '@styles/spacing'
 import type { ITheme } from '@styles/theme'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import type React from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   BackHandler,
   FlatList,
@@ -55,7 +56,7 @@ const ScheduleScreen: React.FC = () => {
   const [selectedDay, setSelectedDay] = useState(new Date().getDay() || 1)
 
   const fetchSchedules = useCallback(async () => {
-    if (!user || !user.schools.length) return
+    if (!user || !user.schools || !user.schools.length) return
 
     // Parallelize schedule fetching with semester fetching if semesters are empty
     const schedulePromise = getSchedules(user.id)
@@ -219,8 +220,7 @@ const ScheduleScreen: React.FC = () => {
       </View>
     )
   }
-
-  if (!user?.schools.length) {
+  if (!user?.schools || !user.schools.length) {
     return (
       <View style={styles.centeredView}>
         <Image
@@ -413,4 +413,4 @@ function useStyles(theme: ITheme) {
   })
 }
 
-export default React.memo(ScheduleScreen)
+export default ScheduleScreen

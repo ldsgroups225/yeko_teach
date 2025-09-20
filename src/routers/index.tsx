@@ -23,7 +23,6 @@ import { useAppSelector } from '@src/store'
 import type { RootStackParams } from '@utils/Routes'
 import Routes from '@utils/Routes'
 import { ScreenOptions } from '@utils/ScreenOptions'
-import * as React from 'react'
 import { useCallback, useEffect, useRef } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { enableScreens } from 'react-native-screens'
@@ -65,11 +64,11 @@ function RootNavigation() {
         await schoolYear.getCurrentSchoolYearWithSemesters()
       if (error) throw error
 
-      if (data && data.schoolYear && data.semesters) {
+      if (data?.schoolYear && data.semesters) {
         dispatch(
           setSchoolYear({
             id: data.schoolYear.id,
-            name: data.schoolYear.name!
+            name: data.schoolYear.name || ''
           })
         )
         dispatch(setSemesters(data.semesters))
@@ -145,6 +144,16 @@ function RootNavigation() {
                   gestureEnabled: false,
                   headerShown: false,
                   headerTitle: translate('navigation.home')
+                }}
+              />
+              <Stack.Screen
+                name={Routes.CompleteTeacherProfile}
+                component={CompleteTeacherProfile}
+                options={{
+                  headerShown: true,
+                  title: 'Compléter le profil',
+                  headerBackTitle: 'Retour',
+                  gestureEnabled: false // Prevent going back
                 }}
               />
             </>

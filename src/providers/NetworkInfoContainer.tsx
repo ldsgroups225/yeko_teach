@@ -1,7 +1,7 @@
 // src/providers/NetworkInfoContainer.tsx
 
 import { useNetInfo } from '@react-native-community/netinfo'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button, Modal, StyleSheet, Text, View } from 'react-native'
 
 const $black = '#000'
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   }
 })
 
-function NetworkInfoContainer({ children }: any) {
+function NetworkInfoContainer({ children }: { children: React.ReactNode }) {
   const { isConnected } = useNetInfo()
   console.warn('isConnected', isConnected)
   const [modalVisible, setModalVisible] = useState(false)
