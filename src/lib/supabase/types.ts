@@ -8,7 +8,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export interface Database {
+export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
@@ -27,6 +27,7 @@ export interface Database {
           image_url: string | null
           is_excused: boolean
           reason: string | null
+          school_id: string
           school_years_id: number
           semesters_id: number
           starts_at: string
@@ -46,6 +47,7 @@ export interface Database {
           image_url?: string | null
           is_excused?: boolean
           reason?: string | null
+          school_id: string
           school_years_id: number
           semesters_id: number
           starts_at: string
@@ -65,6 +67,7 @@ export interface Database {
           image_url?: string | null
           is_excused?: boolean
           reason?: string | null
+          school_id?: string
           school_years_id?: number
           semesters_id?: number
           starts_at?: string
@@ -95,6 +98,13 @@ export interface Database {
             isOneToOne: false
             referencedRelation: 'student_conduct_summary_view'
             referencedColumns: ['class_id']
+          },
+          {
+            foreignKeyName: 'attendances_school_id_foreign'
+            columns: ['school_id']
+            isOneToOne: false
+            referencedRelation: 'schools'
+            referencedColumns: ['id']
           },
           {
             foreignKeyName: 'attendances_school_years_foreign'
@@ -2792,21 +2802,36 @@ export interface Database {
       }
       user_roles: {
         Row: {
+          created_at: string | null
+          created_by: string | null
           grade_id: number | null
+          id: string
           role_id: number
           school_id: string | null
+          updated_at: string | null
+          updated_by: string | null
           user_id: string
         }
         Insert: {
+          created_at?: string | null
+          created_by?: string | null
           grade_id?: number | null
+          id?: string
           role_id: number
           school_id?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
           user_id: string
         }
         Update: {
+          created_at?: string | null
+          created_by?: string | null
           grade_id?: number | null
+          id?: string
           role_id?: number
           school_id?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
           user_id?: string
         }
         Relationships: [
@@ -2901,11 +2926,19 @@ export interface Database {
           lates: number | null
           month: string | null
           month_numeric: number | null
+          school_id: string | null
           school_years_id: number | null
           semester_id: number | null
           student_id: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: 'attendances_school_id_foreign'
+            columns: ['school_id']
+            isOneToOne: false
+            referencedRelation: 'schools'
+            referencedColumns: ['id']
+          },
           {
             foreignKeyName: 'attendances_school_years_foreign'
             columns: ['school_years_id']

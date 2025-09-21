@@ -15,10 +15,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   icon: './src/assets/images/icon.png',
   runtimeVersion: '1.0.0',
   assetBundlePatterns: ['./src/assets/images/*'],
-  locales: {
-    tr: './src/assets/languages/turkish.json',
-    en: './src/assets/languages/english.json'
-  },
+  // locales: {
+  //   tr: './src/assets/languages/turkish.json',
+  //   en: './src/assets/languages/english.json'
+  // },
   splash: {
     image: './src/assets/images/splash.png',
     resizeMode: 'contain',
